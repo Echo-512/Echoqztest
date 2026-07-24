@@ -854,6 +854,124 @@ footer > button {
   letter-spacing: -0.035em;
 }
 
+.source-stem {
+  min-height: 210px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: var(--white);
+}
+
+.vector-art {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+  color: #26312c;
+}
+
+.stem-vector {
+  max-width: 820px;
+  max-height: 390px;
+}
+
+.q1-vector {
+  max-width: 720px;
+}
+
+.q2-vector,
+.q5-vector {
+  max-width: 430px;
+}
+
+.art-stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.panel-grid rect,
+.tile-grid rect {
+  fill: #fff;
+  stroke: #bfc7c1;
+  stroke-width: 1.6;
+}
+
+.question-glyph {
+  fill: var(--navy);
+  font-family: Georgia, serif;
+  font-size: 68px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.relation-glyph {
+  fill: #78857d;
+  font-size: 48px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.matrix-grid {
+  stroke-width: 2.4;
+}
+
+.matrix-glyph circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.matrix-blank {
+  fill: #fff;
+  stroke: none;
+}
+
+.matrix-blank-outline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+}
+
+.choice-frame,
+.tile-frame {
+  fill: #fff;
+  stroke: #bcc4be;
+  stroke-width: 1.6;
+}
+
+.shape-white {
+  fill: #fff;
+}
+
+.shape-gray {
+  fill: #737875;
+}
+
+.shape-dark {
+  fill: #222825;
+}
+
+.tile-gray {
+  fill: #686e6a;
+  stroke: #555d58;
+  stroke-width: 0.8;
+}
+
+.tile-white {
+  fill: #fff;
+  stroke: #aab2ad;
+  stroke-width: 0.8;
+}
+
+.tile-outline {
+  fill: none;
+  stroke: #737c76;
+  stroke-width: 1.25;
+}
+
 .sequence-row {
   padding: 24px;
   border: 1px solid var(--line);
@@ -887,7 +1005,7 @@ footer > button {
 }
 
 .option-card {
-  min-height: 154px;
+  min-height: 174px;
   padding: 12px;
   border: 1.5px solid var(--line);
   border-radius: 16px;
@@ -897,6 +1015,11 @@ footer > button {
   background: var(--white);
   cursor: pointer;
   transition: border 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.option-vector {
+  width: min(132px, 76%);
+  max-height: 132px;
 }
 
 .option-card:hover:not(:disabled),

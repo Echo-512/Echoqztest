@@ -1,47 +1,43 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 const pageUrl = new URL("../app/page.tsx", import.meta.url);
 
-test("records only the verified first five questions from Bank 1", async () => {
+test("records all 99 Bank 1 questions with PDF-source images", async () => {
   const page = await readFile(pageUrl, "utf8");
 
-  for (const sourceId of ["1-1", "1-2", "1-3", "1-4", "1-5"]) {
-    assert.match(page, new RegExp(`sourceId: "${sourceId}"`));
-  }
-  assert.doesNotMatch(page, /sourceId: "1-6"/);
+  assert.match(page, /题库1全部题目/);
+  assert.match(page, /q\$\{String\(id\)\.padStart\(3, "0"\)\}\.png/);
+  assert.match(page, /answerLetters/);
+  assert.match(page, /1-\$\{id\}/);
 
-  const verifiedAnswers = [
-    ['1-1', 3],
-    ['1-2', 1],
-    ['1-3', 0],
-    ['1-4', 3],
-    ['1-5', 1],
-  ];
-  for (const [sourceId, answer] of verifiedAnswers) {
-    assert.match(
-      page,
-      new RegExp(`sourceId: "${sourceId}"[\\s\\S]*?answer: ${answer},`),
+  for (const question of [1, 7, 57, 76, 83, 89, 99]) {
+    await access(
+      new URL(
+        `../public/questions/beisen-1/q${String(question).padStart(3, "0")}.png`,
+        import.meta.url,
+      ),
     );
   }
 });
 
-test("uses clean vector artwork instead of answer-marked PDF screenshots", async () => {
+test("supports three-, four-, and five-option source questions", async () => {
   const page = await readFile(pageUrl, "utf8");
 
-  assert.match(page, /function QuestionArt/);
-  assert.match(page, /className="vector-art/);
-  assert.match(page, /<QuestionArt name=\{activeQuestion\.stemArt\}/);
-  assert.match(page, /<QuestionArt name=\{optionArt\}/);
-  assert.doesNotMatch(page, /optionImages|stemImage|questions\/b1\/q\d+-(?:a|b|c|d)\.png/);
+  assert.match(page, /57: 3/);
+  assert.match(page, /76: 5/);
+  assert.match(page, /77: 5/);
+  assert.match(page, /83: 5/);
+  assert.match(page, /89: 5/);
 });
 
-test("keeps the key structural distinctions used by the answers", async () => {
+test("keeps answer disclosure behind explicit submission", async () => {
   const page = await readFile(pageUrl, "utf8");
 
-  assert.match(page, /r3c1: \[1, 2, 3, 4\]/);
-  assert.match(page, /b: \[1, 2, 3\]/);
-  assert.match(page, /M88 44V66 M94 44V66 M100 44V66/);
-  assert.match(page, /variant === "d" \? 1\.78 : 1\.32/);
+  assert.match(page, /function submitAnswer\(\)/);
+  assert.match(page, /确认提交/);
+  assert.match(page, /提交前不会显示答案/);
+  assert.match(page, /const answered = Boolean\(submitted\[activeQuestion\.id\]\)/);
+  assert.match(page, /!answered \?/);
 });

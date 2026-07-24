@@ -31,7 +31,9 @@ test("renders the finished aptitude-test practice home page", async () => {
   const html = await response.text();
   assert.match(html, /秋招行测/);
   assert.match(html, /大厂行测/);
-  assert.match(html, /开始刷题/);
+  assert.match(html, /进入分类刷题/);
+  assert.match(html, /进入模考/);
+  assert.match(html, /看看题库结构/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|Building your site/i);
   assert.doesNotMatch(html, /正确答案/);
 });
@@ -42,7 +44,7 @@ test("keeps answer disclosure behind explicit submission", async () => {
   assert.match(page, /function submitAnswer\(\)/);
   assert.match(page, /确认提交/);
   assert.match(page, /提交前不会显示答案/);
-  assert.match(page, /Boolean\(submitted\[current\]\)/);
-  assert.match(page, /answered && \(/);
+  assert.match(page, /Boolean\(submitted\[activeQuestion\.id\]\)/);
+  assert.match(page, /!answered \?/);
   await access(new URL("../public/og.png", import.meta.url));
 });

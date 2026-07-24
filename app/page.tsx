@@ -1,111 +1,40 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import questionData from "./questions.json";
 
-type Point = "位置规律" | "样式规律" | "属性规律" | "数量规律" | "综合规律";
 type Difficulty = "入门" | "提高" | "强化";
 type Screen = "home" | "categories" | "mode" | "practice" | "mock" | "result";
 
 type Question = {
-  id: number;
   sourceId: string;
   image: string;
+  optionImages: string[];
   answer: string;
   optionCount: number;
-  point: Point;
+  point: string;
   difficulty: Difficulty;
   finePoints: string[];
   analysis: string;
   method: string;
+  source: "题库1" | "题库2";
+  originalNumber: number;
 };
 
-const answerLetters =
-  "DBADBAACACCDABAAADDBDDCCBCBCBCBBCBACDDDDAABCBBAAADABDADABABCDADCADDDAACADAAECCCDCCEADAACBDADDCADAAA".split(
-    "",
-  );
+type SavedSession = {
+  questionIds: string[];
+  current: number;
+  selected: Record<string, string>;
+  submitted: Record<string, string>;
+  questionTimes: Record<string, number>;
+  currentSeconds: number;
+};
 
-const pointOrder: Point[] = ["位置规律", "样式规律", "属性规律", "数量规律", "综合规律"];
+const questions = questionData as Question[];
+const questionById = new Map(questions.map((question) => [question.sourceId, question]));
+const pointOrder = ["位置规律", "样式规律", "属性规律", "数量规律", "特殊规律"];
 const letters = ["A", "B", "C", "D", "E", "F"];
-const optionCountOverrides: Record<number, number> = {
-  57: 3,
-  76: 5,
-  77: 5,
-  83: 5,
-  89: 5,
-};
-
-const verifiedExplanations: Record<number, { analysis: string; method: string }> = {
-  1: {
-    method: "复杂线条先拆成多线端、折角端和短支线，分别追踪数量与位置。",
-    analysis:
-      "多线端的数量按 3、2、3、2 交替，下一图应恢复为 3 条平行线；再追踪各组成部分的移动与转向，三线端应位于左下，折角端位于右上。只有 D 同时满足。",
-  },
-  2: {
-    method: "先忽略黑点排线型，再用黑点相对线条的位置做二次校验。",
-    analysis:
-      "把大图还原为方格。横线、两种斜线和竖线按固定次序在行列中遍历，空格中的线型由相邻行列唯一确定；再核对三个黑点所在区域，只有 B 的线型和点位全部吻合。",
-  },
-  3: {
-    method: "外框四项相同，可先忽略，只比较中层与最内层图形的边数。",
-    analysis:
-      "B、C、D 中，最内层图形的边数都少于包住它的中层多边形；只有 A 中内层正方形为 4 条边，多于中层三角形的 3 条边，因此 A 是特殊项。",
-  },
-  4: {
-    method: "两图外框相同而内部不同，优先尝试去同存异。",
-    analysis:
-      "左侧后两图去同存异得到第一图：共有外框消失，不同线条保留。右侧使用同一规则，共有轮廓与重合线段被消去，剩余图形对应 D。",
-  },
-  5: {
-    method: "把大图拆成固定小三角，逐格做黑白运算，不凭整体面积判断。",
-    analysis:
-      "对应小三角颜色相同的位置变为灰色，颜色不同的位置变为白色。前两行可验证该规则；第三行逐格运算后与 B 一致。",
-  },
-};
-
-function pointFor(id: number): Point {
-  if (id <= 18) return id % 4 === 0 ? "样式规律" : "位置规律";
-  if (id <= 35) return id % 3 === 0 ? "属性规律" : "数量规律";
-  if (id <= 56) return id % 2 === 0 ? "样式规律" : "数量规律";
-  if (id <= 72) return id % 3 === 0 ? "样式规律" : "位置规律";
-  if (id <= 87) return "综合规律";
-  return id % 2 === 0 ? "属性规律" : "综合规律";
-}
-
-function detailsFor(point: Point): string[] {
-  const details: Record<Point, string[]> = {
-    位置规律: ["平移与旋转", "元素落点", "方向变化"],
-    样式规律: ["图形叠加", "黑白运算", "去同存异"],
-    属性规律: ["对称性", "曲直与开闭", "结构特征"],
-    数量规律: ["点线面数量", "元素个数", "部分数"],
-    综合规律: ["复合规律", "相邻比较", "局部拆分"],
-  };
-  return details[point];
-}
-
-function defaultExplanation(id: number, point: Point, answer: string) {
-  const fine = detailsFor(point);
-  return {
-    method: `先按“${fine[0]}”拆分题干，再用“${fine[1]}”校验，不要只凭整体相似度。`,
-    analysis: `逐项比较题干中的组成元素、相对位置和局部变化，延续同一规律后，符合条件的是 ${answer}。本题高清原图已完成校对，细化文字解析会继续逐题复核。`,
-  };
-}
-
-const questions: Question[] = answerLetters.map((answer, index) => {
-  const id = index + 1;
-  const point = pointFor(id);
-  const explanation = verifiedExplanations[id] ?? defaultExplanation(id, point, answer);
-  return {
-    id,
-    sourceId: `1-${id}`,
-    image: `/questions/beisen-1/q${String(id).padStart(3, "0")}.webp`,
-    answer,
-    optionCount: optionCountOverrides[id] ?? 4,
-    point,
-    difficulty: id % 7 === 0 ? "强化" : id % 3 === 0 ? "入门" : "提高",
-    finePoints: detailsFor(point),
-    ...explanation,
-  };
-});
+const storageKey = "qiuzhao-xingce-graphic-session-v1";
 
 function shuffle<T>(items: T[]) {
   const copy = [...items];
@@ -131,14 +60,10 @@ function SiteNav({ onHome, onPractice }: { onHome: () => void; onPractice: () =>
         <em>beta</em>
       </button>
       <div className="nav-links">
-        <button type="button" onClick={onHome}>
-          首页
-        </button>
+        <button type="button" onClick={onHome}>首页</button>
         <span>北森题库 · 图形推理</span>
       </div>
-      <button className="nav-cta" type="button" onClick={onPractice}>
-        开始刷题
-      </button>
+      <button className="nav-cta" type="button" onClick={onPractice}>开始刷题</button>
     </nav>
   );
 }
@@ -147,28 +72,79 @@ export default function Home() {
   const [screen, setScreen] = useState<Screen>("home");
   const [practiceQuestions, setPracticeQuestions] = useState<Question[]>(questions);
   const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState<Record<number, string>>({});
-  const [submitted, setSubmitted] = useState<Record<number, string>>({});
-  const [elapsed, setElapsed] = useState(0);
+  const [selected, setSelected] = useState<Record<string, string>>({});
+  const [submitted, setSubmitted] = useState<Record<string, string>>({});
+  const [questionTimes, setQuestionTimes] = useState<Record<string, number>>({});
+  const [currentSeconds, setCurrentSeconds] = useState(0);
+  const [savedSession, setSavedSession] = useState<SavedSession | null>(null);
+  const [sessionActive, setSessionActive] = useState(false);
 
   const activeQuestion = practiceQuestions[current] ?? questions[0];
-  const answered = Boolean(submitted[activeQuestion.id]);
+  const activeId = activeQuestion.sourceId;
+  const answered = Boolean(submitted[activeId]);
+
   const correctCount = useMemo(
     () =>
-      questions.filter(
-        (question) => submitted[question.id] && submitted[question.id] === question.answer,
+      practiceQuestions.filter(
+        (question) =>
+          submitted[question.sourceId] &&
+          submitted[question.sourceId] === question.answer,
       ).length,
-    [submitted],
+    [practiceQuestions, submitted],
+  );
+  const totalRecordedSeconds = useMemo(
+    () => Object.values(questionTimes).reduce((sum, value) => sum + value, 0),
+    [questionTimes],
   );
 
   useEffect(() => {
-    if (screen !== "practice") return;
-    const timer = window.setInterval(() => setElapsed((value) => value + 1), 1000);
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as SavedSession;
+      const validIds = parsed.questionIds?.filter((id) => questionById.has(id)) ?? [];
+      if (!validIds.length) return;
+      setSavedSession({ ...parsed, questionIds: validIds });
+    } catch {
+      window.localStorage.removeItem(storageKey);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (screen !== "practice" || answered) return;
+    const timer = window.setInterval(() => setCurrentSeconds((value) => value + 1), 1000);
     return () => window.clearInterval(timer);
-  }, [screen]);
+  }, [screen, answered, activeId]);
+
+  useEffect(() => {
+    if (!sessionActive || !practiceQuestions.length) return;
+    const snapshot: SavedSession = {
+      questionIds: practiceQuestions.map((question) => question.sourceId),
+      current,
+      selected,
+      submitted,
+      questionTimes,
+      currentSeconds,
+    };
+    window.localStorage.setItem(storageKey, JSON.stringify(snapshot));
+    setSavedSession(snapshot);
+  }, [
+    sessionActive,
+    practiceQuestions,
+    current,
+    selected,
+    submitted,
+    questionTimes,
+    currentSeconds,
+  ]);
 
   function goHome() {
     setScreen("home");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function goTo(nextScreen: Screen) {
+    setScreen(nextScreen);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -177,57 +153,76 @@ export default function Home() {
     setCurrent(0);
     setSelected({});
     setSubmitted({});
-    setElapsed(0);
-    setScreen("practice");
-    window.scrollTo({ top: 0 });
+    setQuestionTimes({});
+    setCurrentSeconds(0);
+    setSessionActive(true);
+    goTo("practice");
+  }
+
+  function resumePractice() {
+    if (!savedSession) return;
+    const pool = savedSession.questionIds
+      .map((id) => questionById.get(id))
+      .filter((question): question is Question => Boolean(question));
+    if (!pool.length) return;
+    setPracticeQuestions(pool);
+    setCurrent(Math.min(savedSession.current, pool.length - 1));
+    setSelected(savedSession.selected ?? {});
+    setSubmitted(savedSession.submitted ?? {});
+    setQuestionTimes(savedSession.questionTimes ?? {});
+    setCurrentSeconds(savedSession.currentSeconds ?? 0);
+    setSessionActive(true);
+    goTo("practice");
+  }
+
+  function chooseAnswer(letter: string) {
+    if (answered) return;
+    setSelected((state) => ({ ...state, [activeId]: letter }));
   }
 
   function submitAnswer() {
-    const choice = selected[activeQuestion.id];
+    const choice = selected[activeId];
     if (!choice || answered) return;
-    setSubmitted((currentSubmitted) => ({
-      ...currentSubmitted,
-      [activeQuestion.id]: choice,
-    }));
+    setSubmitted((state) => ({ ...state, [activeId]: choice }));
+    setQuestionTimes((state) => ({ ...state, [activeId]: currentSeconds }));
   }
 
   function nextQuestion() {
     if (current >= practiceQuestions.length - 1) {
-      setScreen("result");
-      window.scrollTo({ top: 0 });
+      goTo("result");
       return;
     }
-    setCurrent((value) => value + 1);
+    const next = current + 1;
+    const nextId = practiceQuestions[next].sourceId;
+    setCurrent(next);
+    setCurrentSeconds(questionTimes[nextId] ?? 0);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   if (screen === "categories") {
     return (
       <main className="inner-page">
-        <SiteNav onHome={goHome} onPractice={() => setScreen("categories")} />
+        <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="page-heading">
+          <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
           <span className="eyebrow">CATEGORY PRACTICE</span>
           <h1>选择题型</h1>
           <p>先按题型进入，再选择随机刷题或按考点练习。</p>
         </section>
         <section className="category-grid">
-          <button className="category-card active-card" type="button" onClick={() => setScreen("mode")}>
+          <button className="category-card active-card" type="button" onClick={() => goTo("mode")}>
             <span>01</span>
             <h2>图形推理</h2>
-            <p>北森题库1已录入 99 题，使用 PDF 原始高清图。</p>
+            <p>北森题库去重后共 {questions.length} 题，保留 Excel 原题号。</p>
             <strong>进入题库 →</strong>
           </button>
           <article className="category-card muted-card">
-            <span>02</span>
-            <h2>案例分析</h2>
-            <p>题库框架已预留，资料补充后开放。</p>
-            <strong>即将更新</strong>
+            <span>02</span><h2>案例分析</h2>
+            <p>题库框架已预留，资料补充后开放。</p><strong>即将更新</strong>
           </article>
           <article className="category-card muted-card">
-            <span>03</span>
-            <h2>文字推理</h2>
-            <p>题库框架已预留，资料补充后开放。</p>
-            <strong>即将更新</strong>
+            <span>03</span><h2>文字推理</h2>
+            <p>题库框架已预留，资料补充后开放。</p><strong>即将更新</strong>
           </article>
         </section>
       </main>
@@ -237,33 +232,35 @@ export default function Home() {
   if (screen === "mode") {
     return (
       <main className="inner-page">
-        <SiteNav onHome={goHome} onPractice={() => setScreen("categories")} />
+        <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="page-heading compact-heading">
-          <button className="back-link" type="button" onClick={() => setScreen("categories")}>
-            ← 返回题型
-          </button>
+          <button className="back-link" type="button" onClick={() => goTo("categories")}>← 返回题型</button>
           <span className="eyebrow">GRAPHIC REASONING</span>
           <h1>图形推理怎么练？</h1>
           <p>随机进入真实节奏，或按大类集中训练薄弱考点。</p>
+          {savedSession && (
+            <button className="resume-mode" type="button" onClick={resumePractice}>
+              继续上次刷题 · 已完成 {Object.keys(savedSession.submitted ?? {}).length} 题 →
+            </button>
+          )}
         </section>
         <section className="mode-grid">
           <button className="mode-card featured-mode" type="button" onClick={() => startPractice(shuffle(questions))}>
             <span className="mode-number">01</span>
             <h2>随机刷题</h2>
-            <p>打乱题库1全部 99 题，逐题计时、提交后判题。</p>
+            <p>打乱全部 {questions.length} 道去重题，逐题计时、提交后判题。</p>
             <strong>开始随机刷题 →</strong>
           </button>
           <article className="mode-card">
             <span className="mode-number">02</span>
             <h2>按考点刷题</h2>
-            <p>先按大类进入，题目提交后再显示细分考点。</p>
+            <p>先按大类进入，提交后再显示二级、三级考点。</p>
             <div className="point-buttons">
               {pointOrder.map((point) => {
                 const pool = questions.filter((question) => question.point === point);
                 return (
                   <button key={point} type="button" onClick={() => startPractice(pool)}>
-                    <span>{point}</span>
-                    <small>{pool.length} 题</small>
+                    <span>{point}</span><small>{pool.length} 题</small>
                   </button>
                 );
               })}
@@ -277,40 +274,36 @@ export default function Home() {
   if (screen === "mock") {
     return (
       <main className="inner-page">
-        <SiteNav onHome={goHome} onPractice={() => setScreen("categories")} />
+        <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="empty-state">
+          <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
           <span className="eyebrow">MOCK EXAM</span>
           <h1>模考框架已经搭好</h1>
           <p>待案例分析、文字推理和更多大厂真题加入后，将开放整卷倒计时、统一交卷和成绩报告。</p>
-          <button className="primary-button" type="button" onClick={() => setScreen("categories")}>
-            先去分类刷题
-          </button>
+          <button className="primary-button" type="button" onClick={() => goTo("categories")}>先去分类刷题</button>
         </section>
       </main>
     );
   }
 
   if (screen === "practice") {
-    const choice = selected[activeQuestion.id];
-    const isCorrect = submitted[activeQuestion.id] === activeQuestion.answer;
+    const choice = selected[activeId];
+    const isCorrect = submitted[activeId] === activeQuestion.answer;
+    const optionImages = activeQuestion.optionImages ?? [];
     return (
       <main className="practice-shell">
         <header className="practice-header">
+          <button className="practice-back" type="button" onClick={() => goTo("mode")}>← 返回练习方式</button>
           <button className="logo light-logo" type="button" onClick={goHome}>
-            <span className="logo-mark">Q</span>
-            秋招行测
+            <span className="logo-mark">Q</span>秋招行测
           </button>
           <div className="practice-progress">
-            <span>
-              题库1 · {current + 1}/{practiceQuestions.length}
-            </span>
-            <div>
-              <i style={{ width: `${((current + 1) / practiceQuestions.length) * 100}%` }} />
-            </div>
+            <span>{activeQuestion.source} · {current + 1}/{practiceQuestions.length}</span>
+            <div><i style={{ width: `${((current + 1) / practiceQuestions.length) * 100}%` }} /></div>
           </div>
-          <div className="timer" aria-label={`已用时 ${formatTime(elapsed)}`}>
-            <small>本次用时</small>
-            <strong>{formatTime(elapsed)}</strong>
+          <div className="timer" aria-label={`本题用时 ${formatTime(currentSeconds)}`}>
+            <small>{answered ? "本题用时" : "本题计时"}</small>
+            <strong>{formatTime(questionTimes[activeId] ?? currentSeconds)}</strong>
           </div>
         </header>
 
@@ -321,47 +314,60 @@ export default function Home() {
             <em>提交前不会显示答案</em>
           </div>
           <article className="question-card">
-            <div className="source-image-wrap">
-              <img
-                src={activeQuestion.image}
-                alt={`${activeQuestion.sourceId} 图形推理题原图`}
-                draggable={false}
-              />
+            <div className={`source-image-wrap ${optionImages.length ? "stem-image-wrap" : ""}`}>
+              <img src={activeQuestion.image} alt={`${activeId} 图形推理题原图`} draggable={false} />
             </div>
-            <div className="answer-zone" aria-label="请选择答案">
-              <p>选择你的答案</p>
-              <div className="answer-buttons">
-                {letters.slice(0, activeQuestion.optionCount).map((letter) => {
+
+            {optionImages.length ? (
+              <div className="source-options" aria-label="请选择答案">
+                {optionImages.map((image, index) => {
+                  const letter = letters[index];
                   const chosen = choice === letter;
                   const stateClass = answered
                     ? letter === activeQuestion.answer
                       ? "correct-choice"
-                      : chosen
-                        ? "wrong-choice"
-                        : ""
-                    : chosen
-                      ? "selected-choice"
-                      : "";
+                      : chosen ? "wrong-choice" : ""
+                    : chosen ? "selected-choice" : "";
                   return (
                     <button
-                      key={letter}
+                      key={image}
                       type="button"
-                      className={stateClass}
-                      onClick={() =>
-                        !answered &&
-                        setSelected((currentSelected) => ({
-                          ...currentSelected,
-                          [activeQuestion.id]: letter,
-                        }))
-                      }
+                      className={`source-option-button ${stateClass}`}
+                      onClick={() => chooseAnswer(letter)}
                       disabled={answered}
                     >
-                      {letter}
+                      <span>{letter}</span>
+                      <img src={image} alt={`选项 ${letter}`} draggable={false} />
                     </button>
                   );
                 })}
               </div>
-            </div>
+            ) : (
+              <div className="answer-zone" aria-label="请选择答案">
+                <p>选择你的答案</p>
+                <div className="answer-buttons">
+                  {letters.slice(0, activeQuestion.optionCount).map((letter) => {
+                    const chosen = choice === letter;
+                    const stateClass = answered
+                      ? letter === activeQuestion.answer
+                        ? "correct-choice"
+                        : chosen ? "wrong-choice" : ""
+                      : chosen ? "selected-choice" : "";
+                    return (
+                      <button
+                        key={letter}
+                        type="button"
+                        className={stateClass}
+                        onClick={() => chooseAnswer(letter)}
+                        disabled={answered}
+                      >
+                        {letter}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </article>
 
           {!answered ? (
@@ -373,17 +379,14 @@ export default function Home() {
               <div className="analysis-result">
                 <span>{isCorrect ? "回答正确" : "回答错误"}</span>
                 <strong>正确答案：{activeQuestion.answer}</strong>
+                <small>本题用时 {formatTime(questionTimes[activeId] ?? currentSeconds)}</small>
               </div>
               <div className="analysis-body">
-                <h2>解析</h2>
-                <p>{activeQuestion.analysis}</p>
-                <h3>快速识别</h3>
-                <p>{activeQuestion.method}</p>
+                <h2>解析</h2><p>{activeQuestion.analysis}</p>
+                <h3>快速识别</h3><p>{activeQuestion.method}</p>
                 <div className="concept-tags">
                   <span>{activeQuestion.point}</span>
-                  {activeQuestion.finePoints.map((point) => (
-                    <span key={point}>{point}</span>
-                  ))}
+                  {activeQuestion.finePoints.map((point) => <span key={point}>{point}</span>)}
                 </div>
               </div>
               <button className="next-button" type="button" onClick={nextQuestion}>
@@ -400,18 +403,15 @@ export default function Home() {
     const answeredCount = Object.keys(submitted).length;
     return (
       <main className="inner-page">
-        <SiteNav onHome={goHome} onPractice={() => setScreen("categories")} />
+        <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="result-card">
+          <button className="back-link" type="button" onClick={() => goTo("mode")}>← 返回练习方式</button>
           <span className="eyebrow">SESSION COMPLETE</span>
           <h1>{correctCount} / {answeredCount}</h1>
-          <p>本次用时 {formatTime(elapsed)}。错题可在下一轮继续回看解析。</p>
+          <p>本次累计答题用时 {formatTime(totalRecordedSeconds)}。进度已经保存在本机，可随时继续。</p>
           <div>
-            <button className="primary-button" type="button" onClick={() => startPractice(shuffle(questions))}>
-              再刷一轮
-            </button>
-            <button className="text-button" type="button" onClick={goHome}>
-              返回首页
-            </button>
+            <button className="primary-button" type="button" onClick={() => startPractice(shuffle(questions))}>再刷一轮</button>
+            <button className="text-button" type="button" onClick={goHome}>返回首页</button>
           </div>
         </section>
       </main>
@@ -420,74 +420,41 @@ export default function Home() {
 
   return (
     <main className="home-page">
-      <SiteNav onHome={goHome} onPractice={() => setScreen("categories")} />
+      <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
       <section className="hero">
         <div className="hero-copy">
           <span className="hero-label">FOR 2026 AUTUMN RECRUITMENT</span>
-          <h1>
-            大厂行测，
-            <br />
-            终于有地方<span>练了</span>
-          </h1>
+          <h1>大厂行测，<br />终于有地方<span>练了</span></h1>
           <p>为秋招学生做的行测刷题站。先从图形推理开始，不套用考公节奏，只练大厂笔试真正会遇到的思路。</p>
           <div className="hero-actions">
-            <button className="primary-button" type="button" onClick={() => setScreen("categories")}>
-              进入分类刷题 →
-            </button>
-            <button className="primary-button secondary-green" type="button" onClick={() => setScreen("mock")}>
-              进入模考 →
-            </button>
+            <button className="primary-button" type="button" onClick={() => goTo("categories")}>进入分类刷题 →</button>
+            <button className="primary-button secondary-green" type="button" onClick={() => goTo("mock")}>进入模考 →</button>
             <a href="#structure">看看题库结构</a>
           </div>
         </div>
         <aside className="hero-board" aria-label="题库概览">
-          <div className="board-top">
-            <span>北森题库 · 图形推理</span>
-            <em>持续更新</em>
-          </div>
+          <div className="board-top"><span>北森题库 · 图形推理</span><em>持续更新</em></div>
           <div className="board-score">
-            <div>
-              <span>已录入</span>
-              <strong>99</strong>
-              <small>题库1全部题目</small>
-            </div>
+            <div><span>去重后已录入</span><strong>{questions.length}</strong><small>题库1 + 题库2</small></div>
             <div className="mini-chart" aria-hidden="true">
-              {[48, 67, 54, 82, 72, 92, 78].map((height) => (
-                <i key={height} style={{ height: `${height}%` }} />
-              ))}
+              {[48, 67, 54, 82, 72, 92, 78].map((height) => <i key={height} style={{ height: `${height}%` }} />)}
             </div>
           </div>
           <div className="board-progress">
-            <div><span>高清原图</span><strong>99 / 99</strong></div>
+            <div><span>题库2清晰图</span><strong>195 题</strong></div>
+            <div><span>题库1独有题</span><strong>52 题</strong></div>
             <div><span>答案隐藏</span><strong>提交后显示</strong></div>
-            <div><span>题型框架</span><strong>3 类</strong></div>
           </div>
-          <div className="board-footer">
-            <span>PDF 原图优先</span>
-            <span>题号 1-1 至 1-99</span>
-          </div>
+          <div className="board-footer"><span>PDF 原图优先</span><span>保留 Excel 原题号</span></div>
         </aside>
       </section>
 
       <section className="structure-section" id="structure">
-        <span className="eyebrow">QUESTION BANK</span>
-        <h2>题库结构</h2>
+        <span className="eyebrow">QUESTION BANK</span><h2>题库结构</h2>
         <div className="structure-grid">
-          <article>
-            <span>01</span>
-            <h3>分类刷题</h3>
-            <p>图形推理已开放；案例分析和文字推理保留扩展框架。</p>
-          </article>
-          <article>
-            <span>02</span>
-            <h3>图形推理</h3>
-            <p>随机刷题与按考点刷题两种方式，覆盖题库1全部 99 题。</p>
-          </article>
-          <article>
-            <span>03</span>
-            <h3>考试模拟</h3>
-            <p>框架已建立，待更多题型与大厂历年题补齐后开放。</p>
-          </article>
+          <article><span>01</span><h3>分类刷题</h3><p>图形推理已开放；案例分析和文字推理保留扩展框架。</p></article>
+          <article><span>02</span><h3>图形推理</h3><p>随机刷题与按考点刷题，覆盖两套北森资料去重后的 {questions.length} 道题。</p></article>
+          <article><span>03</span><h3>考试模拟</h3><p>框架已建立，待更多题型与大厂历年题补齐后开放。</p></article>
         </div>
       </section>
     </main>

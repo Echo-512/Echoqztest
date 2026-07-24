@@ -1,0 +1,4456 @@
+[
+  {
+    "sourceId": "1-1",
+    "image": "/questions/beisen-1/q001.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "线",
+      "直线/线条数量"
+    ],
+    "analysis": "下方横线数量为 3， 2,3， 2, 排除 A。中间线在上面线的 左边，排除 BC。 因此选择 D。",
+    "method": "题型：问号推理。先识别“线”，再核对“直线/线条数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 1
+  },
+  {
+    "sourceId": "1-3",
+    "image": "/questions/beisen-1/q003.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "线",
+      "边数"
+    ],
+    "analysis": "A选项图形边数为 3,4 B选项图形边数为 4,3 C选项图形边数为 6,4 D选项图形边数为 5,3 图形边数外大于里 只有 A不一样",
+    "method": "题型：分组分类/找不同。先识别“线”，再核对“边数”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 3
+  },
+  {
+    "sourceId": "1-13",
+    "image": "/questions/beisen-1/q013.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "遍历 横着看， 每行三个图相 加，所有的组成元素 都 是 相同 的 因此选择 A。",
+    "method": "题型：九宫格。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 13
+  },
+  {
+    "sourceId": "1-14",
+    "image": "/questions/beisen-1/q014.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "每个小 元素左右 按数量规 律 运动 因此选择 B。",
+    "method": "题型：问号推理。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 14
+  },
+  {
+    "sourceId": "1-18",
+    "image": "/questions/beisen-1/q018.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素种类/重复元素"
+    ],
+    "analysis": "第一组有相同图形：圆 第二组有相同图形：月亮 因此选择 D。",
+    "method": "题型：两组式/类比。先识别“素”，再核对“元素种类/重复元素”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 18
+  },
+  {
+    "sourceId": "1-19",
+    "image": "/questions/beisen-1/q019.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "面",
+      "封闭面数量"
+    ],
+    "analysis": "面（封闭区域）的数量成等差 变化 2,3,4,5 因此选择 D。",
+    "method": "题型：问号推理。先识别“面”，再核对“封闭面数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 19
+  },
+  {
+    "sourceId": "1-20",
+    "image": "/questions/beisen-1/q020.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "相邻/连接关系"
+    ],
+    "analysis": "ABD小正方形 连接方式都是点与 点 因此选择 B。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“相邻/连接关系”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 20
+  },
+  {
+    "sourceId": "1-24",
+    "image": "/questions/beisen-1/q024.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "点",
+      "交点/切点数量"
+    ],
+    "analysis": "直线与图形交点的个数 因此选择 C。",
+    "method": "题型：问号推理。先识别“点”，再核对“交点/切点数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 24
+  },
+  {
+    "sourceId": "1-25",
+    "image": "/questions/beisen-1/q025.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "平移",
+      "多元素独立移动"
+    ],
+    "analysis": "每个元素按数量规律 运动 因此选择 B。",
+    "method": "题型：问号推理。先识别“平移”，再核对“多元素独立移动”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 25
+  },
+  {
+    "sourceId": "1-26",
+    "image": "/questions/beisen-1/q026.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "面",
+      "阴影面积/比例"
+    ],
+    "analysis": "黑色面积：白色面积 =1； 2 因此选择 C。",
+    "method": "题型：问号推理。先识别“面”，再核对“阴影面积/比例”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 26
+  },
+  {
+    "sourceId": "1-27",
+    "image": "/questions/beisen-1/q027.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "曲直性",
+      "全直/全曲/曲直混合"
+    ],
+    "analysis": "曲直性 每一行图形分别是直线图形，曲 直图形，曲线图形 因此选择 B。",
+    "method": "题型：问号推理。先识别“曲直性”，再核对“全直/全曲/曲直混合”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 27
+  },
+  {
+    "sourceId": "1-30",
+    "image": "/questions/beisen-1/q030.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "点",
+      "交点/切点数量"
+    ],
+    "analysis": "黑点数量等差变化且黑点都在 锐角旁边 因此选择 C。",
+    "method": "题型：问号推理。先识别“点”，再核对“交点/切点数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 30
+  },
+  {
+    "sourceId": "1-32",
+    "image": "/questions/beisen-1/q032.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "竖线位置不变，横线逆时针转 动 因此选择 B。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 32
+  },
+  {
+    "sourceId": "1-39",
+    "image": "/questions/beisen-1/q039.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "点",
+      "交点/切点数量"
+    ],
+    "analysis": "其余图形都有切点 因此选择 D。",
+    "method": "题型：问号推理。先识别“点”，再核对“交点/切点数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 39
+  },
+  {
+    "sourceId": "1-40",
+    "image": "/questions/beisen-1/q040.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "求异（去掉相同部分，保留不 同部分） 一图和二图求异得到三图 因此选择 D。",
+    "method": "题型：顺推式。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 40
+  },
+  {
+    "sourceId": "1-41",
+    "image": "/questions/beisen-1/q041.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "求异 （去掉相同部分，保留不同部 分） ,横着看，一图和二图求异得到 三图 因此选择 A。",
+    "method": "题型：九宫格。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 41
+  },
+  {
+    "sourceId": "1-43",
+    "image": "/questions/beisen-1/q043.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "运动 正方形颜色不断变化 三角形要紧挨正方形的四个角 因此选择 B。",
+    "method": "题型：问号推理。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 43
+  },
+  {
+    "sourceId": "1-44",
+    "image": "/questions/beisen-1/q044.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "相交/相切关系"
+    ],
+    "analysis": "只有 B的圆在相交区域内 因此选择 C。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“相交/相切关系”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 44
+  },
+  {
+    "sourceId": "1-49",
+    "image": "/questions/beisen-1/q049.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "每一个元素做有规律变化 因此选择 A。",
+    "method": "题型：问号推理。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 49
+  },
+  {
+    "sourceId": "1-50",
+    "image": "/questions/beisen-1/q050.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "每一行第三幅图由第二幅图得来 ，二图由一图变化得来， 和上面 那道题一样 因此选择 D。",
+    "method": "题型：问号推理。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 50
+  },
+  {
+    "sourceId": "1-51",
+    "image": "/questions/beisen-1/q051.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "一图和二图变化得到三图注意不 要选 B 因此选择 A。",
+    "method": "题型：顺推式。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 51
+  },
+  {
+    "sourceId": "1-53",
+    "image": "/questions/beisen-1/q053.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "角",
+      "角的数量/类型"
+    ],
+    "analysis": "线与线的夹角依次是锐角，直角， 钝角，所以下一个图是平角 因此选择 D。",
+    "method": "题型：顺推式。先识别“角”，再核对“角的数量/类型”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 53
+  },
+  {
+    "sourceId": "1-56",
+    "image": "/questions/beisen-1/q056.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求同/保留重合"
+    ],
+    "analysis": "求同（相同位置的线保 留，不同位置的线去除 ） ，一图，二图求同得 到三图 因此选择 A。",
+    "method": "题型：顺推式。先识别“加减同异”，再核对“求同/保留重合”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 56
+  },
+  {
+    "sourceId": "1-57",
+    "image": "/questions/beisen-1/q057.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 3,
+    "point": "属性规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "对称性",
+      "对称轴数量"
+    ],
+    "analysis": "交点数 +端点数从左到右依次是 4, 5， 6，（）， 8。所以排除 BC。 一图，二图交点数 /直线数以三图 为对称轴，分别和五图，四图数 量对称 因此选择 B。",
+    "method": "题型：顺推式。先识别“对称性”，再核对“对称轴数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 57
+  },
+  {
+    "sourceId": "1-59",
+    "image": "/questions/beisen-1/q059.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "部分数"
+    ],
+    "analysis": "部分数 B内部的图形是 4部分其余 选项都是 3部分 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“部分数”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 59
+  },
+  {
+    "sourceId": "1-60",
+    "image": "/questions/beisen-1/q060.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "求异（去掉相同部分， 保留不同部分） ,横着看 ，一图和二图求异得到 三图 因此选择 C。",
+    "method": "题型：九宫格。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 60
+  },
+  {
+    "sourceId": "1-61",
+    "image": "/questions/beisen-1/q061.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "点",
+      "交点/切点数量"
+    ],
+    "analysis": "只有 D点数和边数相同",
+    "method": "题型：问号推理。先识别“点”，再核对“交点/切点数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 61
+  },
+  {
+    "sourceId": "1-62",
+    "image": "/questions/beisen-1/q062.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "圆和竖线位置不变，另一个 图形往前运动 因此选择 A。",
+    "method": "题型：问号推理。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 62
+  },
+  {
+    "sourceId": "1-64",
+    "image": "/questions/beisen-1/q064.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "运动 要注意每个图中的黑球 运动后是下图中的哪一 个黑球，要找对对应关 系 因此选择 C。",
+    "method": "题型：两组式/类比。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 64
+  },
+  {
+    "sourceId": "1-66",
+    "image": "/questions/beisen-1/q066.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "面",
+      "阴影面积/比例"
+    ],
+    "analysis": "黑白面积变化 第一幅图全黑，黑：白 =1:0 第二幅图黑：白 =1： 1 第三幅图黑：白 =1:2 因此选择 D。",
+    "method": "题型：顺推式。先识别“面”，再核对“阴影面积/比例”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 66
+  },
+  {
+    "sourceId": "1-67",
+    "image": "/questions/beisen-1/q067.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "求异（去掉相同部分，保 留不同部分） ,横着看，一 图和二图求异得到三图 因此选择 D。",
+    "method": "题型：九宫格。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 67
+  },
+  {
+    "sourceId": "1-68",
+    "image": "/questions/beisen-1/q068.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "同位颜色运算"
+    ],
+    "analysis": "定义运算 横着看，三个图相同位置 的颜色 黑 +黑 =黑 白 +黑 =黑 白 +白 =白 因此选择 D。",
+    "method": "题型：九宫格。先识别“黑白运算”，再核对“同位颜色运算”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 68
+  },
+  {
+    "sourceId": "1-69",
+    "image": "/questions/beisen-1/q069.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "对称性",
+      "中心对称"
+    ],
+    "analysis": "只有 A是中心对称图形",
+    "method": "题型：问号推理。先识别“对称性”，再核对“中心对称”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 69
+  },
+  {
+    "sourceId": "1-73",
+    "image": "/questions/beisen-1/q073.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "同位颜色运算"
+    ],
+    "analysis": "遍历 横着看，每一行三幅图相同 位置 的颜色， 都是相同的三 种颜色来回变换。 因此选择 D。",
+    "method": "题型：九宫格。先识别“黑白运算”，再核对“同位颜色运算”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 73
+  },
+  {
+    "sourceId": "1-75",
+    "image": "/questions/beisen-1/q075.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "线",
+      "直线/线条数量"
+    ],
+    "analysis": "上面两根线和下面阴影的方向要 对应 因此选择 A。",
+    "method": "题型：两组式/类比。先识别“线”，再核对“直线/线条数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 75
+  },
+  {
+    "sourceId": "1-76",
+    "image": "/questions/beisen-1/q076.webp",
+    "optionImages": [],
+    "answer": "E",
+    "optionCount": 5,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "求异（去掉相同部分，保留 不同部分） ,下面两个图形 求异得到上面那个图形 因此选择 E。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 76
+  },
+  {
+    "sourceId": "1-77",
+    "image": "/questions/beisen-1/q077.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 5,
+    "point": "属性规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "开闭性",
+      "开放/封闭"
+    ],
+    "analysis": "开闭性 一图 全 开放 二图 有 封闭 空间 三图 全 开放 四图 有 封闭 空间 因此选择 C。",
+    "method": "题型：顺推式。先识别“开闭性”，再核对“开放/封闭”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 77
+  },
+  {
+    "sourceId": "1-79",
+    "image": "/questions/beisen-1/q079.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "素",
+      "元素种类/重复元素"
+    ],
+    "analysis": "有争议 是不是两两相交选 B 是不是由相同图形组成选 A 因此选择 C。",
+    "method": "题型：问号推理。先识别“素”，再核对“元素种类/重复元素”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 79
+  },
+  {
+    "sourceId": "1-80",
+    "image": "/questions/beisen-1/q080.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "一图变化得到二图 ， 二图变 化得到三图 因此选择 D。",
+    "method": "题型：顺推式。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 80
+  },
+  {
+    "sourceId": "1-81",
+    "image": "/questions/beisen-1/q081.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "包含/内外关系"
+    ],
+    "analysis": "C内外图形相同",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“包含/内外关系”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 81
+  },
+  {
+    "sourceId": "1-82",
+    "image": "/questions/beisen-1/q082.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "一图 +二图 =三图 因此选择 C。",
+    "method": "题型：顺推式。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 82
+  },
+  {
+    "sourceId": "1-83",
+    "image": "/questions/beisen-1/q083.webp",
+    "optionImages": [],
+    "answer": "E",
+    "optionCount": 5,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "包含/内外关系"
+    ],
+    "analysis": "包含关系 因此选择 E。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“包含/内外关系”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 83
+  },
+  {
+    "sourceId": "1-84",
+    "image": "/questions/beisen-1/q084.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "大圆数量 -小圆数量 因此选择 A。",
+    "method": "题型：问号推理。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 84
+  },
+  {
+    "sourceId": "1-86",
+    "image": "/questions/beisen-1/q086.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "线",
+      "直线/线条数量"
+    ],
+    "analysis": "内部图形旋转 外部图形每次增加两根线 因此选择 A。",
+    "method": "题型：问号推理。先识别“线”，再核对“直线/线条数量”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 86
+  },
+  {
+    "sourceId": "1-88",
+    "image": "/questions/beisen-1/q088.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "包含/内外关系"
+    ],
+    "analysis": "D内外图形相同 因此选择 C。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“包含/内外关系”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 88
+  },
+  {
+    "sourceId": "1-90",
+    "image": "/questions/beisen-1/q090.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "纹理段位置循环"
+    ],
+    "analysis": "比较五段条纹/空白纹理的相对顺序，识别未按循环平移的一项 因此选择 D。",
+    "method": "题型：问号推理。先识别“平移”，再核对“纹理段位置循环”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 90
+  },
+  {
+    "sourceId": "1-91",
+    "image": "/questions/beisen-1/q091.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "功能元素",
+      "标记位置/方向指示"
+    ],
+    "analysis": "A选项内部圆在最长边，外部圆在 最短边，其余选项相反 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“功能元素”，再核对“标记位置/方向指示”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 91
+  },
+  {
+    "sourceId": "1-92",
+    "image": "/questions/beisen-1/q092.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "阴影顺时针运动 因此选择 D。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 92
+  },
+  {
+    "sourceId": "1-95",
+    "image": "/questions/beisen-1/q095.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "平面拼合",
+      "边线与黑点对应"
+    ],
+    "analysis": "依据大图缺口周边的分割线和黑点位置补齐L形拼图 因此选择 A。",
+    "method": "题型：问号推理。先识别“平面拼合”，再核对“边线与黑点对应”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 95
+  },
+  {
+    "sourceId": "1-96",
+    "image": "/questions/beisen-1/q096.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "第一个图形 -第二个图形 =第三个 图形 因此选择 D。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 96
+  },
+  {
+    "sourceId": "1-97",
+    "image": "/questions/beisen-1/q097.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "平移",
+      "多元素独立移动"
+    ],
+    "analysis": "每个元素按数字规律运动 因此选择 A。",
+    "method": "题型：问号推理。先识别“平移”，再核对“多元素独立移动”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 97
+  },
+  {
+    "sourceId": "1-98",
+    "image": "/questions/beisen-1/q098.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "下图 =上图 +两条线 因此选择 A。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库1",
+    "originalNumber": 98
+  },
+  {
+    "sourceId": "2-1",
+    "image": "/questions/beisen-2/q001.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "前三个图形，图一图二都有圆，图三是圆。图一图二是两个图形，图三是一个图形。后三个图形应该也是一样的道理， 图一图二都有三角形， 所以图三是三角形， 图一图二是两个图形，图三是一个图形。只有选项C符合，所以选C。 2 根据以上图形的规律，下一个图形应该是： 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 1
+  },
+  {
+    "sourceId": "2-2",
+    "image": "/questions/beisen-2/q002.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "看小黑点和竖线，第二列，小黑点在竖线的左侧，竖线每次旋转45°； 第三列竖线每次旋转45°，每转一次小黑点位置就变一次，右，左，右，左 3 因此选择 B。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 2
+  },
+  {
+    "sourceId": "2-3",
+    "image": "/questions/beisen-2/q003.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "一行看过去，前两个合并叠加，等于第三个 根据以上图形规律，下一个图形应该是： 因此选择 A。",
+    "method": "题型：顺推式。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 3
+  },
+  {
+    "sourceId": "2-4",
+    "image": "/questions/beisen-2/q004.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "把线条分为上下方向移动和左右方向移动，横线从下往上移动一个单位（移到最顶部再移动就回到最底部），竖线从左往右移动一个单位（移到最右边再移动就回到最左边） 问号处的图形应该是： 因此选择 C。",
+    "method": "题型：问号推理。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 4
+  },
+  {
+    "sourceId": "2-5",
+    "image": "/questions/beisen-2/q005.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "每一行都是两个黑球两个白球 4 问号处的图形应该是： 因此选择 A。",
+    "method": "题型：问号推理。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 5
+  },
+  {
+    "sourceId": "2-6",
+    "image": "/questions/beisen-2/q006.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "功能元素",
+      "标记位置/方向指示"
+    ],
+    "analysis": "第一个图中，左边到中间规律是：第一个移到最后，全体箭头换方向 中间到后边同理 5 问号处的图形应该是? 因此选择 A。",
+    "method": "题型：问号推理。先识别“功能元素”，再核对“标记位置/方向指示”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 6
+  },
+  {
+    "sourceId": "2-7",
+    "image": "/questions/beisen-2/q007.webp",
+    "optionImages": [],
+    "answer": "E",
+    "optionCount": 5,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "最底层相邻两个两两相加，得到上一层，相同消去，相异叠加 6 下列图形中不同于其他图形的一项是: 因此选择 E。",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 7
+  },
+  {
+    "sourceId": "2-8",
+    "image": "/questions/beisen-2/q008.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "其他图形都是两个元素组成，只有A是三个图形元素。 8 从所给的四个选项中。选择最合适的一个填入问号处。使之呈现一定的规律性。 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 8
+  },
+  {
+    "sourceId": "2-9",
+    "image": "/questions/beisen-2/q009.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "竖排依次顺时针旋转90° 9 问号处应当是： 因此选择 C。",
+    "method": "题型：顺推式。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 9
+  },
+  {
+    "sourceId": "2-10",
+    "image": "/questions/beisen-2/q010.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "前面3个图，图一加图二是图三（图一平移到图二中间的位置）。后三个图也是一样的道理，图一加图二是图三。只有选项D符合，所以答案选D。 10 问号处的图形应该是? 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 10
+  },
+  {
+    "sourceId": "2-11",
+    "image": "/questions/beisen-2/q011.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "跟前面类似，最底层相邻两个两两相加，得到上一层，相同相消，相异叠加 11 问号处的图形应当是： 因此选择 D。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 11
+  },
+  {
+    "sourceId": "2-12",
+    "image": "/questions/beisen-2/q012.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "前3个图，图一加图二，重复的地方不显示，留下不重复的部分，就是图三。后三个图也是一样的道理。图一加图二，重复的地方不显示，留下不重复的部分。图一图二两个阴影部分未重复，都留下来。图一图二六边形和六边形中的两条线都重复了，不显示。最后只剩下两个阴影组成的图形。只有选项D符合，所以答案选D。 12 问号处应当是： 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 12
+  },
+  {
+    "sourceId": "2-13",
+    "image": "/questions/beisen-2/q013.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "第一图中，图一减去图二的一半等于图三；第二图中图一减去图二的一半等于D 13 下列哪一个图形是特殊的? 因此选择 D。",
+    "method": "题型：顺推式。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 13
+  },
+  {
+    "sourceId": "2-14",
+    "image": "/questions/beisen-2/q014.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "相邻/连接关系"
+    ],
+    "analysis": "相邻两个图形大小不一，其它选项都有相同的相邻情况。 14 从所给的四个选项中,选择最合适的一个填入问号处,使之呈现一定的规律性 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“图形间关系”，再核对“相邻/连接关系”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 14
+  },
+  {
+    "sourceId": "2-15",
+    "image": "/questions/beisen-2/q015.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平面拼合",
+      "边线/缺口对应"
+    ],
+    "analysis": "横着看，（按行看）左右黑点个数相加等于中间的 竖着看(按列看) 弯钩每次逆时针旋转90° 15 哪一组图形可以拼成上图？ 因此选择 D。",
+    "method": "题型：九宫格。先识别“平面拼合”，再核对“边线/缺口对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 15
+  },
+  {
+    "sourceId": "2-16",
+    "image": "/questions/beisen-2/q016.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "加减同异",
+      "构件拆分/重组"
+    ],
+    "analysis": "由前组三个黑白构件的拆分重组关系推出后组 因此选择 B。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“构件拆分/重组”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 16
+  },
+  {
+    "sourceId": "2-17",
+    "image": "/questions/beisen-2/q017.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "翻转",
+      "上下/左右翻转"
+    ],
+    "analysis": "左右两个图案，两边图形调换，颜色调换，第二组由于是倒三角型再上下调换一次，得到A 17 问号处的图形应该是: 因此选择 A。",
+    "method": "题型：两组式/类比。先识别“翻转”，再核对“上下/左右翻转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 17
+  },
+  {
+    "sourceId": "2-18",
+    "image": "/questions/beisen-2/q018.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "题中的图形都是由六边形和六边形中间的图形组成。每个图形都有六边形，所以六边形不动。从竖着看：第一列第二列图一加图二是图三。从横着看：第一行第二行图一加图二是图三，重合的地方不要，留下不重复的部分。只有D选项符合，所以答案选D 18 根据以上图形的规律。下一个图形应该是： 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 18
+  },
+  {
+    "sourceId": "2-19",
+    "image": "/questions/beisen-2/q019.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "箭头依次顺时针旋转90° 19 找出下列图形中不同于其他图形的一项: 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 19
+  },
+  {
+    "sourceId": "2-20",
+    "image": "/questions/beisen-2/q020.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "图234中黑球数量均为7 20 接下来的图形应该是： 因此选择 A。",
+    "method": "题型：问号推理。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 20
+  },
+  {
+    "sourceId": "2-21",
+    "image": "/questions/beisen-2/q021.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "开闭性",
+      "开放/封闭"
+    ],
+    "analysis": "图一二三四均为封闭图形排除B项，且大图形与小图形紧邻排除A、C项。 21 接下来的图形应该是： 因此选择 D。",
+    "method": "题型：问号推理。先识别“开闭性”，再核对“开放/封闭”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 21
+  },
+  {
+    "sourceId": "2-22",
+    "image": "/questions/beisen-2/q022.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "内外/构成对应"
+    ],
+    "analysis": "间隔的黑块白块组成完整图形，如1和2组成完整图形 因此选择 D。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“内外/构成对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 22
+  },
+  {
+    "sourceId": "2-23",
+    "image": "/questions/beisen-2/q023.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "三个图上都有＋号，×号，黑圆，白圆但是位置不相同。先来看＋号的位置，图一到图二＋号顺时针走了3个格，图二到图三顺时针＋号走了4个格，所以图四应该是在图三的基础上顺时针走5个格。再来看×号的位置，图一到图二×顺时针走了1个格，图二到图三×顺时针走了1个格，所以图四应该是在图三的基础上顺时针走1个格。 看黑圆的位置， 图一到图二顺时针走了6个格， 图二到图三顺时针走了5个格，所以图四应该是在图三的基础上顺时针走了4个格。看白圆的位置，图一到图二顺时针走了2个格，图二到图三顺时针走了2个格， 所以图四应该是在图三的基础上顺时针走2个格。 只有选项A符合， 所以选A。 问号处的图形应该是： 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 23
+  },
+  {
+    "sourceId": "2-24",
+    "image": "/questions/beisen-2/q024.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "同位颜色运算"
+    ],
+    "analysis": "每一行横着看，白+白=白，白+灰=灰，黑+白=灰，黑+黑=白，黑+灰=黑 30 问号处应当是： 因此选择 A。",
+    "method": "题型：九宫格。先识别“黑白运算”，再核对“同位颜色运算”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 24
+  },
+  {
+    "sourceId": "2-25",
+    "image": "/questions/beisen-2/q025.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "曲直性",
+      "全直/全曲/曲直混合"
+    ],
+    "analysis": "左边与右边的对应顺序是:曲线变直线，直线变曲线。 31 找出下列图形中不同于其他图形的一项: 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“曲直性”，再核对“全直/全曲/曲直混合”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 25
+  },
+  {
+    "sourceId": "2-26",
+    "image": "/questions/beisen-2/q026.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "图234中大正方形内侧小正方形数量与外侧相同。 问号处应当是？ 因此选择 A。",
+    "method": "题型：问号推理。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 26
+  },
+  {
+    "sourceId": "2-27",
+    "image": "/questions/beisen-2/q027.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "线",
+      "边数"
+    ],
+    "analysis": "后面的图比前面的图增加一个图形，增加的图形的边数是一样的 问号处的图形应该是？ 因此选择 D。",
+    "method": "题型：问号推理。先识别“线”，再核对“边数”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 27
+  },
+  {
+    "sourceId": "2-28",
+    "image": "/questions/beisen-2/q028.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "每隔3个图形，出现一次黑圆，三角形顺序是两正一倒 找出不同的一项 因此选择 A。",
+    "method": "题型：问号推理。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 28
+  },
+  {
+    "sourceId": "2-29",
+    "image": "/questions/beisen-2/q029.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "对称性",
+      "对称轴数量"
+    ],
+    "analysis": "轴对称图形 问号处的图形应该是？ 因此选择 A。",
+    "method": "题型：问号推理。先识别“对称性”，再核对“对称轴数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 29
+  },
+  {
+    "sourceId": "2-30",
+    "image": "/questions/beisen-2/q030.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "观察图像可知，一个大的带两个小的相同的图形，只有 D 符号 1 找出不同的一项: 因此选择 D。",
+    "method": "题型：问号推理。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 30
+  },
+  {
+    "sourceId": "2-31",
+    "image": "/questions/beisen-2/q031.webp",
+    "optionImages": [],
+    "answer": "E",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "只有 E 是黑白色块个数不一样2 问号处应当是： 因此选择 E。",
+    "method": "题型：问号推理。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 31
+  },
+  {
+    "sourceId": "2-32",
+    "image": "/questions/beisen-2/q032.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "点",
+      "交点/切点数量"
+    ],
+    "analysis": "数横线与图形的接点数。左边规律，交点数从左到右 -2 /2 3 从所给的四个选项中。选择最合适的一个填入问号处,使之呈现一定的规律性 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“点”，再核对“交点/切点数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 32
+  },
+  {
+    "sourceId": "2-33",
+    "image": "/questions/beisen-2/q033.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "第一二行第一个图加第二个图是第三个图，第三行也是一样道理，第一个图加第二个图得到第三个图。只有B符合，所以答案选B。 4 根据以上图形的规律，下一个图形应该是： 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 33
+  },
+  {
+    "sourceId": "2-34",
+    "image": "/questions/beisen-2/q034.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "上图依次向右移动一格，由此选A。 5 找出下列图形中不同于其他图形的一项: 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 34
+  },
+  {
+    "sourceId": "2-35",
+    "image": "/questions/beisen-2/q035.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "线",
+      "直线/线条数量"
+    ],
+    "analysis": "左右两侧的横条数量， B是唯一一个左右两侧横条数量相同的。 6 问号处的图形应当是： 因此选择 B。",
+    "method": "题型：问号推理。先识别“线”，再核对“直线/线条数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 35
+  },
+  {
+    "sourceId": "2-36",
+    "image": "/questions/beisen-2/q036.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "由前三个图可知规律，第二个图和第三个图重合，重复的线条去掉，就得到了第一个图。 7 问号处的图形应该是: 因此选择 D。",
+    "method": "题型：问号推理。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 36
+  },
+  {
+    "sourceId": "2-37",
+    "image": "/questions/beisen-2/q037.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "第一行，图一加图二，重合的地方留下，不重合的地方去掉，得到图三。第二行也是同样道理，图一加图二，重合的地方留下，不重合的地方去掉，得到图三。所以第三行也是图一加图二，重合的地方留下，不重合的地方去掉，只有选项D符合，所以答案选D。 8 根据以上图形的规律，下一个图形应该是： 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 37
+  },
+  {
+    "sourceId": "2-38",
+    "image": "/questions/beisen-2/q038.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "五边形逆时针走两个，六边形顺时针走三个 找出下列图形中，不同于其他图形的一项 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 38
+  },
+  {
+    "sourceId": "2-39",
+    "image": "/questions/beisen-2/q039.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "每图中大球数量比小球多2个，只有B项不是 9 问号处的图形应该是： 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 39
+  },
+  {
+    "sourceId": "2-40",
+    "image": "/questions/beisen-2/q040.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "图形中左右两端依次相同移动一格，选c 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 40
+  },
+  {
+    "sourceId": "2-41",
+    "image": "/questions/beisen-2/q041.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "题干第一排1图两个黑球加2图两个白球得出3图，第二排1图一个白球加2图一个 黑球得出3图;由此可知，1 图和2图相加得出3图且数量相同，颜色相同，故选A。 接下来的图形是？",
+    "method": "题型：九宫格。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 41
+  },
+  {
+    "sourceId": "2-42",
+    "image": "/questions/beisen-2/q042.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "圆形每次顺时针旋转45°，其余三个图形每次顺时针旋转90°，排除CD。四角处的图形数量如果是3，那么图中就会有一个黑色图案，四角处的图形数量是2，那么图中就会有两个黑色图案。 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 42
+  },
+  {
+    "sourceId": "2-43",
+    "image": "/questions/beisen-2/q043.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "题中的图都是由正方形和正方形内的不同线条组成。 从第一行看， 图一加图二是图三，重复的线条不显示，留下不重复的线条。第二三行也是同样道理。只有选项D符合，所以答案选D。 11 接下来的图形应该是： 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 43
+  },
+  {
+    "sourceId": "2-45",
+    "image": "/questions/beisen-2/q045.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "线",
+      "直线/线条数量"
+    ],
+    "analysis": "第一行都是一笔写成的线条，第二行都是两笔写成的线条，第三行都是三笔写成的线条，选择选项中是三笔写成的选项，只要A是三笔写成的，所以答案选A。 13 找出下列图形中不同于其他图形的一项: 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“线”，再核对“直线/线条数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 45
+  },
+  {
+    "sourceId": "2-46",
+    "image": "/questions/beisen-2/q046.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "A选项切分之后有四边形，其余都只有三角形 14 问号处的图形应该是： 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 46
+  },
+  {
+    "sourceId": "2-47",
+    "image": "/questions/beisen-2/q047.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "图中每个图形都是由3层图形组成。我们看前三个图，图一（最里面是第一层）第一层放到第三层就是图二， 图二第一层放到第三层是图三， 所以规律是上一个图形的第一层放到第二层是下一个图形。 所以问号处的图形应该是第一层是菱形， 第二层是三角形， 第三层是梯形。只有C符合，所以答案选C。 15 问号处的图片应该是： 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 47
+  },
+  {
+    "sourceId": "2-48",
+    "image": "/questions/beisen-2/q048.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "黑白分区与圆点同步"
+    ],
+    "analysis": "黑白分区方向交替旋转，黑白圆点按固定位置换位 因此选择 B。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“黑白分区与圆点同步”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 48
+  },
+  {
+    "sourceId": "2-49",
+    "image": "/questions/beisen-2/q049.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "叠加把重复的去掉 问号处的图形应该是？ 因此选择 A。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 49
+  },
+  {
+    "sourceId": "2-50",
+    "image": "/questions/beisen-2/q050.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "前3个图，图一加图二，重复的地方不显示，留下不重复的部分，就是图三。后三个图也是一样的道理。图一加图二，重复的地方不显示，留下不重复的部分。图一图二两个阴影部分未重复，都留下来。图一图二六边形和六边形中的两条线都重复了，不显示。最后只剩下两个阴影组成的图形。只有选项D符合，所以答案选D。 17 接下来的图形应该是： 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 50
+  },
+  {
+    "sourceId": "2-52",
+    "image": "/questions/beisen-2/q052.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "同位颜色运算"
+    ],
+    "analysis": "黑+白=白 黑+黑=黑 白+白=黑 19 找出下列图形中不同于其他图形的一项: 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“黑白运算”，再核对“同位颜色运算”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 52
+  },
+  {
+    "sourceId": "2-53",
+    "image": "/questions/beisen-2/q053.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "图形间关系",
+      "内外嵌套对应"
+    ],
+    "analysis": "比较三层图形的内外形状是否按相同次序嵌套 因此选择 A。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“内外嵌套对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 53
+  },
+  {
+    "sourceId": "2-54",
+    "image": "/questions/beisen-2/q054.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "三图一循环。 21 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 54
+  },
+  {
+    "sourceId": "2-55",
+    "image": "/questions/beisen-2/q055.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "每一行，第一个图和第三个图，黑块180度翻转 24 下列不同于其他的图形是: 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 55
+  },
+  {
+    "sourceId": "2-56",
+    "image": "/questions/beisen-2/q056.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "功能元素",
+      "标记位置/方向指示"
+    ],
+    "analysis": "题干中1.2.6是笑脸，4.5是哭脸， 由图可知，笑脸眼睛是眼睛是向右看，哭脸眼睛向左看，图2笑脸眼睛向左看，错误。选B。 25 问号处的图形应该是: 因此选择 B。",
+    "method": "题型：问号推理。先识别“功能元素”，再核对“标记位置/方向指示”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 56
+  },
+  {
+    "sourceId": "2-57",
+    "image": "/questions/beisen-2/q057.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "按列，从上往下看，每一列的第一个图形加第二个图形等于第三个图形，相加的规则是有重复的边去掉 26 找出下列图形中不同于其他图形的一项: 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 57
+  },
+  {
+    "sourceId": "2-58",
+    "image": "/questions/beisen-2/q058.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "除了A，其余图形小球贴的边是相邻的 27 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 58
+  },
+  {
+    "sourceId": "2-59",
+    "image": "/questions/beisen-2/q059.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "图中的图形都是一个正方形带有上下左右4个箭头。我们从箭头和正方形入手。第一个图是上面黑箭头，左上角黑三角形。第二个图是左面黑箭头，右上角黑三角形。第三个图是下面黑箭头，右下角黑三角形。第四个图是右面黑箭头，左下角黑三角形。第五个图和第一个图一样，第六个图和第二个图一样。所以前4个图是一个规律，不断重复。问号处的图形应该是规律的第一个图。只有C符合，所以答案选C。 29 问号处应当是： A:H B:D C:S D:O",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 59
+  },
+  {
+    "sourceId": "2-60",
+    "image": "/questions/beisen-2/q060.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "对称性",
+      "对称轴数量"
+    ],
+    "analysis": "AWY是竖的对称轴，BCD横的对称轴 30 找出下列图形中不同于其他图形的一项: 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“对称性”，再核对“对称轴数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 60
+  },
+  {
+    "sourceId": "2-61",
+    "image": "/questions/beisen-2/q061.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "角",
+      "角的数量/类型"
+    ],
+    "analysis": "BCD的三角形顶点都和黑色正方形交，但A黑色正方形和三角形的直角边交 31 从所给的四个选项中， 选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“角”，再核对“角的数量/类型”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 61
+  },
+  {
+    "sourceId": "2-62",
+    "image": "/questions/beisen-2/q062.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "同位颜色运算"
+    ],
+    "analysis": "黑加黑等于黑， 白加黑等于白，白加白等于白 32 问号处的图形应该是： 因此选择 A。",
+    "method": "题型：问号推理。先识别“黑白运算”，再核对“同位颜色运算”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 62
+  },
+  {
+    "sourceId": "2-63",
+    "image": "/questions/beisen-2/q063.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "翻转",
+      "上下/左右翻转"
+    ],
+    "analysis": "仔细观察，图形1上下交换得到图形2，图形2左右交换得到图形3 33 下列哪一个图形是特殊的? 因此选择 A。",
+    "method": "题型：问号推理。先识别“翻转”，再核对“上下/左右翻转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 63
+  },
+  {
+    "sourceId": "2-64",
+    "image": "/questions/beisen-2/q064.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素种类/重复元素"
+    ],
+    "analysis": "比较五个方框内符号种类及重复次数 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“元素种类/重复元素”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 64
+  },
+  {
+    "sourceId": "2-65",
+    "image": "/questions/beisen-2/q065.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "第一行灰色部分是月亮，星星，月亮，星星，所以第五个是月亮 第二行灰色部分是太阳，月亮，太阳，月亮，所以第五个是太阳 第三行灰色部分是星星，太阳，星星，太阳，所以第五个是星星 35 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 65
+  },
+  {
+    "sourceId": "2-66",
+    "image": "/questions/beisen-2/q066.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "元素遍历/轮换"
+    ],
+    "analysis": "每行所有总图形元素相同 36 找出下列图形中不同于其他图形的一项: 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“遍历”，再核对“元素遍历/轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 66
+  },
+  {
+    "sourceId": "2-67",
+    "image": "/questions/beisen-2/q067.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "图2.3.4对折能完全重合，图1不可以，所以选A。 37 根据以上图形的规律，下一个图形应该是: 因此选择 A。",
+    "method": "题型：顺推式。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 67
+  },
+  {
+    "sourceId": "2-68",
+    "image": "/questions/beisen-2/q068.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "左下角的黑色三角形保持不动，另一个黑色三角形依次顺时针翻转一个单位。两个小圆形也依次顺时针旋转一个单位。 38 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 68
+  },
+  {
+    "sourceId": "2-69",
+    "image": "/questions/beisen-2/q069.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "黑白圆点行列组合"
+    ],
+    "analysis": "九宫格内黑白圆点的位置和数量按行列组合 因此选择 B。",
+    "method": "题型：问号推理。先识别“黑白运算”，再核对“黑白圆点行列组合”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 69
+  },
+  {
+    "sourceId": "2-70",
+    "image": "/questions/beisen-2/q070.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "相交/相切关系"
+    ],
+    "analysis": "A相交了，边重合了 空着的正方形里的图形应该是： 因此选择 A。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“相交/相切关系”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 70
+  },
+  {
+    "sourceId": "2-71",
+    "image": "/questions/beisen-2/q071.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "仔细观察第一行，++---÷÷xxx为一组，之后顺时针循环 找出不同的一项 因此选择 C。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 71
+  },
+  {
+    "sourceId": "2-72",
+    "image": "/questions/beisen-2/q072.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "只有D里面有两个四边形 问号处应该是： 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 72
+  },
+  {
+    "sourceId": "2-73",
+    "image": "/questions/beisen-2/q073.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求同/保留重合"
+    ],
+    "analysis": "找公共的 问号处的图形应当是： 因此选择 B。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“求同/保留重合”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 73
+  },
+  {
+    "sourceId": "2-74",
+    "image": "/questions/beisen-2/q074.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "笑脸顺时针轴2步，哭脸走一步 因此选择 D。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 74
+  },
+  {
+    "sourceId": "2-75",
+    "image": "/questions/beisen-2/q075.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "同位颜色运算"
+    ],
+    "analysis": "黑加白的黑，黑加黑的白 问号处的图形应该是： 因此选择 D。",
+    "method": "题型：问号推理。先识别“黑白运算”，再核对“同位颜色运算”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 75
+  },
+  {
+    "sourceId": "2-76",
+    "image": "/questions/beisen-2/q076.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "元素遍历/轮换"
+    ],
+    "analysis": "前三个图形， 图一上面黑色图形， 下面白色图形。 图二左面黑色图形， 右面黑色图形。图三上面白色图形，下面黑色图形。后三个图形，图一上面黑色图形，下面白色图形。图二左面黑色图形，右面黑色图形。所以问号处的图形应该是上面白色图形，下面黑色图形。只有C符合，所以答案选A。 2 问号处的图形应该是： 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“遍历”，再核对“元素遍历/轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 76
+  },
+  {
+    "sourceId": "2-77",
+    "image": "/questions/beisen-2/q077.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "面",
+      "阴影面积/比例"
+    ],
+    "analysis": "黑色部分的面积 占一半，到1/3，到1/4 3 找出下列图形中不同于其他图形的一项: 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“面”，再核对“阴影面积/比例”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 77
+  },
+  {
+    "sourceId": "2-78",
+    "image": "/questions/beisen-2/q078.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "线",
+      "直线/线条数量"
+    ],
+    "analysis": "B项左右两侧横条数量相同 5 根据以上图形的规律，下一个图形应该是： 因此选择 B。",
+    "method": "题型：顺推式。先识别“线”，再核对“直线/线条数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 78
+  },
+  {
+    "sourceId": "2-79",
+    "image": "/questions/beisen-2/q079.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "旋转",
+      "圆内折线旋转"
+    ],
+    "analysis": "圆内折线按固定方向转动并保持端点关系 因此选择 A。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“圆内折线旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 79
+  },
+  {
+    "sourceId": "2-80",
+    "image": "/questions/beisen-2/q080.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "相邻/连接关系"
+    ],
+    "analysis": "第一张图的所有顶点都碰到线， 因此选择 A。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“相邻/连接关系”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 80
+  },
+  {
+    "sourceId": "2-81",
+    "image": "/questions/beisen-2/q081.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "看前三个图形，图一到图二，白色图形逆时针旋转90°，黑色小正方形沿白色图形的长边走一格。图二到图三也是一样道理。所以规律是白色图形每次逆时针旋转90°，黑色小正方形每次沿白色图形的长边走一格。只有D符合，所以答案选D。 6 问号处的图形应该是： 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 81
+  },
+  {
+    "sourceId": "2-82",
+    "image": "/questions/beisen-2/q082.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "图一图二合起来，留下重合的线条。所得的图形再旋转90°。得到图三。 7 下列哪一个图形是特殊的?</span><p class=\"p\"><img data-v-396cae4f=\"\" 因此选择 D。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 82
+  },
+  {
+    "sourceId": "2-83",
+    "image": "/questions/beisen-2/q083.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "相邻/连接关系"
+    ],
+    "analysis": "上图中图形2.3.4里面小图是实心且在外图中心，图形1不符合，所以选A。 8 问号处的图形应该是： 因此选择 A。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“相邻/连接关系”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 83
+  },
+  {
+    "sourceId": "2-84",
+    "image": "/questions/beisen-2/q084.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "黑白运算",
+      "黑白菱形换位"
+    ],
+    "analysis": "四个菱形的黑白填充按位置换位，找出不一致项 因此选择 C。",
+    "method": "题型：问号推理。先识别“黑白运算”，再核对“黑白菱形换位”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 84
+  },
+  {
+    "sourceId": "2-85",
+    "image": "/questions/beisen-2/q085.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "三个形状一样 因此选择 B。",
+    "method": "题型：问号推理。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 85
+  },
+  {
+    "sourceId": "2-86",
+    "image": "/questions/beisen-2/q086.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "线",
+      "边数"
+    ],
+    "analysis": "ABCE项中间图形的边数均比小圆球的数量多，D项是相等。 11 问号处的图形应当是： 因此选择 D。",
+    "method": "题型：问号推理。先识别“线”，再核对“边数”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 86
+  },
+  {
+    "sourceId": "2-87",
+    "image": "/questions/beisen-2/q087.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "12 根据以上图形规律，下一个图形应该是： 因此选择 C。",
+    "method": "题型：顺推式。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 87
+  },
+  {
+    "sourceId": "2-88",
+    "image": "/questions/beisen-2/q088.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "前三个图依次是6边形，5个小圆球。5边形，4个小圆球。4边形，3个小圆球。所以规律是几边形依次减1，小圆球依次减1。所以下一个图形应该是三角形，2个小圆球。只有A符合，所以答案选A。 13 问号处的图形应该是： 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 88
+  },
+  {
+    "sourceId": "2-89",
+    "image": "/questions/beisen-2/q089.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "翻转",
+      "上下/左右翻转"
+    ],
+    "analysis": "向上翻折，再向右翻折 14 找出下列图形中不同于其他图形的一项: 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“翻转”，再核对“上下/左右翻转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 89
+  },
+  {
+    "sourceId": "2-90",
+    "image": "/questions/beisen-2/q090.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "面",
+      "阴影面积/比例"
+    ],
+    "analysis": "除了D，其余三个黑色面积占总面积三分之一 15 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“面”，再核对“阴影面积/比例”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 90
+  },
+  {
+    "sourceId": "2-91",
+    "image": "/questions/beisen-2/q091.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "对称性",
+      "轴对称/中心对称"
+    ],
+    "analysis": "对称 16 问号处的图片应该是: 因此选择 A。",
+    "method": "题型：问号推理。先识别“对称性”，再核对“轴对称/中心对称”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 91
+  },
+  {
+    "sourceId": "2-92",
+    "image": "/questions/beisen-2/q092.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "元素遍历/轮换"
+    ],
+    "analysis": "上白下奇，黑白相间 因此选择 A。",
+    "method": "题型：问号推理。先识别“遍历”，再核对“元素遍历/轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 92
+  },
+  {
+    "sourceId": "2-93",
+    "image": "/questions/beisen-2/q093.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "重叠程度递减"
+    ],
+    "analysis": "两构件由重叠到相接再到分离，后组按同样过程变化 因此选择 D。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“重叠程度递减”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 93
+  },
+  {
+    "sourceId": "2-94",
+    "image": "/questions/beisen-2/q094.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "我们竖着来看，第一二列图一加图二加图三是一个完整的正方形，第三列也是同样道理，图一加图二加图三是一个完整的正方形。只有D符合，所以答案选D。 18 问号处的图形应该是: 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 94
+  },
+  {
+    "sourceId": "2-95",
+    "image": "/questions/beisen-2/q095.webp",
+    "optionImages": [],
+    "answer": "E",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "星月大小黑白遍历"
+    ],
+    "analysis": "九宫格中星、月的大小、黑白和组合方式按行列遍历 因此选择 E。",
+    "method": "题型：问号推理。先识别“遍历”，再核对“星月大小黑白遍历”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 95
+  },
+  {
+    "sourceId": "2-96",
+    "image": "/questions/beisen-2/q096.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "点",
+      "交点/切点数量"
+    ],
+    "analysis": "第一个图交点处加一个图形 20 问号处的图形应该是: 因此选择 B。",
+    "method": "题型：问号推理。先识别“点”，再核对“交点/切点数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 96
+  },
+  {
+    "sourceId": "2-98",
+    "image": "/questions/beisen-2/q098.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "内外/构成对应"
+    ],
+    "analysis": "最外层和最里层一样 22 因此选择 D。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“内外/构成对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 98
+  },
+  {
+    "sourceId": "2-99",
+    "image": "/questions/beisen-2/q099.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "上下黑白圆数量关系"
+    ],
+    "analysis": "比较横线上下黑白圆的分项数量关系 因此选择 C。",
+    "method": "题型：问号推理。先识别“素”，再核对“上下黑白圆数量关系”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 99
+  },
+  {
+    "sourceId": "2-100",
+    "image": "/questions/beisen-2/q100.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "重叠+旋转 23 从所给的四个选项中，选择最合适的一个填入问号处， 使之呈现一定的规律性 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 100
+  },
+  {
+    "sourceId": "2-101",
+    "image": "/questions/beisen-2/q101.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "24 根据以上图形的规律，下一个图形应该是: 因此选择 B。",
+    "method": "题型：顺推式。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 101
+  },
+  {
+    "sourceId": "2-102",
+    "image": "/questions/beisen-2/q102.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "线",
+      "直线/线条数量"
+    ],
+    "analysis": "数刃，上面6 - 4 - 2 - 0 下面 5-4-3-2 25 接下来的图形应该是 因此选择 D。",
+    "method": "题型：问号推理。先识别“线”，再核对“直线/线条数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 102
+  },
+  {
+    "sourceId": "2-103",
+    "image": "/questions/beisen-2/q103.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "题中图形都是圆和4根指针组成（三角指针，白圆指针，正方形指针，黑圆指针）。从三角指针看：图一到图四三角指针依次顺时针转了180°、180°、180°。从白圆指针看：图一到图四白圆指针依次顺时针旋转了90°、90°、90°。从正方形指针看：图一到图四正方形指针依次顺时针旋转了45°、45°、45°。 从黑圆指针看： 图一到图四依次顺时针旋转了135°、135°、135°。所以问号处图形，三角指针在图四的基础上顺时针旋转180°，白圆指针在图四的基础上顺时针旋转90°，正方形指针在图四的基础上顺时针旋转45°，黑圆指针在图四的基础上顺时针旋转135°。只有上图第四项符合，所以答案选D。 26 根据以上图形的规律，下一个图形应该是: 因此选择 D。",
+    "method": "题型：顺推式。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 103
+  },
+  {
+    "sourceId": "2-104",
+    "image": "/questions/beisen-2/q104.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "前三个图， 图一加图二， 重合的地方不要， 留下不重合的线条， 得到图三。 后三个图也是一样的道理，图一加图二， 重合的地方不要， 留下不重合的线条。 最后只剩下左边一条线， 只有选项B符合， 所以选B。 问号处的图形是？",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 104
+  },
+  {
+    "sourceId": "2-105",
+    "image": "/questions/beisen-2/q105.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "第一个图顺时针转90度，叠加第二个图得到第三个图 根据以上图形，下一个图形应该是？ 因此选择 C。",
+    "method": "题型：顺推式。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 105
+  },
+  {
+    "sourceId": "2-106",
+    "image": "/questions/beisen-2/q106.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "同心弧开口旋转"
+    ],
+    "analysis": "同心弧的开口方向按内外层不同步长旋转 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“同心弧开口旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 106
+  },
+  {
+    "sourceId": "2-107",
+    "image": "/questions/beisen-2/q107.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "相邻/连接关系"
+    ],
+    "analysis": "1.2.4顶点相接，故选C。 问号处的图形是？",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“相邻/连接关系”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 107
+  },
+  {
+    "sourceId": "2-108",
+    "image": "/questions/beisen-2/q108.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "前三个图， 图一加图二等于第三个图。 后三个图也是同样的道理， 图一加图二等于下一个图。 只有选项B符合，所以答案选B。 28 根据以上图形的规律，下一个图形应该是: 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 108
+  },
+  {
+    "sourceId": "2-109",
+    "image": "/questions/beisen-2/q109.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "三角形向右挪，方块向上挪 13miabe 9 接下来的图形应该是: 因此选择 A。",
+    "method": "题型：问号推理。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 109
+  },
+  {
+    "sourceId": "2-111",
+    "image": "/questions/beisen-2/q111.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "黑白圆点组合"
+    ],
+    "analysis": "九宫格中黑白圆点按行列进行同位组合 因此选择 D。",
+    "method": "题型：问号推理。先识别“黑白运算”，再核对“黑白圆点组合”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 111
+  },
+  {
+    "sourceId": "2-112",
+    "image": "/questions/beisen-2/q112.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "同位颜色运算"
+    ],
+    "analysis": "空白加三角形等于空白， 三角形加空白等于三角， 三角加三角等于空白 31 找出下列图形中不同于其他图形的一项: 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“黑白运算”，再核对“同位颜色运算”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 112
+  },
+  {
+    "sourceId": "2-113",
+    "image": "/questions/beisen-2/q113.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "重复元素数量"
+    ],
+    "analysis": "比较四组图形中相同元素的重复次数 因此选择 B。",
+    "method": "题型：问号推理。先识别“素”，再核对“重复元素数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 113
+  },
+  {
+    "sourceId": "2-114",
+    "image": "/questions/beisen-2/q114.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "每一行黑色和白色的圆数量都相等 因此选择 C。",
+    "method": "题型：问号推理。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 114
+  },
+  {
+    "sourceId": "2-116",
+    "image": "/questions/beisen-2/q116.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "图中图形都是一个圆被分成八份，还有一个小圆和一个小星星组成。那我们从小星星的位置入手， 图一到图二小星星顺时针走了1个格， 图二到图三小星星顺时针走了3个格，图三到图四小星星顺时针走了5个格，小星星走的格数是1、3、5，所以下一个图小星星，应该在图四的基础上顺时针走7个格。我们再来看小圆的位置，图一到图二逆时针走2个格，图二到图三逆时针走2个格，图三到图四逆时针走2个格。所以下一个图小圆，应该在图四的基础上逆时针走2个格。只有选项B符合，所以选B。 34 从所给的四个选项中。选择最合适的一个填入问号处，使之早现一定的规律性: 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 116
+  },
+  {
+    "sourceId": "2-117",
+    "image": "/questions/beisen-2/q117.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "第一排，第一个图加第二图，留下重合的黑色小正方形，不重合的去掉，得到第三个图形。第二排第三排也是一样道理。只有选项A符合，所以选A。 35 问号处的图片应该是 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 117
+  },
+  {
+    "sourceId": "2-120",
+    "image": "/questions/beisen-2/q120.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平面拼合",
+      "边线/缺口对应"
+    ],
+    "analysis": "第一排的三个图形， 第一个图形加第二个图形， 重合的线条不要， 留下不重合的线条。第二排也是一样，第一个图形加第二个图形，重合的线条不要，留下不重合的线条。所以第三排的规律和第一二排一样， 也是第一个图形加第二个图形， 重合的线条不要， 留下不重合的线条。 所以第三排第三个图形应该是一个竖着的三角形和一条小横线。 选项只有A符合，所以选A。 38 空缺处的图形应当是: 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“平面拼合”，再核对“边线/缺口对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 120
+  },
+  {
+    "sourceId": "2-122",
+    "image": "/questions/beisen-2/q122.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "加减同异",
+      "图形相加"
+    ],
+    "analysis": "前两个图形叠加得到第三图，后组采用同一相加规则 因此选择 C。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“图形相加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 122
+  },
+  {
+    "sourceId": "2-123",
+    "image": "/questions/beisen-2/q123.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "线",
+      "直线/线条数量"
+    ],
+    "analysis": "图中的图形都是正方形中带有不规则的线条， 那我们从线条数入手。 图一中正方形内是一条线， 图二中是两条线， 图三中是一个三角形三条线， 图四中是一个正方形四条线， 很显然规律就是线条数， 依次+1，那么下一图中正方形内的线条数应为4+1=5条。其中选项A与B有不同的数法（因为有相交的线条，也可以数出来5条，但不完全是5条），我们先不优先考虑，选项D是四条线排除，选项C5条，且只有一种数法，答案为C 找出不同的一项",
+    "method": "题型：分组分类/找不同。先识别“线”，再核对“直线/线条数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 123
+  },
+  {
+    "sourceId": "2-124",
+    "image": "/questions/beisen-2/q124.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "对称性",
+      "对称轴数量"
+    ],
+    "analysis": "只有A不是轴对称图形 从所给的四个选项中。选择最合适的一个填入问号处，使之早现一定的规律性: 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“对称性”，再核对“对称轴数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 124
+  },
+  {
+    "sourceId": "2-125",
+    "image": "/questions/beisen-2/q125.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "元素遍历/轮换"
+    ],
+    "analysis": "每一行都有相同的元素 根据以上图形，下一个图形应该是？ 因此选择 A。",
+    "method": "题型：顺推式。先识别“遍历”，再核对“元素遍历/轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 125
+  },
+  {
+    "sourceId": "2-126",
+    "image": "/questions/beisen-2/q126.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "方向/步数平移"
+    ],
+    "analysis": "第一列，每次向下一格 第二列，每次向左一格， 第三列，每次向左一格 找出不同于其他图形的一项 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“平移”，再核对“方向/步数平移”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 126
+  },
+  {
+    "sourceId": "2-127",
+    "image": "/questions/beisen-2/q127.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "面",
+      "分割面数量"
+    ],
+    "analysis": "比较外框被内部线条分割出的封闭面数量 因此选择 C。",
+    "method": "题型：问号推理。先识别“面”，再核对“分割面数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 127
+  },
+  {
+    "sourceId": "2-128",
+    "image": "/questions/beisen-2/q128.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "旋转，在框里的不改变颜色，在框外的改变颜色 41 空着的正方形里的图形应该是: 因此选择 A。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 128
+  },
+  {
+    "sourceId": "2-129",
+    "image": "/questions/beisen-2/q129.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "第一层顺时针，第二层逆时针 找出下列图形中，不同于其他图形的一项是？ 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 129
+  },
+  {
+    "sourceId": "2-130",
+    "image": "/questions/beisen-2/q130.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素总数/分项数量"
+    ],
+    "analysis": "黑色块和白色块数量一样，B 选项数量不一致",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“元素总数/分项数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 130
+  },
+  {
+    "sourceId": "2-131",
+    "image": "/questions/beisen-2/q131.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "内外/构成对应"
+    ],
+    "analysis": "图三的最里层是图二的外层，中间层是图一的外层，外层是图二的外层。 43 问号处的图形应当是： 因此选择 A。",
+    "method": "题型：问号推理。先识别“图形间关系”，再核对“内外/构成对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 131
+  },
+  {
+    "sourceId": "2-132",
+    "image": "/questions/beisen-2/q132.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "线",
+      "笔画数"
+    ],
+    "analysis": "按黑色块数笔画，规律是1,2,1,2,1,2 44 问号处的图形应该是： 因此选择 C。",
+    "method": "题型：问号推理。先识别“线”，再核对“笔画数”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 132
+  },
+  {
+    "sourceId": "2-133",
+    "image": "/questions/beisen-2/q133.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "角",
+      "角的数量/类型"
+    ],
+    "analysis": "数直角的个数，直角的个数依次递增 找出不同一项 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“角”，再核对“角的数量/类型”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 133
+  },
+  {
+    "sourceId": "2-134",
+    "image": "/questions/beisen-2/q134.webp",
+    "optionImages": [],
+    "answer": "E",
+    "optionCount": 5,
+    "point": "属性规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "对称性",
+      "对称轴有无"
+    ],
+    "analysis": "选项E为唯一不具轴对称结构的图形 因此选择 E。",
+    "method": "题型：问号推理。先识别“对称性”，再核对“对称轴有无”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 134
+  },
+  {
+    "sourceId": "2-135",
+    "image": "/questions/beisen-2/q135.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "同位颜色运算"
+    ],
+    "analysis": "白+白等于白；白加黑等于黑；黑加黑等于白 问号处应该的图形应该是？ 因此选择 D。",
+    "method": "题型：问号推理。先识别“黑白运算”，再核对“同位颜色运算”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 135
+  },
+  {
+    "sourceId": "2-136",
+    "image": "/questions/beisen-2/q136.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "每一列，找到重合的边之后，旋转45度 根据以下图形的规律，问号处图形应该是？ 因此选择 C。",
+    "method": "题型：问号推理。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 136
+  },
+  {
+    "sourceId": "2-137",
+    "image": "/questions/beisen-2/q137.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "内外/构成对应"
+    ],
+    "analysis": "上面的大图形分别是圆，平行四边形，梯形，长方形，所以最后一个不应该再是梯形，应该是正方形， 然后观察每一个图形的内部， 都会被分割出一个对应小的图形。C选项是正方形，且内部还被分割出小正反形，应该选C，D不符合。",
+    "method": "题型：分组分类/找不同。先识别“图形间关系”，再核对“内外/构成对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 137
+  },
+  {
+    "sourceId": "2-138",
+    "image": "/questions/beisen-2/q138.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 138
+  },
+  {
+    "sourceId": "2-139",
+    "image": "/questions/beisen-2/q139.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "相加/叠加"
+    ],
+    "analysis": "每一行都有五角星，圆，方形，箭头合并 找出不同的一项 因此选择 D。",
+    "method": "题型：问号推理。先识别“加减同异”，再核对“相加/叠加”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 139
+  },
+  {
+    "sourceId": "2-141",
+    "image": "/questions/beisen-2/q141.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "元素遍历/轮换"
+    ],
+    "analysis": "每一行内部都有长方形，线，三角形，圆。应该选D。",
+    "method": "题型：问号推理。先识别“遍历”，再核对“元素遍历/轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 141
+  },
+  {
+    "sourceId": "2-142",
+    "image": "/questions/beisen-2/q142.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "线",
+      "直线/线条数量"
+    ],
+    "analysis": "有两根线，每次一根顺时针转90°，一根逆时针转45° 找出下列图形中不同于其他图形的一项是 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“线”，再核对“直线/线条数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 142
+  },
+  {
+    "sourceId": "2-143",
+    "image": "/questions/beisen-2/q143.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "面",
+      "封闭面数量"
+    ],
+    "analysis": "面数量规律。面的数量一致时，考虑最大面或者最小面的形状。这题是考虑被分割的最小面，C选项的最小面是扇形，如下图 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“面”，再核对“封闭面数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 143
+  },
+  {
+    "sourceId": "2-144",
+    "image": "/questions/beisen-2/q144.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "固定角度旋转"
+    ],
+    "analysis": "竖线不动，横线逆时针移动 2 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“旋转”，再核对“固定角度旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 144
+  },
+  {
+    "sourceId": "2-145",
+    "image": "/questions/beisen-2/q145.webp",
+    "optionImages": [],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "第一列加上第二列重叠的相消 3 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 145
+  },
+  {
+    "sourceId": "2-146",
+    "image": "/questions/beisen-2/q146.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "求异/相消"
+    ],
+    "analysis": "重叠相消 5 根据以上图形的规律，下一个图形应该是: 因此选择 A。",
+    "method": "题型：顺推式。先识别“加减同异”，再核对“求异/相消”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 146
+  },
+  {
+    "sourceId": "2-147",
+    "image": "/questions/beisen-2/q147.webp",
+    "optionImages": [],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "对称性",
+      "对称轴方向"
+    ],
+    "analysis": "对称轴是竖线，其他对称轴不是竖线 问号处图形应该是？ 因此选择 D。",
+    "method": "题型：问号推理。先识别“对称性”，再核对“对称轴方向”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 147
+  },
+  {
+    "sourceId": "2-148",
+    "image": "/questions/beisen-2/q148.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "线",
+      "内部线条/分区数量"
+    ],
+    "analysis": "比较多边形内部放射线和分区数量，选出结构不同项 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“线”，再核对“内部线条/分区数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 148
+  },
+  {
+    "sourceId": "2-149",
+    "image": "/questions/beisen-2/q149.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "看内部分割，其余选项是分割为三个图形，且图形不同 从所给的四个选项中， 选择最合适的一个填入问号处，使之呈现定的规律性。 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 149
+  },
+  {
+    "sourceId": "2-150",
+    "image": "/questions/beisen-2/q150.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "元素遍历/轮换"
+    ],
+    "analysis": "箭头三角形长方形都是成对出现的，排除A。中间分割线分别为-- | / ,排除D。 斜线 / 的下方图形是横线上方的图形，所以三角形在上，选B 找出下列图形中不同于其他图形的一项: 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“遍历”，再核对“元素遍历/轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 150
+  },
+  {
+    "sourceId": "2-151",
+    "image": "/questions/beisen-2/q151.webp",
+    "optionImages": [],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "图形变化/对应"
+    ],
+    "analysis": "B选项三个都叠在一起了 从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“逻辑对应”，再核对“图形变化/对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 151
+  },
+  {
+    "sourceId": "2-152",
+    "image": "/questions/beisen-2/q152.webp",
+    "optionImages": [],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "加减同异",
+      "求同/保留重合"
+    ],
+    "analysis": "前面很多类似的题了，总结一下。横着看，找出重叠的部分。 因此选择 A。",
+    "method": "题型：九宫格。先识别“加减同异”，再核对“求同/保留重合”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 152
+  },
+  {
+    "sourceId": "2-153",
+    "image": "/questions/beisen-2/q153-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q153-A.webp",
+      "/questions/beisen-2/q153-B.webp",
+      "/questions/beisen-2/q153-C.webp",
+      "/questions/beisen-2/q153-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "构成元素对应"
+    ],
+    "analysis": "拆分并对应保留相同的构成元素 因此选择 C。",
+    "method": "题型：顺推式/问号推理。先识别“图形间关系”，再核对“构成元素对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 153
+  },
+  {
+    "sourceId": "2-154",
+    "image": "/questions/beisen-2/q154-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q154-A.webp",
+      "/questions/beisen-2/q154-B.webp",
+      "/questions/beisen-2/q154-C.webp",
+      "/questions/beisen-2/q154-D.webp"
+    ],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "图形间关系",
+      "相交/连接关系"
+    ],
+    "analysis": "比较圆与直线、角形之间的相交和连接方式 因此选择 D。",
+    "method": "题型：分组分类/找不同。先识别“图形间关系”，再核对“相交/连接关系”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 154
+  },
+  {
+    "sourceId": "2-156",
+    "image": "/questions/beisen-2/q156-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q156-A.webp",
+      "/questions/beisen-2/q156-B.webp",
+      "/questions/beisen-2/q156-C.webp",
+      "/questions/beisen-2/q156-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "黑白端点遍历"
+    ],
+    "analysis": "九宫格中黑白端点按行列轮换 因此选择 A。",
+    "method": "题型：九宫格。先识别“遍历”，再核对“黑白端点遍历”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 156
+  },
+  {
+    "sourceId": "2-157",
+    "image": "/questions/beisen-2/q157-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q157-A.webp",
+      "/questions/beisen-2/q157-B.webp",
+      "/questions/beisen-2/q157-C.webp"
+    ],
+    "answer": "C",
+    "optionCount": 3,
+    "point": "样式规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "遍历",
+      "元素形状遍历"
+    ],
+    "analysis": "每行曲直形状按固定次序轮换 因此选择 C。",
+    "method": "题型：顺推式/问号推理。先识别“遍历”，再核对“元素形状遍历”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 157
+  },
+  {
+    "sourceId": "2-158",
+    "image": "/questions/beisen-2/q158-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q158-A.webp",
+      "/questions/beisen-2/q158-B.webp",
+      "/questions/beisen-2/q158-C.webp",
+      "/questions/beisen-2/q158-D.webp"
+    ],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "分段位置移动"
+    ],
+    "analysis": "条带中的阴影/线纹分段按位置循环 因此选择 B。",
+    "method": "题型：顺推式/问号推理。先识别“平移”，再核对“分段位置移动”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 158
+  },
+  {
+    "sourceId": "2-159",
+    "image": "/questions/beisen-2/q159-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q159-A.webp",
+      "/questions/beisen-2/q159-B.webp",
+      "/questions/beisen-2/q159-C.webp",
+      "/questions/beisen-2/q159-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "逻辑对应",
+      "数量与形状替换"
+    ],
+    "analysis": "三圆对应三方块，括线按相同构成规则替换 因此选择 C。",
+    "method": "题型：顺推式/问号推理。先识别“逻辑对应”，再核对“数量与形状替换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 159
+  },
+  {
+    "sourceId": "2-161",
+    "image": "/questions/beisen-2/q161-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q161-A.webp",
+      "/questions/beisen-2/q161-B.webp",
+      "/questions/beisen-2/q161-C.webp"
+    ],
+    "answer": "A",
+    "optionCount": 3,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "四元素位置置换"
+    ],
+    "analysis": "四种元素在方格中按同一位置置换 因此选择 A。",
+    "method": "题型：顺推式/问号推理。先识别“平移”，再核对“四元素位置置换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 161
+  },
+  {
+    "sourceId": "2-164",
+    "image": "/questions/beisen-2/q164-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q164-A.webp",
+      "/questions/beisen-2/q164-B.webp",
+      "/questions/beisen-2/q164-C.webp",
+      "/questions/beisen-2/q164-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "黑白点分布"
+    ],
+    "analysis": "九宫格中黑白圆点按行列组合 因此选择 C。",
+    "method": "题型：九宫格。先识别“黑白运算”，再核对“黑白点分布”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 164
+  },
+  {
+    "sourceId": "2-165",
+    "image": "/questions/beisen-2/q165-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q165-A.webp",
+      "/questions/beisen-2/q165-B.webp",
+      "/questions/beisen-2/q165-C.webp",
+      "/questions/beisen-2/q165-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "扇区元素旋转"
+    ],
+    "analysis": "圆盘中的符号沿扇区移动并轮换 因此选择 C。",
+    "method": "题型：顺推式/问号推理。先识别“旋转”，再核对“扇区元素旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 165
+  },
+  {
+    "sourceId": "2-167",
+    "image": "/questions/beisen-2/q167-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q167-A.webp",
+      "/questions/beisen-2/q167-B.webp",
+      "/questions/beisen-2/q167-C.webp",
+      "/questions/beisen-2/q167-D.webp"
+    ],
+    "answer": "E",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "加减同异",
+      "线与点同位运算"
+    ],
+    "analysis": "九宫格中圆心、外线按同位叠加/相消 因此选择 E。",
+    "method": "题型：九宫格。先识别“加减同异”，再核对“线与点同位运算”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 167
+  },
+  {
+    "sourceId": "2-168",
+    "image": "/questions/beisen-2/q168-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q168-A.webp",
+      "/questions/beisen-2/q168-B.webp",
+      "/questions/beisen-2/q168-C.webp",
+      "/questions/beisen-2/q168-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "黑白块数量"
+    ],
+    "analysis": "比较黑白小块数量及方格总数（题库未标答案） 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“黑白块数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 168
+  },
+  {
+    "sourceId": "2-172",
+    "image": "/questions/beisen-2/q172-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q172-A.webp",
+      "/questions/beisen-2/q172-B.webp",
+      "/questions/beisen-2/q172-C.webp",
+      "/questions/beisen-2/q172-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "平面拼合",
+      "曲线边界拼接"
+    ],
+    "analysis": "根据相邻曲线连续性补齐拼图 因此选择 C。",
+    "method": "题型：顺推式/问号推理。先识别“平面拼合”，再核对“曲线边界拼接”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 172
+  },
+  {
+    "sourceId": "2-177",
+    "image": "/questions/beisen-2/q177-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q177-A.webp",
+      "/questions/beisen-2/q177-B.webp",
+      "/questions/beisen-2/q177-C.webp",
+      "/questions/beisen-2/q177-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "曲直图形遍历"
+    ],
+    "analysis": "九宫格中外框和内部曲直元素轮换 因此选择 A。",
+    "method": "题型：九宫格。先识别“遍历”，再核对“曲直图形遍历”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 177
+  },
+  {
+    "sourceId": "2-178",
+    "image": "/questions/beisen-2/q178-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q178-A.webp",
+      "/questions/beisen-2/q178-B.webp",
+      "/questions/beisen-2/q178-C.webp",
+      "/questions/beisen-2/q178-D.webp"
+    ],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "两元素配对轮换"
+    ],
+    "analysis": "两类符号按顺序成对出现并轮换 因此选择 B。",
+    "method": "题型：顺推式/问号推理。先识别“遍历”，再核对“两元素配对轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 178
+  },
+  {
+    "sourceId": "2-180",
+    "image": "/questions/beisen-2/q180-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q180-A.webp",
+      "/questions/beisen-2/q180-B.webp",
+      "/questions/beisen-2/q180-C.webp",
+      "/questions/beisen-2/q180-D.webp",
+      "/questions/beisen-2/q180-E.webp"
+    ],
+    "answer": "B",
+    "optionCount": 5,
+    "point": "属性规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "对称性",
+      "对称结构差异"
+    ],
+    "analysis": "生活化图标中对称结构或对称轴特征不同 因此选择 B。",
+    "method": "题型：顺推式/问号推理。先识别“对称性”，再核对“对称结构差异”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 180
+  },
+  {
+    "sourceId": "2-185",
+    "image": "/questions/beisen-2/q185-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q185-A.webp",
+      "/questions/beisen-2/q185-B.webp",
+      "/questions/beisen-2/q185-C.webp",
+      "/questions/beisen-2/q185-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "遍历",
+      "三类元素位置对应"
+    ],
+    "analysis": "四个位置按同一置换关系变化：左上移到左下，右上移到左上，左下移到右上，右下保持不变。代入第三组后应为 C。",
+    "method": "题型：两组式/类比。先识别“遍历”，再核对“三类元素位置对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 185
+  },
+  {
+    "sourceId": "2-186",
+    "image": "/questions/beisen-2/q186-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q186-A.webp",
+      "/questions/beisen-2/q186-B.webp",
+      "/questions/beisen-2/q186-C.webp",
+      "/questions/beisen-2/q186-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "黑白块与方向线同步"
+    ],
+    "analysis": "黑白块位置及上方方向线同步旋转 因此选择 A。",
+    "method": "题型：顺推式/问号推理。先识别“旋转”，再核对“黑白块与方向线同步”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 186
+  },
+  {
+    "sourceId": "2-187",
+    "image": "/questions/beisen-2/q187-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q187-A.webp",
+      "/questions/beisen-2/q187-B.webp",
+      "/questions/beisen-2/q187-C.webp"
+    ],
+    "answer": "D",
+    "optionCount": 3,
+    "point": "样式规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "加减同异",
+      "线段叠加/相消"
+    ],
+    "analysis": "由前组三图提取线段变化并应用于后组 因此选择 D。",
+    "method": "题型：顺推式/问号推理。先识别“加减同异”，再核对“线段叠加/相消”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 187
+  },
+  {
+    "sourceId": "2-189",
+    "image": "/questions/beisen-2/q189-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q189-A.webp",
+      "/questions/beisen-2/q189-B.webp",
+      "/questions/beisen-2/q189-C.webp",
+      "/questions/beisen-2/q189-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "嵌套层级对应"
+    ],
+    "analysis": "内外嵌套形状依次替换并保持层级（红框提示A）",
+    "method": "题型：顺推式/问号推理。先识别“图形间关系”，再核对“嵌套层级对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 189
+  },
+  {
+    "sourceId": "2-191",
+    "image": "/questions/beisen-2/q191-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q191-A.webp",
+      "/questions/beisen-2/q191-B.webp",
+      "/questions/beisen-2/q191-C.webp",
+      "/questions/beisen-2/q191-D.webp"
+    ],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素数量递增"
+    ],
+    "analysis": "方框、圆点、曲线、三角形数量依次增加 因此选择 D。",
+    "method": "题型：顺推式/问号推理。先识别“素”，再核对“元素数量递增”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 191
+  },
+  {
+    "sourceId": "2-193",
+    "image": "/questions/beisen-2/q193-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q193-A.webp",
+      "/questions/beisen-2/q193-B.webp",
+      "/questions/beisen-2/q193-C.webp",
+      "/questions/beisen-2/q193-D.webp"
+    ],
+    "answer": "E",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "遍历",
+      "多符号位置轮换"
+    ],
+    "analysis": "星、月、太阳在小方格中逐格轮换 因此选择 E。",
+    "method": "题型：顺推式/问号推理。先识别“遍历”，再核对“多符号位置轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 193
+  },
+  {
+    "sourceId": "2-195",
+    "image": "/questions/beisen-2/q195-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q195-A.webp",
+      "/questions/beisen-2/q195-B.webp",
+      "/questions/beisen-2/q195-C.webp",
+      "/questions/beisen-2/q195-D.webp"
+    ],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "灰黑区域组合"
+    ],
+    "analysis": "九宫格中灰黑分区按行列叠加组合 因此选择 B。",
+    "method": "题型：九宫格。先识别“黑白运算”，再核对“灰黑区域组合”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 195
+  },
+  {
+    "sourceId": "2-196",
+    "image": "/questions/beisen-2/q196-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q196-A.webp",
+      "/questions/beisen-2/q196-B.webp",
+      "/questions/beisen-2/q196-C.webp",
+      "/questions/beisen-2/q196-D.webp",
+      "/questions/beisen-2/q196-E.webp"
+    ],
+    "answer": "A",
+    "optionCount": 5,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "脸部元素旋转"
+    ],
+    "analysis": "眼、口等内部标记随外框方向对应旋转 因此选择 A。",
+    "method": "题型：顺推式/问号推理。先识别“旋转”，再核对“脸部元素旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 196
+  },
+  {
+    "sourceId": "2-198",
+    "image": "/questions/beisen-2/q198-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q198-A.webp",
+      "/questions/beisen-2/q198-B.webp",
+      "/questions/beisen-2/q198-C.webp"
+    ],
+    "answer": "C",
+    "optionCount": 3,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "黑圆沿边框移动"
+    ],
+    "analysis": "黑圆沿方阵外缘按固定方向和步长移动 因此选择 C。",
+    "method": "题型：顺推式/问号推理。先识别“平移”，再核对“黑圆沿边框移动”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 198
+  },
+  {
+    "sourceId": "2-202",
+    "image": "/questions/beisen-2/q202-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q202-A.webp",
+      "/questions/beisen-2/q202-B.webp",
+      "/questions/beisen-2/q202-C.webp",
+      "/questions/beisen-2/q202-D.webp"
+    ],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "四元素组合"
+    ],
+    "analysis": "两组三图中四类元素按相同去留规律变化 因此选择 B。",
+    "method": "题型：两组式/类比。先识别“遍历”，再核对“四元素组合”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 202
+  },
+  {
+    "sourceId": "2-203",
+    "image": "/questions/beisen-2/q203-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q203-A.webp",
+      "/questions/beisen-2/q203-B.webp",
+      "/questions/beisen-2/q203-C.webp",
+      "/questions/beisen-2/q203-D.webp"
+    ],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "开闭性",
+      "闭合图形去边"
+    ],
+    "analysis": "闭合形状按对应位置去掉一条边形成开放图形 因此选择 B。",
+    "method": "题型：顺推式/问号推理。先识别“开闭性”，再核对“闭合图形去边”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 203
+  },
+  {
+    "sourceId": "2-206",
+    "image": "/questions/beisen-2/q206-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q206-A.webp",
+      "/questions/beisen-2/q206-B.webp",
+      "/questions/beisen-2/q206-C.webp",
+      "/questions/beisen-2/q206-D.webp",
+      "/questions/beisen-2/q206-E.webp"
+    ],
+    "answer": "C",
+    "optionCount": 5,
+    "point": "特殊规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "图形间关系",
+      "圆形相交/连接"
+    ],
+    "analysis": "比较大小圆的相交、相切和串联方式 因此选择 C。",
+    "method": "题型：分组分类/找不同。先识别“图形间关系”，再核对“圆形相交/连接”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 206
+  },
+  {
+    "sourceId": "2-207",
+    "image": "/questions/beisen-2/q207-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q207-A.webp",
+      "/questions/beisen-2/q207-B.webp",
+      "/questions/beisen-2/q207-C.webp",
+      "/questions/beisen-2/q207-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "双图形同步旋转"
+    ],
+    "analysis": "两部分按固定方向旋转（红框提示C）",
+    "method": "题型：顺推式/问号推理。先识别“旋转”，再核对“双图形同步旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 207
+  },
+  {
+    "sourceId": "2-208",
+    "image": "/questions/beisen-2/q208-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q208-A.webp",
+      "/questions/beisen-2/q208-B.webp",
+      "/questions/beisen-2/q208-C.webp",
+      "/questions/beisen-2/q208-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "黑白块组合"
+    ],
+    "analysis": "九宫格中3×3黑白块按行列组合 因此选择 C。",
+    "method": "题型：九宫格。先识别“黑白运算”，再核对“黑白块组合”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 208
+  },
+  {
+    "sourceId": "2-209",
+    "image": "/questions/beisen-2/q209-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q209-A.webp",
+      "/questions/beisen-2/q209-B.webp",
+      "/questions/beisen-2/q209-C.webp",
+      "/questions/beisen-2/q209-D.webp"
+    ],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "黑白块数量"
+    ],
+    "analysis": "比较黑白块数量及方格总数 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“素”，再核对“黑白块数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 209
+  },
+  {
+    "sourceId": "2-212",
+    "image": "/questions/beisen-2/q212-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q212-A.webp",
+      "/questions/beisen-2/q212-B.webp",
+      "/questions/beisen-2/q212-C.webp",
+      "/questions/beisen-2/q212-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "加减同异",
+      "线段拆分/重组"
+    ],
+    "analysis": "前组三个线图的拆分关系映射到后组 因此选择 A。",
+    "method": "题型：顺推式/问号推理。先识别“加减同异”，再核对“线段拆分/重组”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 212
+  },
+  {
+    "sourceId": "2-213",
+    "image": "/questions/beisen-2/q213-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q213-A.webp",
+      "/questions/beisen-2/q213-B.webp",
+      "/questions/beisen-2/q213-C.webp",
+      "/questions/beisen-2/q213-D.webp"
+    ],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "逻辑对应",
+      "三角形线段增减"
+    ],
+    "analysis": "三角形内部线条按相同增减关系变化 因此选择 B。",
+    "method": "题型：顺推式/问号推理。先识别“逻辑对应”，再核对“三角形线段增减”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 213
+  },
+  {
+    "sourceId": "2-214",
+    "image": "/questions/beisen-2/q214-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q214-A.webp",
+      "/questions/beisen-2/q214-B.webp",
+      "/questions/beisen-2/q214-C.webp",
+      "/questions/beisen-2/q214-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "爱心与对角线轮换"
+    ],
+    "analysis": "爱心和对角线按固定位置循环 因此选择 A。",
+    "method": "题型：顺推式/问号推理。先识别“旋转”，再核对“爱心与对角线轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 214
+  },
+  {
+    "sourceId": "2-215",
+    "image": "/questions/beisen-2/q215-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q215-A.webp",
+      "/questions/beisen-2/q215-B.webp",
+      "/questions/beisen-2/q215-C.webp",
+      "/questions/beisen-2/q215-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "图形间关系",
+      "构件连接关系"
+    ],
+    "analysis": "找出多个构件连接方式不同的一项 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“图形间关系”，再核对“构件连接关系”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 215
+  },
+  {
+    "sourceId": "2-216",
+    "image": "/questions/beisen-2/q216-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q216-A.webp",
+      "/questions/beisen-2/q216-B.webp",
+      "/questions/beisen-2/q216-C.webp",
+      "/questions/beisen-2/q216-D.webp"
+    ],
+    "answer": "C",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "多边形与内部线旋转"
+    ],
+    "analysis": "外框和内部折线按周期旋转 因此选择 C。",
+    "method": "题型：顺推式/问号推理。先识别“旋转”，再核对“多边形与内部线旋转”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 216
+  },
+  {
+    "sourceId": "2-217",
+    "image": "/questions/beisen-2/q217-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q217-A.webp",
+      "/questions/beisen-2/q217-B.webp",
+      "/questions/beisen-2/q217-C.webp",
+      "/questions/beisen-2/q217-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "特殊规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "图形间关系",
+      "内外黑白对应"
+    ],
+    "analysis": "内外图形与黑白填充进行类比对应 因此选择 A。",
+    "method": "题型：两组式/类比。先识别“图形间关系”，再核对“内外黑白对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 217
+  },
+  {
+    "sourceId": "2-218",
+    "image": "/questions/beisen-2/q218-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q218-A.webp",
+      "/questions/beisen-2/q218-B.webp",
+      "/questions/beisen-2/q218-C.webp",
+      "/questions/beisen-2/q218-D.webp"
+    ],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "三角分区组合"
+    ],
+    "analysis": "九宫格中三角形各分区灰度按行列组合 因此选择 B。",
+    "method": "题型：九宫格。先识别“黑白运算”，再核对“三角分区组合”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 218
+  },
+  {
+    "sourceId": "2-220",
+    "image": "/questions/beisen-2/q220-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q220-A.webp",
+      "/questions/beisen-2/q220-B.webp",
+      "/questions/beisen-2/q220-C.webp",
+      "/questions/beisen-2/q220-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "对称性",
+      "图形结构相似"
+    ],
+    "analysis": "从候选中选择与题干四图结构最相似的一项 因此选择 A。",
+    "method": "题型：顺推式/问号推理。先识别“对称性”，再核对“图形结构相似”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 220
+  },
+  {
+    "sourceId": "2-222",
+    "image": "/questions/beisen-2/q222-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q222-A.webp",
+      "/questions/beisen-2/q222-B.webp",
+      "/questions/beisen-2/q222-C.webp",
+      "/questions/beisen-2/q222-D.webp"
+    ],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "复合位置",
+      "三角构件大小与位置循环"
+    ],
+    "analysis": "三角构件的大小与朝向交替变化，同时依次改变附着方位；延续该轮换关系，下一图对应 D。此题原题未标答案，按图形规律补判。 因此选择 D。",
+    "method": "题型：顺推式/问号推理。先识别“复合位置”，再核对“三角构件大小与位置循环”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 222
+  },
+  {
+    "sourceId": "2-223",
+    "image": "/questions/beisen-2/q223-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q223-A.webp",
+      "/questions/beisen-2/q223-B.webp",
+      "/questions/beisen-2/q223-C.webp",
+      "/questions/beisen-2/q223-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "线",
+      "内外图形边数对应"
+    ],
+    "analysis": "比较外框与黑色内图形的边数/形状对应 因此选择 A。",
+    "method": "题型：分组分类/找不同。先识别“线”，再核对“内外图形边数对应”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 223
+  },
+  {
+    "sourceId": "2-224",
+    "image": "/questions/beisen-2/q224-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q224-A.webp",
+      "/questions/beisen-2/q224-B.webp",
+      "/questions/beisen-2/q224-C.webp"
+    ],
+    "answer": "C",
+    "optionCount": 3,
+    "point": "样式规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "加减同异",
+      "分割线重组"
+    ],
+    "analysis": "前组三个方格的分割线变化映射到后组 因此选择 C。",
+    "method": "题型：顺推式/问号推理。先识别“加减同异”，再核对“分割线重组”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 224
+  },
+  {
+    "sourceId": "2-225",
+    "image": "/questions/beisen-2/q225-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q225-A.webp",
+      "/questions/beisen-2/q225-B.webp",
+      "/questions/beisen-2/q225-C.webp"
+    ],
+    "answer": "B",
+    "optionCount": 3,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "素",
+      "元素数量/曲直构成"
+    ],
+    "analysis": "生活化图形的元素数量或曲直构成不同 因此选择 B。",
+    "method": "题型：顺推式/问号推理。先识别“素”，再核对“元素数量/曲直构成”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 225
+  },
+  {
+    "sourceId": "2-226",
+    "image": "/questions/beisen-2/q226-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q226-A.webp",
+      "/questions/beisen-2/q226-B.webp",
+      "/questions/beisen-2/q226-C.webp",
+      "/questions/beisen-2/q226-D.webp"
+    ],
+    "answer": "E",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "加减同异",
+      "线段拆分/重组"
+    ],
+    "analysis": "线段组按同一拆分和保留关系完成类比 因此选择 E。",
+    "method": "题型：两组式/类比。先识别“加减同异”，再核对“线段拆分/重组”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 226
+  },
+  {
+    "sourceId": "2-227",
+    "image": "/questions/beisen-2/q227-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q227-A.webp",
+      "/questions/beisen-2/q227-B.webp",
+      "/questions/beisen-2/q227-C.webp"
+    ],
+    "answer": "B",
+    "optionCount": 3,
+    "point": "特殊规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "平面拼合",
+      "纹路连续"
+    ],
+    "analysis": "根据大图纹路和相邻边连续性补齐正方形 因此选择 B。",
+    "method": "题型：顺推式/问号推理。先识别“平面拼合”，再核对“纹路连续”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 227
+  },
+  {
+    "sourceId": "2-228",
+    "image": "/questions/beisen-2/q228-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q228-A.webp",
+      "/questions/beisen-2/q228-B.webp",
+      "/questions/beisen-2/q228-C.webp"
+    ],
+    "answer": "A",
+    "optionCount": 3,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "黑白运算",
+      "黑白圆点递推"
+    ],
+    "analysis": "六宫格中黑白圆点按列递推组合 因此选择 A。",
+    "method": "题型：顺推式/问号推理。先识别“黑白运算”，再核对“黑白圆点递推”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 228
+  },
+  {
+    "sourceId": "2-229",
+    "image": "/questions/beisen-2/q229-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q229-A.webp",
+      "/questions/beisen-2/q229-B.webp",
+      "/questions/beisen-2/q229-C.webp",
+      "/questions/beisen-2/q229-D.webp"
+    ],
+    "answer": "B",
+    "optionCount": 4,
+    "point": "数量规律",
+    "difficulty": "入门",
+    "finePoints": [
+      "面",
+      "分割面数量"
+    ],
+    "analysis": "比较外框被分割后的封闭面数量 因此选择 B。",
+    "method": "题型：分组分类/找不同。先识别“面”，再核对“分割面数量”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 229
+  },
+  {
+    "sourceId": "2-230",
+    "image": "/questions/beisen-2/q230-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q230-A.webp",
+      "/questions/beisen-2/q230-B.webp",
+      "/questions/beisen-2/q230-C.webp",
+      "/questions/beisen-2/q230-D.webp"
+    ],
+    "answer": "A",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "遍历",
+      "内外元素轮换"
+    ],
+    "analysis": "九宫格内外形状与方向按行列轮换 因此选择 A。",
+    "method": "题型：九宫格。先识别“遍历”，再核对“内外元素轮换”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 230
+  },
+  {
+    "sourceId": "2-232",
+    "image": "/questions/beisen-2/q232-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q232-A.webp",
+      "/questions/beisen-2/q232-B.webp",
+      "/questions/beisen-2/q232-C.webp",
+      "/questions/beisen-2/q232-D.webp"
+    ],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "样式规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "加减同异",
+      "阴影图形求异"
+    ],
+    "analysis": "类比两组多边形叠加后阴影部分的去留 因此选择 D。",
+    "method": "题型：两组式/类比。先识别“加减同异”，再核对“阴影图形求异”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 232
+  },
+  {
+    "sourceId": "2-233",
+    "image": "/questions/beisen-2/q233-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q233-A.webp",
+      "/questions/beisen-2/q233-B.webp",
+      "/questions/beisen-2/q233-C.webp"
+    ],
+    "answer": "A",
+    "optionCount": 3,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "平移",
+      "箭头方向遍历"
+    ],
+    "analysis": "九宫格中四支箭头方向按行列轮换 因此选择 A。",
+    "method": "题型：九宫格。先识别“平移”，再核对“箭头方向遍历”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 233
+  },
+  {
+    "sourceId": "2-235",
+    "image": "/questions/beisen-2/q235-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q235-A.webp",
+      "/questions/beisen-2/q235-B.webp",
+      "/questions/beisen-2/q235-C.webp",
+      "/questions/beisen-2/q235-D.webp",
+      "/questions/beisen-2/q235-E.webp"
+    ],
+    "answer": "E",
+    "optionCount": 5,
+    "point": "特殊规律",
+    "difficulty": "强化",
+    "finePoints": [
+      "平面拼合",
+      "立体块缺口匹配"
+    ],
+    "analysis": "根据堆叠图案的边线补齐顶端块 因此选择 E。",
+    "method": "题型：顺推式/问号推理。先识别“平面拼合”，再核对“立体块缺口匹配”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 235
+  },
+  {
+    "sourceId": "2-236",
+    "image": "/questions/beisen-2/q236-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q236-A.webp",
+      "/questions/beisen-2/q236-B.webp",
+      "/questions/beisen-2/q236-C.webp",
+      "/questions/beisen-2/q236-D.webp"
+    ],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "位置规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "旋转",
+      "多元素环形换位"
+    ],
+    "analysis": "大圆、小方与黑圆沿外框依次换位 因此选择 D。",
+    "method": "题型：顺推式/问号推理。先识别“旋转”，再核对“多元素环形换位”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 236
+  },
+  {
+    "sourceId": "2-237",
+    "image": "/questions/beisen-2/q237-stem.webp",
+    "optionImages": [
+      "/questions/beisen-2/q237-A.webp",
+      "/questions/beisen-2/q237-B.webp",
+      "/questions/beisen-2/q237-C.webp",
+      "/questions/beisen-2/q237-D.webp"
+    ],
+    "answer": "D",
+    "optionCount": 4,
+    "point": "属性规律",
+    "difficulty": "提高",
+    "finePoints": [
+      "开闭性",
+      "断口与边数交替"
+    ],
+    "analysis": "断线图形按边数和开闭状态交替变化 因此选择 D。",
+    "method": "题型：顺推式/问号推理。先识别“开闭性”，再核对“断口与边数交替”，最后用其余元素排除干扰项。",
+    "source": "题库2",
+    "originalNumber": 237
+  }
+]

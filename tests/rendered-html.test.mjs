@@ -44,7 +44,7 @@ test("keeps answer disclosure behind explicit submission", async () => {
   assert.match(page, /function submitAnswer\(\)/);
   assert.match(page, /确认提交/);
   assert.match(page, /提交前不会显示答案/);
-  assert.match(page, /Boolean\(submitted\[activeQuestion\.id\]\)/);
+  assert.match(page, /Boolean\(submitted\[activeId\]\)/);
   assert.match(page, /!answered \?/);
   await access(new URL("../public/og.png", import.meta.url));
 });

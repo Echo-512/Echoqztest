@@ -20,6 +20,17 @@ test("every referenced PDF image exists and every question has a gradeable answe
   for (const question of questions) {
     assert.match(question.answer, /^[A-E]$/, question.sourceId);
     assert.ok(question.optionCount >= 3 && question.optionCount <= 5, question.sourceId);
+    assert.ok(
+      question.optionCount >= question.answer.charCodeAt(0) - 64,
+      `${question.sourceId} is missing the correct-answer choice`,
+    );
+    if (question.optionImages.length) {
+      assert.equal(
+        question.optionImages.length,
+        question.optionCount,
+        `${question.sourceId} has a cropped-out split option`,
+      );
+    }
     await access(new URL(`../public${question.image}`, import.meta.url));
     for (const image of question.optionImages) {
       await access(new URL(`../public${image}`, import.meta.url));

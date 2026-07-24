@@ -2,9 +2,18 @@
 
 import { useEffect, useMemo, useState } from "react";
 import questionData from "./questions.json";
+import materialQuestionData from "./material-questions.json";
 
 type Difficulty = "入门" | "提高" | "强化";
-type Screen = "home" | "categories" | "mode" | "practice" | "mock" | "result";
+type Screen =
+  | "home"
+  | "categories"
+  | "mode"
+  | "practice"
+  | "material-practice"
+  | "mock"
+  | "result"
+  | "material-result";
 
 type Question = {
   sourceId: string;
@@ -30,11 +39,28 @@ type SavedSession = {
   currentSeconds: number;
 };
 
+type MaterialQuestion = {
+  sourceId: string;
+  image: string | null;
+  prompt: string;
+  options: string[];
+  answer: string;
+  optionCount: number;
+  difficulty: Difficulty;
+  analysis: string;
+  sourceOccurrence: number;
+};
+
 const questions = questionData as Question[];
+const materialQuestions = materialQuestionData as MaterialQuestion[];
 const questionById = new Map(questions.map((question) => [question.sourceId, question]));
+const materialQuestionById = new Map(
+  materialQuestions.map((question) => [question.sourceId, question]),
+);
 const pointOrder = ["位置规律", "样式规律", "属性规律", "数量规律", "特殊规律"];
 const letters = ["A", "B", "C", "D", "E", "F"];
 const storageKey = "qiuzhao-xingce-graphic-session-v1";
+const materialStorageKey = "qiuzhao-xingce-material-session-v1";
 
 function shuffle<T>(items: T[]) {
   const copy = [...items];
@@ -61,7 +87,7 @@ function SiteNav({ onHome, onPractice }: { onHome: () => void; onPractice: () =>
       </button>
       <div className="nav-links">
         <button type="button" onClick={onHome}>首页</button>
-        <span>北森题库 · 图形推理</span>
+        <span>北森题库 · 图形推理 / 材料分析</span>
       </div>
       <button className="nav-cta" type="button" onClick={onPractice}>开始刷题</button>
     </nav>
@@ -78,10 +104,21 @@ export default function Home() {
   const [currentSeconds, setCurrentSeconds] = useState(0);
   const [savedSession, setSavedSession] = useState<SavedSession | null>(null);
   const [sessionActive, setSessionActive] = useState(false);
+  const [materialCurrent, setMaterialCurrent] = useState(0);
+  const [materialSelected, setMaterialSelected] = useState<Record<string, string>>({});
+  const [materialSubmitted, setMaterialSubmitted] = useState<Record<string, string>>({});
+  const [materialQuestionTimes, setMaterialQuestionTimes] = useState<Record<string, number>>({});
+  const [materialCurrentSeconds, setMaterialCurrentSeconds] = useState(0);
+  const [savedMaterialSession, setSavedMaterialSession] = useState<SavedSession | null>(null);
+  const [materialSessionActive, setMaterialSessionActive] = useState(false);
 
   const activeQuestion = practiceQuestions[current] ?? questions[0];
   const activeId = activeQuestion.sourceId;
   const answered = Boolean(submitted[activeId]);
+  const activeMaterialQuestion =
+    materialQuestions[materialCurrent] ?? materialQuestions[0];
+  const activeMaterialId = activeMaterialQuestion.sourceId;
+  const materialAnswered = Boolean(materialSubmitted[activeMaterialId]);
 
   const correctCount = useMemo(
     () =>
@@ -95,6 +132,23 @@ export default function Home() {
   const totalRecordedSeconds = useMemo(
     () => Object.values(questionTimes).reduce((sum, value) => sum + value, 0),
     [questionTimes],
+  );
+  const materialCorrectCount = useMemo(
+    () =>
+      materialQuestions.filter(
+        (question) =>
+          materialSubmitted[question.sourceId] &&
+          materialSubmitted[question.sourceId] === question.answer,
+      ).length,
+    [materialSubmitted],
+  );
+  const materialTotalRecordedSeconds = useMemo(
+    () =>
+      Object.values(materialQuestionTimes).reduce(
+        (sum, value) => sum + value,
+        0,
+      ),
+    [materialQuestionTimes],
   );
 
   useEffect(() => {
@@ -111,10 +165,33 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(materialStorageKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as SavedSession;
+      const validIds =
+        parsed.questionIds?.filter((id) => materialQuestionById.has(id)) ?? [];
+      if (!validIds.length) return;
+      setSavedMaterialSession({ ...parsed, questionIds: validIds });
+    } catch {
+      window.localStorage.removeItem(materialStorageKey);
+    }
+  }, []);
+
+  useEffect(() => {
     if (screen !== "practice" || answered) return;
     const timer = window.setInterval(() => setCurrentSeconds((value) => value + 1), 1000);
     return () => window.clearInterval(timer);
   }, [screen, answered, activeId]);
+
+  useEffect(() => {
+    if (screen !== "material-practice" || materialAnswered) return;
+    const timer = window.setInterval(
+      () => setMaterialCurrentSeconds((value) => value + 1),
+      1000,
+    );
+    return () => window.clearInterval(timer);
+  }, [screen, materialAnswered, activeMaterialId]);
 
   useEffect(() => {
     if (!sessionActive || !practiceQuestions.length) return;
@@ -136,6 +213,27 @@ export default function Home() {
     submitted,
     questionTimes,
     currentSeconds,
+  ]);
+
+  useEffect(() => {
+    if (!materialSessionActive || !materialQuestions.length) return;
+    const snapshot: SavedSession = {
+      questionIds: materialQuestions.map((question) => question.sourceId),
+      current: materialCurrent,
+      selected: materialSelected,
+      submitted: materialSubmitted,
+      questionTimes: materialQuestionTimes,
+      currentSeconds: materialCurrentSeconds,
+    };
+    window.localStorage.setItem(materialStorageKey, JSON.stringify(snapshot));
+    setSavedMaterialSession(snapshot);
+  }, [
+    materialSessionActive,
+    materialCurrent,
+    materialSelected,
+    materialSubmitted,
+    materialQuestionTimes,
+    materialCurrentSeconds,
   ]);
 
   function goHome() {
@@ -175,6 +273,28 @@ export default function Home() {
     goTo("practice");
   }
 
+  function startMaterialPractice(reset = false) {
+    if (!reset && savedMaterialSession) {
+      const validCurrent = Math.min(
+        savedMaterialSession.current,
+        materialQuestions.length - 1,
+      );
+      setMaterialCurrent(validCurrent);
+      setMaterialSelected(savedMaterialSession.selected ?? {});
+      setMaterialSubmitted(savedMaterialSession.submitted ?? {});
+      setMaterialQuestionTimes(savedMaterialSession.questionTimes ?? {});
+      setMaterialCurrentSeconds(savedMaterialSession.currentSeconds ?? 0);
+    } else {
+      setMaterialCurrent(0);
+      setMaterialSelected({});
+      setMaterialSubmitted({});
+      setMaterialQuestionTimes({});
+      setMaterialCurrentSeconds(0);
+    }
+    setMaterialSessionActive(true);
+    goTo("material-practice");
+  }
+
   function chooseAnswer(letter: string) {
     if (answered) return;
     setSelected((state) => ({ ...state, [activeId]: letter }));
@@ -199,6 +319,39 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function chooseMaterialAnswer(letter: string) {
+    if (materialAnswered) return;
+    setMaterialSelected((state) => ({
+      ...state,
+      [activeMaterialId]: letter,
+    }));
+  }
+
+  function submitMaterialAnswer() {
+    const choice = materialSelected[activeMaterialId];
+    if (!choice || materialAnswered) return;
+    setMaterialSubmitted((state) => ({
+      ...state,
+      [activeMaterialId]: choice,
+    }));
+    setMaterialQuestionTimes((state) => ({
+      ...state,
+      [activeMaterialId]: materialCurrentSeconds,
+    }));
+  }
+
+  function nextMaterialQuestion() {
+    if (materialCurrent >= materialQuestions.length - 1) {
+      goTo("material-result");
+      return;
+    }
+    const next = materialCurrent + 1;
+    const nextId = materialQuestions[next].sourceId;
+    setMaterialCurrent(next);
+    setMaterialCurrentSeconds(materialQuestionTimes[nextId] ?? 0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   if (screen === "categories") {
     return (
       <main className="inner-page">
@@ -207,7 +360,7 @@ export default function Home() {
           <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
           <span className="eyebrow">CATEGORY PRACTICE</span>
           <h1>选择题型</h1>
-          <p>先按题型进入，再选择随机刷题或按考点练习。</p>
+          <p>图形推理可随机或按考点练习；材料分析按原题顺序直接开始。</p>
         </section>
         <section className="category-grid">
           <button className="category-card active-card" type="button" onClick={() => goTo("mode")}>
@@ -216,10 +369,19 @@ export default function Home() {
             <p>北森题库去重后共 {questions.length} 题，保留 Excel 原题号。</p>
             <strong>进入题库 →</strong>
           </button>
-          <article className="category-card muted-card">
-            <span>02</span><h2>案例分析</h2>
-            <p>题库框架已预留，资料补充后开放。</p><strong>即将更新</strong>
-          </article>
+          <button
+            className="category-card active-card material-category-card"
+            type="button"
+            onClick={() => startMaterialPractice(false)}
+          >
+            <span>02</span><h2>材料分析</h2>
+            <p>北森图表分析去重后共 {materialQuestions.length} 题，按原题顺序练习。</p>
+            <strong>
+              {savedMaterialSession
+                ? `继续上次进度 · 已完成 ${Object.keys(savedMaterialSession.submitted ?? {}).length} 题 →`
+                : "进入题库 →"}
+            </strong>
+          </button>
           <article className="category-card muted-card">
             <span>03</span><h2>文字推理</h2>
             <p>题库框架已预留，资料补充后开放。</p><strong>即将更新</strong>
@@ -279,7 +441,7 @@ export default function Home() {
           <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
           <span className="eyebrow">MOCK EXAM</span>
           <h1>模考框架已经搭好</h1>
-          <p>待案例分析、文字推理和更多大厂真题加入后，将开放整卷倒计时、统一交卷和成绩报告。</p>
+          <p>待文字推理和更多大厂真题加入后，将开放整卷倒计时、统一交卷和成绩报告。</p>
           <button className="primary-button" type="button" onClick={() => goTo("categories")}>先去分类刷题</button>
         </section>
       </main>
@@ -290,6 +452,11 @@ export default function Home() {
     const choice = selected[activeId];
     const isCorrect = submitted[activeId] === activeQuestion.answer;
     const optionImages = activeQuestion.optionImages ?? [];
+    const visibleOptionCount = Math.max(
+      activeQuestion.optionCount,
+      optionImages.length,
+      letters.indexOf(activeQuestion.answer) + 1,
+    );
     return (
       <main className="practice-shell">
         <header className="practice-header">
@@ -346,7 +513,7 @@ export default function Home() {
               <div className="answer-zone" aria-label="请选择答案">
                 <p>选择你的答案</p>
                 <div className="answer-buttons">
-                  {letters.slice(0, activeQuestion.optionCount).map((letter) => {
+                  {letters.slice(0, visibleOptionCount).map((letter) => {
                     const chosen = choice === letter;
                     const stateClass = answered
                       ? letter === activeQuestion.answer
@@ -399,6 +566,154 @@ export default function Home() {
     );
   }
 
+  if (screen === "material-practice") {
+    const choice = materialSelected[activeMaterialId];
+    const isCorrect =
+      materialSubmitted[activeMaterialId] === activeMaterialQuestion.answer;
+    const visibleOptionCount = Math.max(
+      activeMaterialQuestion.optionCount,
+      activeMaterialQuestion.options.length,
+      letters.indexOf(activeMaterialQuestion.answer) + 1,
+    );
+    return (
+      <main className="practice-shell material-practice-shell">
+        <header className="practice-header">
+          <button
+            className="practice-back"
+            type="button"
+            onClick={() => goTo("categories")}
+          >
+            ← 返回题型
+          </button>
+          <button className="logo light-logo" type="button" onClick={goHome}>
+            <span className="logo-mark">Q</span>秋招行测
+          </button>
+          <div className="practice-progress">
+            <span>
+              材料分析 · {materialCurrent + 1}/{materialQuestions.length}
+            </span>
+            <div>
+              <i
+                style={{
+                  width: `${((materialCurrent + 1) / materialQuestions.length) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+          <div
+            className="timer"
+            aria-label={`本题用时 ${formatTime(materialCurrentSeconds)}`}
+          >
+            <small>{materialAnswered ? "本题用时" : "本题计时"}</small>
+            <strong>
+              {formatTime(
+                materialQuestionTimes[activeMaterialId] ??
+                  materialCurrentSeconds,
+              )}
+            </strong>
+          </div>
+        </header>
+
+        <section className="practice-content">
+          <div className="question-meta">
+            <span>{activeMaterialQuestion.sourceId}</span>
+            <span>{activeMaterialQuestion.difficulty}</span>
+            <em>提交前不会显示答案</em>
+          </div>
+          <article className="question-card material-question-card">
+            <p className="material-prompt">
+              {activeMaterialQuestion.prompt}
+            </p>
+            {activeMaterialQuestion.image && (
+              <div className="source-image-wrap material-chart-wrap">
+                <img
+                  src={activeMaterialQuestion.image}
+                  alt={`${activeMaterialId} 原 PDF 图表`}
+                  draggable={false}
+                />
+              </div>
+            )}
+            <div className="material-options" aria-label="请选择答案">
+              {letters.slice(0, visibleOptionCount).map((letter, index) => {
+                const chosen = choice === letter;
+                const stateClass = materialAnswered
+                  ? letter === activeMaterialQuestion.answer
+                    ? "correct-choice"
+                    : chosen
+                      ? "wrong-choice"
+                      : ""
+                  : chosen
+                    ? "selected-choice"
+                    : "";
+                const optionText =
+                  activeMaterialQuestion.options[index] ?? "以上说法";
+                return (
+                  <button
+                    key={letter}
+                    type="button"
+                    className={`material-option-button ${stateClass}`}
+                    onClick={() => chooseMaterialAnswer(letter)}
+                    disabled={materialAnswered}
+                  >
+                    <strong>{letter}</strong>
+                    <span>{optionText}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </article>
+
+          {!materialAnswered ? (
+            <button
+              className="submit-button"
+              type="button"
+              onClick={submitMaterialAnswer}
+              disabled={!choice}
+            >
+              确认提交
+            </button>
+          ) : (
+            <section
+              className={`analysis-card ${isCorrect ? "analysis-correct" : "analysis-wrong"}`}
+            >
+              <div className="analysis-result">
+                <span>{isCorrect ? "回答正确" : "回答错误"}</span>
+                <strong>正确答案：{activeMaterialQuestion.answer}</strong>
+                <small>
+                  本题用时{" "}
+                  {formatTime(
+                    materialQuestionTimes[activeMaterialId] ??
+                      materialCurrentSeconds,
+                  )}
+                </small>
+              </div>
+              <div className="analysis-body">
+                <h2>解析</h2>
+                {activeMaterialQuestion.analysis
+                  .split("\n")
+                  .filter(Boolean)
+                  .map((paragraph, index) => (
+                    <p key={`${activeMaterialId}-analysis-${index}`}>
+                      {paragraph}
+                    </p>
+                  ))}
+              </div>
+              <button
+                className="next-button"
+                type="button"
+                onClick={nextMaterialQuestion}
+              >
+                {materialCurrent === materialQuestions.length - 1
+                  ? "查看成绩"
+                  : "下一题 →"}
+              </button>
+            </section>
+          )}
+        </section>
+      </main>
+    );
+  }
+
   if (screen === "result") {
     const answeredCount = Object.keys(submitted).length;
     return (
@@ -418,6 +733,46 @@ export default function Home() {
     );
   }
 
+  if (screen === "material-result") {
+    const answeredCount = Object.keys(materialSubmitted).length;
+    return (
+      <main className="inner-page">
+        <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
+        <section className="result-card">
+          <button
+            className="back-link"
+            type="button"
+            onClick={() => goTo("categories")}
+          >
+            ← 返回题型
+          </button>
+          <span className="eyebrow">MATERIAL SESSION COMPLETE</span>
+          <h1>{materialCorrectCount} / {answeredCount}</h1>
+          <p>
+            本次累计答题用时 {formatTime(materialTotalRecordedSeconds)}
+            。材料分析进度已经保存在本机。
+          </p>
+          <div>
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => startMaterialPractice(true)}
+            >
+              重新开始
+            </button>
+            <button
+              className="text-button"
+              type="button"
+              onClick={() => goTo("categories")}
+            >
+              返回题型
+            </button>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="home-page">
       <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
@@ -425,7 +780,7 @@ export default function Home() {
         <div className="hero-copy">
           <span className="hero-label">FOR 2026 AUTUMN RECRUITMENT</span>
           <h1>大厂行测，<br />终于有地方<span>练了</span></h1>
-          <p>为秋招学生做的行测刷题站。先从图形推理开始，不套用考公节奏，只练大厂笔试真正会遇到的思路。</p>
+          <p>为秋招学生做的行测刷题站。图形推理与材料分析已开放，不套用考公节奏，只练大厂笔试真正会遇到的题。</p>
           <div className="hero-actions">
             <button className="primary-button" type="button" onClick={() => goTo("categories")}>进入分类刷题 →</button>
             <button className="primary-button secondary-green" type="button" onClick={() => goTo("mock")}>进入模考 →</button>
@@ -452,9 +807,10 @@ export default function Home() {
       <section className="structure-section" id="structure">
         <span className="eyebrow">QUESTION BANK</span><h2>题库结构</h2>
         <div className="structure-grid">
-          <article><span>01</span><h3>分类刷题</h3><p>图形推理已开放；案例分析和文字推理保留扩展框架。</p></article>
+          <article><span>01</span><h3>分类刷题</h3><p>图形推理与材料分析已开放；文字推理保留扩展框架。</p></article>
           <article><span>02</span><h3>图形推理</h3><p>随机刷题与按考点刷题，覆盖两套北森资料去重后的 {questions.length} 道题。</p></article>
-          <article><span>03</span><h3>考试模拟</h3><p>框架已建立，待更多题型与大厂历年题补齐后开放。</p></article>
+          <article><span>03</span><h3>材料分析</h3><p>按原题顺序练习 {materialQuestions.length} 道去重题，题干与选项清晰排版，图表保留 PDF 原图。</p></article>
+          <article><span>04</span><h3>考试模拟</h3><p>框架已建立，待更多题型与大厂历年题补齐后开放。</p></article>
         </div>
       </section>
     </main>

@@ -42,6 +42,9 @@ DIGITS = {
 }
 
 MANUAL_STARTS = {
+    # The source places the complete question above a trailing "问号处应当是"
+    # line, which the text layer otherwise mistakes for the start.
+    25: (13, 290.0),
     75: (43, 350.0),
     81: (47, 70.0),
     115: (65, 545.0),
@@ -501,6 +504,21 @@ def split_back_question(image, question_number=None):
     if manual_rows:
         rows = manual_rows
         stem_bottom = rows[0][0]
+    elif len(centers) >= 3 and len(centers) > len(matched_border_rows):
+        # The last card border is frequently clipped by a page/marker boundary,
+        # while every radio center is still visible. Prefer the complete radio
+        # sequence so D/E is never silently dropped.
+        spacing = float(np.median(np.diff(centers)))
+        stem_bottom = max(1, int(centers[0] - spacing * 0.43))
+        rows = []
+        for index, center in enumerate(centers):
+            top = int((centers[index - 1] + center) / 2) if index else stem_bottom
+            bottom = (
+                int((center + centers[index + 1]) / 2)
+                if index + 1 < len(centers)
+                else min(image.height, int(center + spacing * 0.49))
+            )
+            rows.append((top, bottom))
     elif len(matched_border_rows) >= 3:
         rows = matched_border_rows
         stem_bottom = rows[0][0]

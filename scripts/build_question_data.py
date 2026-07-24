@@ -117,18 +117,52 @@ ANSWER_OVERRIDES = {
     150: "B",
     151: "B",
     152: "A",
+    167: "D",
     185: "C",
+    193: "D",
     208: "C",
     213: "B",
     214: "A",
     220: "A",
     222: "D",
+    226: "D",
 }
 
 # Question 64 is the clear copy of the same item described at row 184.
 METADATA_SOURCE_OVERRIDES = {64: 184}
 
 BANK1_OPTION_COUNTS = {57: 3, 76: 5, 77: 5, 83: 5, 89: 5}
+
+# Visually counted from the untouched PDF rows. Most early questions have four
+# choices, but these source pages contain three or five; the answer letter
+# alone cannot reveal the count when E is only a distractor.
+BANK2_EARLY_OPTION_COUNTS = {
+    **{number: 3 for number in (38, 40, 41, 49, 67)},
+    **{
+        number: 5
+        for number in (
+            5,
+            7,
+            14,
+            23,
+            31,
+            51,
+            56,
+            64,
+            72,
+            85,
+            86,
+            95,
+            103,
+            110,
+            111,
+            114,
+            124,
+            128,
+            134,
+        )
+    },
+}
 
 MANUAL_ANALYSES = {
     185: (
@@ -232,11 +266,14 @@ def main():
         option_count = len(option_images)
         if not option_count:
             bank1_match = BANK2_TO_BANK1.get(number)
-            option_count = (
-                BANK1_OPTION_COUNTS.get(bank1_match, 4)
-                if bank1_match
-                else (5 if answer == "E" else 4)
-            )
+            if number <= 152:
+                option_count = BANK2_EARLY_OPTION_COUNTS.get(number, 4)
+            else:
+                option_count = (
+                    BANK1_OPTION_COUNTS.get(bank1_match, 4)
+                    if bank1_match
+                    else (5 if answer == "E" else 4)
+                )
         point, second, third, analysis, method = explanation(row, source_id, answer)
         questions.append(
             {

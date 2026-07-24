@@ -956,7 +956,7 @@
     "image": "/questions/beisen-2/q005.webp",
     "optionImages": [],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "数量规律",
     "difficulty": "入门",
     "finePoints": [
@@ -1109,7 +1109,7 @@
     "image": "/questions/beisen-2/q014.webp",
     "optionImages": [],
     "answer": "C",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "特殊规律",
     "difficulty": "提高",
     "finePoints": [
@@ -1262,7 +1262,7 @@
     "image": "/questions/beisen-2/q023.webp",
     "optionImages": [],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "位置规律",
     "difficulty": "提高",
     "finePoints": [
@@ -1398,7 +1398,7 @@
     "image": "/questions/beisen-2/q031.webp",
     "optionImages": [],
     "answer": "E",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "数量规律",
     "difficulty": "入门",
     "finePoints": [
@@ -1517,7 +1517,7 @@
     "image": "/questions/beisen-2/q038.webp",
     "optionImages": [],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 3,
     "point": "位置规律",
     "difficulty": "提高",
     "finePoints": [
@@ -1551,7 +1551,7 @@
     "image": "/questions/beisen-2/q040.webp",
     "optionImages": [],
     "answer": "C",
-    "optionCount": 4,
+    "optionCount": 3,
     "point": "位置规律",
     "difficulty": "提高",
     "finePoints": [
@@ -1568,7 +1568,7 @@
     "image": "/questions/beisen-2/q041.webp",
     "optionImages": [],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 3,
     "point": "样式规律",
     "difficulty": "提高",
     "finePoints": [
@@ -1687,7 +1687,7 @@
     "image": "/questions/beisen-2/q049.webp",
     "optionImages": [],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 3,
     "point": "样式规律",
     "difficulty": "提高",
     "finePoints": [
@@ -1789,7 +1789,7 @@
     "image": "/questions/beisen-2/q056.webp",
     "optionImages": [],
     "answer": "B",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "特殊规律",
     "difficulty": "提高",
     "finePoints": [
@@ -1925,7 +1925,7 @@
     "image": "/questions/beisen-2/q064.webp",
     "optionImages": [],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "数量规律",
     "difficulty": "入门",
     "finePoints": [
@@ -1976,7 +1976,7 @@
     "image": "/questions/beisen-2/q067.webp",
     "optionImages": [],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 3,
     "point": "特殊规律",
     "difficulty": "提高",
     "finePoints": [
@@ -2061,7 +2061,7 @@
     "image": "/questions/beisen-2/q072.webp",
     "optionImages": [],
     "answer": "D",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "数量规律",
     "difficulty": "入门",
     "finePoints": [
@@ -2282,7 +2282,7 @@
     "image": "/questions/beisen-2/q085.webp",
     "optionImages": [],
     "answer": "B",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "数量规律",
     "difficulty": "入门",
     "finePoints": [
@@ -2299,7 +2299,7 @@
     "image": "/questions/beisen-2/q086.webp",
     "optionImages": [],
     "answer": "D",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "数量规律",
     "difficulty": "入门",
     "finePoints": [
@@ -2452,7 +2452,7 @@
     "image": "/questions/beisen-2/q095.webp",
     "optionImages": [],
     "answer": "E",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "样式规律",
     "difficulty": "提高",
     "finePoints": [
@@ -2571,7 +2571,7 @@
     "image": "/questions/beisen-2/q103.webp",
     "optionImages": [],
     "answer": "D",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "位置规律",
     "difficulty": "提高",
     "finePoints": [
@@ -2690,7 +2690,7 @@
     "image": "/questions/beisen-2/q111.webp",
     "optionImages": [],
     "answer": "D",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "样式规律",
     "difficulty": "提高",
     "finePoints": [
@@ -2741,7 +2741,7 @@
     "image": "/questions/beisen-2/q114.webp",
     "optionImages": [],
     "answer": "C",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "数量规律",
     "difficulty": "入门",
     "finePoints": [
@@ -2843,7 +2843,7 @@
     "image": "/questions/beisen-2/q124.webp",
     "optionImages": [],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "属性规律",
     "difficulty": "提高",
     "finePoints": [
@@ -2911,7 +2911,7 @@
     "image": "/questions/beisen-2/q128.webp",
     "optionImages": [],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "位置规律",
     "difficulty": "提高",
     "finePoints": [
@@ -3386,10 +3386,11 @@
     "optionImages": [
       "/questions/beisen-2/q157-A.webp",
       "/questions/beisen-2/q157-B.webp",
-      "/questions/beisen-2/q157-C.webp"
+      "/questions/beisen-2/q157-C.webp",
+      "/questions/beisen-2/q157-D.webp"
     ],
     "answer": "C",
-    "optionCount": 3,
+    "optionCount": 4,
     "point": "样式规律",
     "difficulty": "入门",
     "finePoints": [
@@ -3451,10 +3452,11 @@
     "optionImages": [
       "/questions/beisen-2/q161-A.webp",
       "/questions/beisen-2/q161-B.webp",
-      "/questions/beisen-2/q161-C.webp"
+      "/questions/beisen-2/q161-C.webp",
+      "/questions/beisen-2/q161-D.webp"
     ],
     "answer": "A",
-    "optionCount": 3,
+    "optionCount": 4,
     "point": "位置规律",
     "difficulty": "提高",
     "finePoints": [
@@ -3517,17 +3519,18 @@
       "/questions/beisen-2/q167-A.webp",
       "/questions/beisen-2/q167-B.webp",
       "/questions/beisen-2/q167-C.webp",
-      "/questions/beisen-2/q167-D.webp"
+      "/questions/beisen-2/q167-D.webp",
+      "/questions/beisen-2/q167-E.webp"
     ],
-    "answer": "E",
-    "optionCount": 4,
+    "answer": "D",
+    "optionCount": 5,
     "point": "样式规律",
     "difficulty": "提高",
     "finePoints": [
       "加减同异",
       "线与点同位运算"
     ],
-    "analysis": "九宫格中圆心、外线按同位叠加/相消 因此选择 E。",
+    "analysis": "九宫格中圆心、外线按同位叠加/相消 因此选择 D。",
     "method": "题型：九宫格。先识别“加减同异”，再核对“线与点同位运算”，最后用其余元素排除干扰项。",
     "source": "题库2",
     "originalNumber": 167
@@ -3583,10 +3586,11 @@
       "/questions/beisen-2/q177-A.webp",
       "/questions/beisen-2/q177-B.webp",
       "/questions/beisen-2/q177-C.webp",
-      "/questions/beisen-2/q177-D.webp"
+      "/questions/beisen-2/q177-D.webp",
+      "/questions/beisen-2/q177-E.webp"
     ],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "样式规律",
     "difficulty": "提高",
     "finePoints": [
@@ -3693,10 +3697,11 @@
     "optionImages": [
       "/questions/beisen-2/q187-A.webp",
       "/questions/beisen-2/q187-B.webp",
-      "/questions/beisen-2/q187-C.webp"
+      "/questions/beisen-2/q187-C.webp",
+      "/questions/beisen-2/q187-D.webp"
     ],
     "answer": "D",
-    "optionCount": 3,
+    "optionCount": 4,
     "point": "样式规律",
     "difficulty": "强化",
     "finePoints": [
@@ -3761,7 +3766,7 @@
       "/questions/beisen-2/q193-C.webp",
       "/questions/beisen-2/q193-D.webp"
     ],
-    "answer": "E",
+    "answer": "D",
     "optionCount": 4,
     "point": "样式规律",
     "difficulty": "强化",
@@ -3769,7 +3774,7 @@
       "遍历",
       "多符号位置轮换"
     ],
-    "analysis": "星、月、太阳在小方格中逐格轮换 因此选择 E。",
+    "analysis": "星、月、太阳在小方格中逐格轮换 因此选择 D。",
     "method": "题型：顺推式/问号推理。先识别“遍历”，再核对“多符号位置轮换”，最后用其余元素排除干扰项。",
     "source": "题库2",
     "originalNumber": 193
@@ -3825,10 +3830,11 @@
     "optionImages": [
       "/questions/beisen-2/q198-A.webp",
       "/questions/beisen-2/q198-B.webp",
-      "/questions/beisen-2/q198-C.webp"
+      "/questions/beisen-2/q198-C.webp",
+      "/questions/beisen-2/q198-D.webp"
     ],
     "answer": "C",
-    "optionCount": 3,
+    "optionCount": 4,
     "point": "位置规律",
     "difficulty": "提高",
     "finePoints": [
@@ -4199,10 +4205,11 @@
     "optionImages": [
       "/questions/beisen-2/q224-A.webp",
       "/questions/beisen-2/q224-B.webp",
-      "/questions/beisen-2/q224-C.webp"
+      "/questions/beisen-2/q224-C.webp",
+      "/questions/beisen-2/q224-D.webp"
     ],
     "answer": "C",
-    "optionCount": 3,
+    "optionCount": 4,
     "point": "样式规律",
     "difficulty": "强化",
     "finePoints": [
@@ -4220,10 +4227,11 @@
     "optionImages": [
       "/questions/beisen-2/q225-A.webp",
       "/questions/beisen-2/q225-B.webp",
-      "/questions/beisen-2/q225-C.webp"
+      "/questions/beisen-2/q225-C.webp",
+      "/questions/beisen-2/q225-D.webp"
     ],
     "answer": "B",
-    "optionCount": 3,
+    "optionCount": 4,
     "point": "数量规律",
     "difficulty": "入门",
     "finePoints": [
@@ -4244,7 +4252,7 @@
       "/questions/beisen-2/q226-C.webp",
       "/questions/beisen-2/q226-D.webp"
     ],
-    "answer": "E",
+    "answer": "D",
     "optionCount": 4,
     "point": "样式规律",
     "difficulty": "强化",
@@ -4252,7 +4260,7 @@
       "加减同异",
       "线段拆分/重组"
     ],
-    "analysis": "线段组按同一拆分和保留关系完成类比 因此选择 E。",
+    "analysis": "线段组按同一拆分和保留关系完成类比 因此选择 D。",
     "method": "题型：两组式/类比。先识别“加减同异”，再核对“线段拆分/重组”，最后用其余元素排除干扰项。",
     "source": "题库2",
     "originalNumber": 226
@@ -4263,10 +4271,11 @@
     "optionImages": [
       "/questions/beisen-2/q227-A.webp",
       "/questions/beisen-2/q227-B.webp",
-      "/questions/beisen-2/q227-C.webp"
+      "/questions/beisen-2/q227-C.webp",
+      "/questions/beisen-2/q227-D.webp"
     ],
     "answer": "B",
-    "optionCount": 3,
+    "optionCount": 4,
     "point": "特殊规律",
     "difficulty": "强化",
     "finePoints": [
@@ -4284,10 +4293,12 @@
     "optionImages": [
       "/questions/beisen-2/q228-A.webp",
       "/questions/beisen-2/q228-B.webp",
-      "/questions/beisen-2/q228-C.webp"
+      "/questions/beisen-2/q228-C.webp",
+      "/questions/beisen-2/q228-D.webp",
+      "/questions/beisen-2/q228-E.webp"
     ],
     "answer": "A",
-    "optionCount": 3,
+    "optionCount": 5,
     "point": "样式规律",
     "difficulty": "提高",
     "finePoints": [
@@ -4328,10 +4339,11 @@
       "/questions/beisen-2/q230-A.webp",
       "/questions/beisen-2/q230-B.webp",
       "/questions/beisen-2/q230-C.webp",
-      "/questions/beisen-2/q230-D.webp"
+      "/questions/beisen-2/q230-D.webp",
+      "/questions/beisen-2/q230-E.webp"
     ],
     "answer": "A",
-    "optionCount": 4,
+    "optionCount": 5,
     "point": "样式规律",
     "difficulty": "提高",
     "finePoints": [
@@ -4371,10 +4383,11 @@
     "optionImages": [
       "/questions/beisen-2/q233-A.webp",
       "/questions/beisen-2/q233-B.webp",
-      "/questions/beisen-2/q233-C.webp"
+      "/questions/beisen-2/q233-C.webp",
+      "/questions/beisen-2/q233-D.webp"
     ],
     "answer": "A",
-    "optionCount": 3,
+    "optionCount": 4,
     "point": "位置规律",
     "difficulty": "提高",
     "finePoints": [

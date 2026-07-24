@@ -867,6 +867,100 @@ button.mode-card {
   margin: 0 28px 28px;
 }
 
+.material-category-card {
+  border-color: #9b7a25;
+  background: #fffdf4;
+}
+
+.material-category-card strong {
+  color: #84651b;
+}
+
+.material-question-card {
+  padding-top: 1px;
+}
+
+.material-prompt {
+  margin: 0;
+  padding: 26px 28px 22px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.85;
+  white-space: pre-wrap;
+}
+
+.material-chart-wrap {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: white;
+}
+
+.material-chart-wrap img {
+  max-height: 68vh;
+}
+
+.material-options {
+  padding: 22px 24px 26px;
+  display: grid;
+  gap: 10px;
+}
+
+.material-option-button {
+  min-height: 58px;
+  padding: 13px 16px;
+  border: 1px solid #cfd5d0;
+  border-radius: 12px;
+  background: white;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  align-items: start;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.material-option-button > strong {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: #f0f3ef;
+  display: grid;
+  place-items: center;
+}
+
+.material-option-button > span {
+  padding-top: 3px;
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+
+.material-option-button:hover:not(:disabled),
+.material-option-button.selected-choice {
+  border-color: var(--green);
+  background: var(--mint-pale);
+}
+
+.material-option-button.correct-choice {
+  border-color: var(--green);
+  box-shadow: inset 0 0 0 2px var(--green);
+}
+
+.material-option-button.correct-choice > strong {
+  background: var(--green);
+  color: white;
+}
+
+.material-option-button.wrong-choice {
+  border-color: var(--red);
+  background: var(--red-pale);
+}
+
+.material-option-button.wrong-choice > strong {
+  background: var(--red);
+  color: white;
+}
+
 @media (max-width: 880px) {
   .nav-links {
     display: none;
@@ -1006,6 +1100,27 @@ button.mode-card {
 
   .source-option-button {
     min-height: 132px;
+  }
+
+  .material-prompt {
+    padding: 20px 17px 17px;
+    font-size: 16px;
+  }
+
+  .material-chart-wrap {
+    padding: 8px;
+  }
+
+  .material-chart-wrap img {
+    max-height: none;
+  }
+
+  .material-options {
+    padding: 15px 14px 18px;
+  }
+
+  .material-option-button {
+    padding: 11px 12px;
   }
 
   .analysis-result {

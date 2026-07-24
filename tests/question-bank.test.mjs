@@ -8,14 +8,14 @@ test("records all 99 Bank 1 questions with PDF-source images", async () => {
   const page = await readFile(pageUrl, "utf8");
 
   assert.match(page, /题库1全部题目/);
-  assert.match(page, /q\$\{String\(id\)\.padStart\(3, "0"\)\}\.png/);
+  assert.match(page, /q\$\{String\(id\)\.padStart\(3, "0"\)\}\.webp/);
   assert.match(page, /answerLetters/);
   assert.match(page, /1-\$\{id\}/);
 
   for (const question of [1, 7, 57, 76, 83, 89, 99]) {
     await access(
       new URL(
-        `../public/questions/beisen-1/q${String(question).padStart(3, "0")}.png`,
+        `../public/questions/beisen-1/q${String(question).padStart(3, "0")}.webp`,
         import.meta.url,
       ),
     );

@@ -97,7 +97,7 @@ const questions: Question[] = answerLetters.map((answer, index) => {
   return {
     id,
     sourceId: `1-${id}`,
-    image: `/questions/beisen-1/q${String(id).padStart(3, "0")}.png`,
+    image: `/questions/beisen-1/q${String(id).padStart(3, "0")}.webp`,
     answer,
     optionCount: optionCountOverrides[id] ?? 4,
     point,

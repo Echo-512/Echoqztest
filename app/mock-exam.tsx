@@ -95,10 +95,13 @@ type HistorySummary = {
 };
 
 type MockView = "landing" | "preparing" | "intro" | "question" | "between" | "report";
+type FavoriteState = Record<ModuleKey, string[]>;
 
 type MockExamProps = {
   onHome: () => void;
   onPractice: () => void;
+  favorites: FavoriteState;
+  onToggleFavorite: (module: ModuleKey, sourceId: string) => void;
   onComplete: (
     outcomes: Array<{ module: ModuleKey; sourceId: string; isCorrect: boolean }>,
   ) => void;
@@ -487,7 +490,13 @@ function MockNav({
   );
 }
 
-export default function MockExam({ onHome, onPractice, onComplete }: MockExamProps) {
+export default function MockExam({
+  onHome,
+  onPractice,
+  favorites,
+  onToggleFavorite,
+  onComplete,
+}: MockExamProps) {
   const [view, setView] = useState<MockView>("landing");
   const [exam, setExam] = useState<ActiveExam | null>(null);
   const [resumableExam, setResumableExam] = useState<ActiveExam | null>(null);
@@ -1090,6 +1099,7 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
     activeQuestion
   ) {
     const choice = activeModule.selected[activeQuestionId];
+    const isFavorite = favorites[activeModuleKey].includes(activeQuestionId);
     return (
       <main className="practice-shell mock-exam-shell">
         <header className="mock-exam-header">
@@ -1131,6 +1141,15 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
             <em>
               {questionReady ? "计时中 · 提交后不可返回" : "题目完整显示后开始计时"}
             </em>
+            <button
+              className={`favorite-toggle ${isFavorite ? "is-favorite" : ""}`}
+              type="button"
+              aria-label={isFavorite ? "取消收藏本题" : "收藏本题"}
+              title={isFavorite ? "取消收藏本题" : "收藏本题"}
+              onClick={() => onToggleFavorite(activeModuleKey, activeQuestionId)}
+            >
+              {isFavorite ? "★" : "☆"}
+            </button>
           </div>
           <div className={`timed-question-frame ${questionReady ? "" : "is-loading"}`}>
           <article

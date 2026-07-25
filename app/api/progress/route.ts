@@ -6,6 +6,7 @@ import { practiceStates } from "../../../db/schema";
 type PracticePayload = {
   sessions: Record<string, unknown>;
   performance: Record<string, unknown>;
+  favorites?: Record<string, unknown>;
 };
 
 function routeError(error: unknown) {

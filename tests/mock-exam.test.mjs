@@ -51,6 +51,7 @@ test("starts both timers only after the new question is decoded and painted", as
 
 test("renders exactly the options present and keeps progress circles non-interactive", async () => {
   const mock = await readFile(mockUrl, "utf8");
+  const page = await readFile(pageUrl, "utf8");
   assert.match(mock, /graphic\.optionImages\.length === graphic\.optionCount/);
   assert.match(mock, /letters\.slice\(0, graphic\.optionCount\)\.map/);
   assert.match(mock, /textQuestion\.options\.map/);
@@ -59,6 +60,8 @@ test("renders exactly the options present and keeps progress circles non-interac
     mock,
     /mock-question-strip[\s\S]{0,700}onClick=\{\(\) =>.*current/,
   );
+  assert.match(page, /<section className="practice-question-strip"/);
+  assert.match(page, /Math\.floor\(activeSession\.current \/ 10\) \* 10/);
 });
 
 test("saves cloud history, supports review, and sends every mock error to the wrong book", async () => {
@@ -96,9 +99,24 @@ test("preloads upcoming practice questions and syncs progress for the signed-in 
   assert.match(page, /function preloadPracticeQueue/);
   assert.match(page, /practiceImageCache/);
   assert.match(page, /fetch\("\/api\/progress"/);
+  assert.match(page, /const payload: CloudPracticePayload = \{ sessions, performance, favorites \}/);
   assert.match(schema, /practiceStates/);
   assert.match(schema, /examDrafts/);
   assert.match(progressRoute, /getChatGPTUser/);
   assert.match(progressRoute, /user\.email/);
+  assert.match(progressRoute, /favorites\?/);
   assert.match(draftRoute, /getChatGPTUser/);
+});
+
+test("supports account-synced favorites in practice and mock exam", async () => {
+  const page = await readFile(pageUrl, "utf8");
+  const mock = await readFile(mockUrl, "utf8");
+
+  assert.match(page, /favorite-categories/);
+  assert.match(page, /function toggleFavorite/);
+  assert.match(page, /function startFavoritePractice/);
+  assert.match(page, /className=\{`favorite-toggle/);
+  assert.match(page, /favorites=\{favorites\}/);
+  assert.match(mock, /onToggleFavorite/);
+  assert.match(mock, /取消收藏本题/);
 });

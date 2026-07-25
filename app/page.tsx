@@ -8,7 +8,7 @@ import verbalQuestionData from "./verbal-questions.json";
 
 type Difficulty = "入门" | "提高" | "强化";
 type ModuleKey = "graphic" | "material" | "verbal";
-type PracticeContext = "normal" | "wrong";
+type PracticeContext = "normal" | "wrong" | "favorite";
 type Screen =
   | "home"
   | "categories"
@@ -18,7 +18,8 @@ type Screen =
   | "practice"
   | "result"
   | "wrong-categories"
-  | "wrong-dashboard";
+  | "wrong-dashboard"
+  | "favorite-categories";
 
 type GraphicQuestion = {
   sourceId: string;
@@ -83,10 +84,12 @@ type ModulePerformance = {
 };
 
 type PerformanceState = Record<ModuleKey, ModulePerformance>;
+type FavoriteState = Record<ModuleKey, string[]>;
 
 type CloudPracticePayload = {
   sessions: Record<string, SavedSession>;
   performance: PerformanceState;
+  favorites: FavoriteState;
 };
 
 const questions = questionData as GraphicQuestion[];
@@ -115,12 +118,16 @@ const letters = ["A", "B", "C", "D", "E", "F"];
 const sessionStorageKeys: Record<`${ModuleKey}-${PracticeContext}`, string> = {
   "graphic-normal": "qiuzhao-xingce-graphic-session-v1",
   "graphic-wrong": "qiuzhao-xingce-graphic-wrong-session-v1",
+  "graphic-favorite": "qiuzhao-xingce-graphic-favorite-session-v1",
   "material-normal": "qiuzhao-xingce-material-session-v1",
   "material-wrong": "qiuzhao-xingce-material-wrong-session-v1",
+  "material-favorite": "qiuzhao-xingce-material-favorite-session-v1",
   "verbal-normal": "qiuzhao-xingce-verbal-session-v1",
   "verbal-wrong": "qiuzhao-xingce-verbal-wrong-session-v1",
+  "verbal-favorite": "qiuzhao-xingce-verbal-favorite-session-v1",
 };
 const performanceStorageKey = "qiuzhao-xingce-performance-v1";
+const favoritesStorageKey = "qiuzhao-xingce-favorites-v1";
 const cloudProgressUpdatedAtKey = "qiuzhao-xingce-cloud-progress-updated-v1";
 const preloadAheadCount = 10;
 const practiceImageCache = new Map<string, Promise<void>>();
@@ -128,6 +135,11 @@ const initialPerformance: PerformanceState = {
   graphic: { attempts: 0, correct: 0, wrongIds: [] },
   material: { attempts: 0, correct: 0, wrongIds: [] },
   verbal: { attempts: 0, correct: 0, wrongIds: [] },
+};
+const initialFavorites: FavoriteState = {
+  graphic: [],
+  material: [],
+  verbal: [],
 };
 const moduleNames: Record<ModuleKey, string> = {
   graphic: "图形推理",
@@ -242,7 +254,7 @@ function normalizeSessions(value: unknown) {
     const parsed = raw as SavedSession;
     if (
       !["graphic", "material", "verbal"].includes(parsed.module) ||
-      !["normal", "wrong"].includes(parsed.context)
+      !["normal", "wrong", "favorite"].includes(parsed.context)
     ) {
       continue;
     }
@@ -260,6 +272,16 @@ function normalizeSessions(value: unknown) {
     };
   }
   return normalized;
+}
+
+function mergeFavorites(value: unknown): FavoriteState {
+  if (!value || typeof value !== "object") return initialFavorites;
+  const parsed = value as Partial<FavoriteState>;
+  return {
+    graphic: [...new Set(parsed.graphic?.filter((id) => graphicById.has(id)) ?? [])],
+    material: [...new Set(parsed.material?.filter((id) => materialById.has(id)) ?? [])],
+    verbal: [...new Set(parsed.verbal?.filter((id) => verbalById.has(id)) ?? [])],
+  };
 }
 
 function mergePerformance(value: unknown): PerformanceState {
@@ -306,6 +328,7 @@ export default function Home() {
   const [activeSession, setActiveSession] = useState<SavedSession | null>(null);
   const [savedSessions, setSavedSessions] = useState<Record<string, SavedSession>>({});
   const [performance, setPerformance] = useState<PerformanceState>(initialPerformance);
+  const [favorites, setFavorites] = useState<FavoriteState>(initialFavorites);
   const [persistenceLoaded, setPersistenceLoaded] = useState(false);
   const [cloudSyncReady, setCloudSyncReady] = useState(false);
   const [wrongModule, setWrongModule] = useState<ModuleKey>("graphic");
@@ -363,15 +386,23 @@ export default function Home() {
         }
       }
       let localPerformance = initialPerformance;
+      let localFavorites = initialFavorites;
       try {
         const raw = window.localStorage.getItem(performanceStorageKey);
         if (raw) localPerformance = mergePerformance(JSON.parse(raw));
       } catch {
         window.localStorage.removeItem(performanceStorageKey);
       }
+      try {
+        const raw = window.localStorage.getItem(favoritesStorageKey);
+        if (raw) localFavorites = mergeFavorites(JSON.parse(raw));
+      } catch {
+        window.localStorage.removeItem(favoritesStorageKey);
+      }
 
       let sessions = localSessions;
       let nextPerformance = localPerformance;
+      let nextFavorites = localFavorites;
       const localUpdatedAt =
         window.localStorage.getItem(cloudProgressUpdatedAtKey) ?? "";
       lastCloudUpdatedAtRef.current = localUpdatedAt;
@@ -389,6 +420,7 @@ export default function Home() {
           ) {
             sessions = normalizeSessions(result.payload.sessions);
             nextPerformance = mergePerformance(result.payload.performance);
+            nextFavorites = mergeFavorites(result.payload.favorites);
             lastCloudUpdatedAtRef.current = result.updatedAt;
             window.localStorage.setItem(cloudProgressUpdatedAtKey, result.updatedAt);
           }
@@ -399,6 +431,7 @@ export default function Home() {
       if (cancelled) return;
       setSavedSessions(sessions);
       setPerformance(nextPerformance);
+      setFavorites(nextFavorites);
       setPersistenceLoaded(true);
       setCloudSyncReady(true);
     };
@@ -412,6 +445,11 @@ export default function Home() {
     if (!persistenceLoaded) return;
     window.localStorage.setItem(performanceStorageKey, JSON.stringify(performance));
   }, [performance, persistenceLoaded]);
+
+  useEffect(() => {
+    if (!persistenceLoaded) return;
+    window.localStorage.setItem(favoritesStorageKey, JSON.stringify(favorites));
+  }, [favorites, persistenceLoaded]);
 
   useEffect(() => {
     if (!activeSession || !persistenceLoaded) return;
@@ -430,7 +468,7 @@ export default function Home() {
     if (currentSession) {
       sessions[storageKey(currentSession.module, currentSession.context)] = currentSession;
     }
-    const payload: CloudPracticePayload = { sessions, performance };
+    const payload: CloudPracticePayload = { sessions, performance, favorites };
     cloudPayloadRef.current = payload;
     const localUpdatedAt = new Date().toISOString();
     window.localStorage.setItem(cloudProgressUpdatedAtKey, localUpdatedAt);
@@ -454,6 +492,7 @@ export default function Home() {
     activeSessionRevision,
     savedSessions,
     performance,
+    favorites,
     persistenceLoaded,
     cloudSyncReady,
   ]);
@@ -511,6 +550,7 @@ export default function Home() {
         const sessions = normalizeSessions(result.payload.sessions);
         setSavedSessions(sessions);
         setPerformance(mergePerformance(result.payload.performance));
+        setFavorites(mergeFavorites(result.payload.favorites));
         setActiveSession((current) => {
           if (!current) return current;
           return sessions[storageKey(current.module, current.context)] ?? current;
@@ -752,6 +792,7 @@ export default function Home() {
 
   function practiceBackScreen() {
     if (activeSession?.context === "wrong") return "wrong-dashboard";
+    if (activeSession?.context === "favorite") return "favorite-categories";
     if (activeSession?.module === "graphic") return "graphic-mode";
     if (activeSession?.module === "verbal") return "verbal-mode";
     return "categories";
@@ -768,6 +809,25 @@ export default function Home() {
     if (resumeSession(module, "wrong", wrongIds)) return;
     const pool = bankFor(module).filter((question) => wrongIds.has(question.sourceId));
     startSession(module, pool, "wrong");
+  }
+
+  function toggleFavorite(module: ModuleKey, sourceId: string) {
+    setFavorites((current) => {
+      const ids = new Set(current[module]);
+      if (ids.has(sourceId)) ids.delete(sourceId);
+      else ids.add(sourceId);
+      return { ...current, [module]: [...ids] };
+    });
+  }
+
+  function startFavoritePractice(module: ModuleKey) {
+    const favoriteIds = new Set(favorites[module]);
+    if (!favoriteIds.size) return;
+    if (resumeSession(module, "favorite", favoriteIds)) return;
+    const pool = bankFor(module).filter((question) =>
+      favoriteIds.has(question.sourceId),
+    );
+    startSession(module, pool, "favorite");
   }
 
   function recordMockOutcomes(
@@ -1015,6 +1075,38 @@ export default function Home() {
     );
   }
 
+  if (screen === "favorite-categories") {
+    return (
+      <main className="inner-page">
+        <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
+        <section className="page-heading">
+          <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
+          <span className="eyebrow">FAVORITES</span>
+          <h1>我的收藏夹</h1>
+          <p>做题时点击黄色星星即可收藏；收藏题会按模块同步到手机和电脑。</p>
+        </section>
+        <section className="category-grid">
+          {(["graphic", "material", "verbal"] as ModuleKey[]).map((module, index) => (
+            <button
+              className="category-card active-card favorite-category-card"
+              type="button"
+              key={module}
+              disabled={!favorites[module].length}
+              onClick={() => startFavoritePractice(module)}
+            >
+              <span>0{index + 1}</span>
+              <h2>{moduleNames[module]}</h2>
+              <p>当前收藏 {favorites[module].length} 道，答对后仍会保留，可反复训练。</p>
+              <strong>
+                {favorites[module].length ? "进入收藏题练习 →" : "暂时没有收藏"}
+              </strong>
+            </button>
+          ))}
+        </section>
+      </main>
+    );
+  }
+
   if (screen === "wrong-dashboard") {
     const stats = performance[wrongModule];
     const accuracy = stats.attempts
@@ -1091,6 +1183,8 @@ export default function Home() {
         onHome={goHome}
         onPractice={() => goTo("categories")}
         onComplete={recordMockOutcomes}
+        favorites={favorites}
+        onToggleFavorite={toggleFavorite}
       />
     );
   }
@@ -1102,6 +1196,16 @@ export default function Home() {
     const optionCount = activeQuestion.optionCount;
     const questionTime =
       activeSession.questionTimes[activeId] ?? activeSession.currentSeconds;
+    const isFavorite = favorites[activeSession.module].includes(activeId);
+    const groupStart = Math.floor(activeSession.current / 10) * 10;
+    const groupEnd = Math.min(
+      groupStart + 10,
+      activeSession.questionIds.length,
+    );
+    const groupIndices = Array.from(
+      { length: groupEnd - groupStart },
+      (_, index) => groupStart + index,
+    );
 
     const optionStateClass = (letter: string) => {
       const chosen = choice === letter;
@@ -1122,21 +1226,32 @@ export default function Home() {
           <div className="practice-progress">
             <span>
               {activeSession.context === "wrong" ? "错题集 · " : ""}
+              {activeSession.context === "favorite" ? "收藏夹 · " : ""}
               {moduleNames[activeSession.module]} · {activeSession.current + 1}/{activeSession.questionIds.length}
             </span>
-            <div>
-              <i
-                style={{
-                  width: `${((activeSession.current + 1) / activeSession.questionIds.length) * 100}%`,
-                }}
-              />
-            </div>
           </div>
           <div className="timer" aria-label={`本题用时 ${formatTime(questionTime)}`}>
             <small>{answered ? "本题用时" : "本题计时"}</small>
             <strong>{formatTime(questionTime)}</strong>
           </div>
         </header>
+
+        <section className="practice-question-strip" aria-label="本组题目进度">
+          {groupIndices.map((index) => (
+            <span
+              key={activeSession.questionIds[index]}
+              className={
+                index < activeSession.current
+                  ? "completed"
+                  : index === activeSession.current
+                    ? "current"
+                    : ""
+              }
+            >
+              {index + 1}
+            </span>
+          ))}
+        </section>
 
         <section className="practice-content">
           <div className="question-meta">
@@ -1149,6 +1264,15 @@ export default function Home() {
                 ? "计时中 · 提交前不会显示答案"
                 : "新题加载中 · 当前暂停计时"}
             </em>
+            <button
+              className={`favorite-toggle ${isFavorite ? "is-favorite" : ""}`}
+              type="button"
+              aria-label={isFavorite ? "取消收藏本题" : "收藏本题"}
+              title={isFavorite ? "取消收藏本题" : "收藏本题"}
+              onClick={() => toggleFavorite(activeSession.module, activeId)}
+            >
+              {isFavorite ? "★" : "☆"}
+            </button>
           </div>
           <div className={`timed-question-frame ${practiceQuestionReady ? "" : "is-loading"}`}>
           <article
@@ -1338,6 +1462,10 @@ export default function Home() {
               <button className="primary-button" type="button" onClick={() => openWrongDashboard(activeSession.module)}>
                 返回错题评估
               </button>
+            ) : activeSession.context === "favorite" ? (
+              <button className="primary-button" type="button" onClick={() => goTo("favorite-categories")}>
+                返回收藏夹
+              </button>
             ) : (
               <button className="primary-button" type="button" onClick={() => goTo(practiceBackScreen())}>
                 返回练习方式
@@ -1362,6 +1490,7 @@ export default function Home() {
             <button className="primary-button" type="button" onClick={() => goTo("categories")}>进入分类刷题 →</button>
             <button className="primary-button secondary-green" type="button" onClick={() => goTo("mock")}>进入模考 →</button>
             <button className="primary-button secondary-green" type="button" onClick={() => goTo("wrong-categories")}>错题集 →</button>
+            <button className="primary-button favorite-entry" type="button" onClick={() => goTo("favorite-categories")}>收藏夹 ★</button>
             <a href="#structure">看看题库结构</a>
           </div>
         </div>
@@ -1395,6 +1524,7 @@ export default function Home() {
           <article><span>02</span><h3>材料分析</h3><p>按原题顺序练习 {materialQuestions.length} 道去重题，题干与图表分开呈现。</p></article>
           <article><span>03</span><h3>文字推理</h3><p>随机或按类型练习 {verbalQuestions.length} 道去重题，提交后显示细化考点。</p></article>
           <article><span>04</span><h3>错题集</h3><p>三大模块分别统计；错题即时加入，答对后自动移出。</p></article>
+          <article><span>05</span><h3>收藏夹</h3><p>三大模块分别收藏；做对也会保留，适合反复训练耗时题与犹豫题。</p></article>
         </div>
       </section>
     </main>

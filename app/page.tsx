@@ -84,6 +84,11 @@ type ModulePerformance = {
 
 type PerformanceState = Record<ModuleKey, ModulePerformance>;
 
+type CloudPracticePayload = {
+  sessions: Record<string, SavedSession>;
+  performance: PerformanceState;
+};
+
 const questions = questionData as GraphicQuestion[];
 const materialQuestions = materialQuestionData as MaterialQuestion[];
 const verbalQuestions = verbalQuestionData as VerbalQuestion[];
@@ -116,6 +121,9 @@ const sessionStorageKeys: Record<`${ModuleKey}-${PracticeContext}`, string> = {
   "verbal-wrong": "qiuzhao-xingce-verbal-wrong-session-v1",
 };
 const performanceStorageKey = "qiuzhao-xingce-performance-v1";
+const cloudProgressUpdatedAtKey = "qiuzhao-xingce-cloud-progress-updated-v1";
+const preloadAheadCount = 10;
+const practiceImageCache = new Map<string, Promise<void>>();
 const initialPerformance: PerformanceState = {
   graphic: { attempts: 0, correct: 0, wrongIds: [] },
   material: { attempts: 0, correct: 0, wrongIds: [] },
@@ -175,7 +183,9 @@ function practiceImageAssets(module: ModuleKey, question: BankQuestion) {
 }
 
 function preloadPracticeImage(url: string) {
-  return new Promise<void>((resolve) => {
+  const cached = practiceImageCache.get(url);
+  if (cached) return cached;
+  const pending = new Promise<void>((resolve) => {
     const image = new window.Image();
     const finish = () => {
       if (typeof image.decode === "function") {
@@ -188,6 +198,8 @@ function preloadPracticeImage(url: string) {
     image.onerror = () => resolve();
     image.src = url;
   });
+  practiceImageCache.set(url, pending);
+  return pending;
 }
 
 async function waitForPracticeQuestion(module: ModuleKey, question: BankQuestion) {
@@ -195,6 +207,18 @@ async function waitForPracticeQuestion(module: ModuleKey, question: BankQuestion
   await new Promise<void>((resolve) => {
     window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
   });
+}
+
+function preloadPracticeQueue(session: SavedSession, fromIndex = session.current) {
+  const ids = session.questionIds.slice(
+    fromIndex,
+    Math.min(session.questionIds.length, fromIndex + preloadAheadCount + 1),
+  );
+  const urls = ids.flatMap((id) => {
+    const question = questionFor(session.module, id);
+    return question ? practiceImageAssets(session.module, question) : [];
+  });
+  void Promise.all([...new Set(urls)].map(preloadPracticeImage));
 }
 
 function emptySession(module: ModuleKey, context: PracticeContext, pool: BankQuestion[]): SavedSession {
@@ -208,6 +232,34 @@ function emptySession(module: ModuleKey, context: PracticeContext, pool: BankQue
     questionTimes: {},
     currentSeconds: 0,
   };
+}
+
+function normalizeSessions(value: unknown) {
+  const normalized: Record<string, SavedSession> = {};
+  if (!value || typeof value !== "object") return normalized;
+  for (const [key, raw] of Object.entries(value as Record<string, unknown>)) {
+    if (!raw || typeof raw !== "object") continue;
+    const parsed = raw as SavedSession;
+    if (
+      !["graphic", "material", "verbal"].includes(parsed.module) ||
+      !["normal", "wrong"].includes(parsed.context)
+    ) {
+      continue;
+    }
+    const validIds =
+      parsed.questionIds?.filter((id) => Boolean(questionFor(parsed.module, id))) ?? [];
+    if (!validIds.length) continue;
+    normalized[key] = {
+      ...parsed,
+      questionIds: validIds,
+      current: Math.min(Math.max(0, parsed.current ?? 0), validIds.length - 1),
+      selected: parsed.selected ?? {},
+      submitted: parsed.submitted ?? {},
+      questionTimes: parsed.questionTimes ?? {},
+      currentSeconds: Math.max(0, parsed.currentSeconds ?? 0),
+    };
+  }
+  return normalized;
 }
 
 function mergePerformance(value: unknown): PerformanceState {
@@ -255,9 +307,13 @@ export default function Home() {
   const [savedSessions, setSavedSessions] = useState<Record<string, SavedSession>>({});
   const [performance, setPerformance] = useState<PerformanceState>(initialPerformance);
   const [persistenceLoaded, setPersistenceLoaded] = useState(false);
+  const [cloudSyncReady, setCloudSyncReady] = useState(false);
   const [wrongModule, setWrongModule] = useState<ModuleKey>("graphic");
   const [practiceQuestionReady, setPracticeQuestionReady] = useState(false);
   const practiceTimerEnabledRef = useRef(false);
+  const activeSessionRef = useRef<SavedSession | null>(null);
+  const cloudPayloadRef = useRef<CloudPracticePayload | null>(null);
+  const lastCloudUpdatedAtRef = useRef("");
 
   const activeId =
     activeSession?.questionIds[activeSession.current] ?? questions[0].sourceId;
@@ -266,6 +322,20 @@ export default function Home() {
     : questions[0];
   const answered = Boolean(activeSession?.submitted[activeId]);
   const activeModule = activeSession?.module;
+  const activeSessionRevision = activeSession
+    ? JSON.stringify([
+        activeSession.module,
+        activeSession.context,
+        activeSession.questionIds,
+        activeSession.current,
+        activeSession.selected,
+        activeSession.submitted,
+        activeSession.questionTimes,
+      ])
+    : "";
+  const preloadSessionRevision = activeSession
+    ? `${activeSession.module}:${activeSession.current}:${activeSession.questionIds.join("|")}`
+    : "";
 
   const savedGraphic =
     activeSession?.module === "graphic" && activeSession.context === "normal"
@@ -281,30 +351,61 @@ export default function Home() {
       : savedSessions[storageKey("verbal", "normal")];
 
   useEffect(() => {
-    const loadedSessions: Record<string, SavedSession> = {};
-    for (const key of Object.values(sessionStorageKeys)) {
-      try {
-        const raw = window.localStorage.getItem(key);
-        if (!raw) continue;
-        const parsed = JSON.parse(raw) as SavedSession;
-        const validIds =
-          parsed.questionIds?.filter((id) => Boolean(questionFor(parsed.module, id))) ?? [];
-        if (!validIds.length) continue;
-        loadedSessions[key] = { ...parsed, questionIds: validIds };
-      } catch {
-        window.localStorage.removeItem(key);
+    let cancelled = false;
+    const hydrate = async () => {
+      const localSessions: Record<string, SavedSession> = {};
+      for (const key of Object.values(sessionStorageKeys)) {
+        try {
+          const raw = window.localStorage.getItem(key);
+          if (raw) Object.assign(localSessions, normalizeSessions({ [key]: JSON.parse(raw) }));
+        } catch {
+          window.localStorage.removeItem(key);
+        }
       }
-    }
-    window.setTimeout(() => {
-      setSavedSessions(loadedSessions);
+      let localPerformance = initialPerformance;
       try {
         const raw = window.localStorage.getItem(performanceStorageKey);
-        if (raw) setPerformance(mergePerformance(JSON.parse(raw)));
+        if (raw) localPerformance = mergePerformance(JSON.parse(raw));
       } catch {
         window.localStorage.removeItem(performanceStorageKey);
       }
+
+      let sessions = localSessions;
+      let nextPerformance = localPerformance;
+      const localUpdatedAt =
+        window.localStorage.getItem(cloudProgressUpdatedAtKey) ?? "";
+      lastCloudUpdatedAtRef.current = localUpdatedAt;
+      try {
+        const response = await fetch("/api/progress", { cache: "no-store" });
+        if (response.ok) {
+          const result = (await response.json()) as {
+            payload?: CloudPracticePayload | null;
+            updatedAt?: string | null;
+          };
+          if (
+            result.payload &&
+            result.updatedAt &&
+            (!localUpdatedAt || result.updatedAt >= localUpdatedAt)
+          ) {
+            sessions = normalizeSessions(result.payload.sessions);
+            nextPerformance = mergePerformance(result.payload.performance);
+            lastCloudUpdatedAtRef.current = result.updatedAt;
+            window.localStorage.setItem(cloudProgressUpdatedAtKey, result.updatedAt);
+          }
+        }
+      } catch {
+        // Offline/local preview keeps the most recent device copy.
+      }
+      if (cancelled) return;
+      setSavedSessions(sessions);
+      setPerformance(nextPerformance);
       setPersistenceLoaded(true);
-    }, 0);
+      setCloudSyncReady(true);
+    };
+    void hydrate();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -319,6 +420,45 @@ export default function Home() {
   }, [activeSession, persistenceLoaded]);
 
   useEffect(() => {
+    activeSessionRef.current = activeSession;
+  }, [activeSession]);
+
+  useEffect(() => {
+    if (!persistenceLoaded || !cloudSyncReady) return;
+    const sessions = { ...savedSessions };
+    const currentSession = activeSessionRef.current;
+    if (currentSession) {
+      sessions[storageKey(currentSession.module, currentSession.context)] = currentSession;
+    }
+    const payload: CloudPracticePayload = { sessions, performance };
+    cloudPayloadRef.current = payload;
+    const localUpdatedAt = new Date().toISOString();
+    window.localStorage.setItem(cloudProgressUpdatedAtKey, localUpdatedAt);
+    const timer = window.setTimeout(() => {
+      fetch("/api/progress", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ payload }),
+        keepalive: true,
+      })
+        .then((response) => (response.ok ? response.json() : Promise.reject()))
+        .then((result: { updatedAt?: string }) => {
+          if (!result.updatedAt) return;
+          lastCloudUpdatedAtRef.current = result.updatedAt;
+          window.localStorage.setItem(cloudProgressUpdatedAtKey, result.updatedAt);
+        })
+        .catch(() => undefined);
+    }, 700);
+    return () => window.clearTimeout(timer);
+  }, [
+    activeSessionRevision,
+    savedSessions,
+    performance,
+    persistenceLoaded,
+    cloudSyncReady,
+  ]);
+
+  useEffect(() => {
     if (!activeSession) return;
     const flush = () => {
       window.localStorage.setItem(
@@ -327,7 +467,18 @@ export default function Home() {
       );
     };
     const onVisibilityChange = () => {
-      if (document.visibilityState === "hidden") flush();
+      if (document.visibilityState === "hidden") {
+        flush();
+        const payload = cloudPayloadRef.current;
+        if (payload) {
+          fetch("/api/progress", {
+            method: "PUT",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ payload }),
+            keepalive: true,
+          }).catch(() => undefined);
+        }
+      }
     };
     window.addEventListener("beforeunload", flush);
     document.addEventListener("visibilitychange", onVisibilityChange);
@@ -336,6 +487,52 @@ export default function Home() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [activeSession]);
+
+  useEffect(() => {
+    if (!cloudSyncReady) return;
+    let pulling = false;
+    const pullLatest = async () => {
+      if (pulling || document.visibilityState === "hidden") return;
+      pulling = true;
+      try {
+        const response = await fetch("/api/progress", { cache: "no-store" });
+        if (!response.ok) return;
+        const result = (await response.json()) as {
+          payload?: CloudPracticePayload | null;
+          updatedAt?: string | null;
+        };
+        if (
+          !result.payload ||
+          !result.updatedAt ||
+          result.updatedAt <= lastCloudUpdatedAtRef.current
+        ) {
+          return;
+        }
+        const sessions = normalizeSessions(result.payload.sessions);
+        setSavedSessions(sessions);
+        setPerformance(mergePerformance(result.payload.performance));
+        setActiveSession((current) => {
+          if (!current) return current;
+          return sessions[storageKey(current.module, current.context)] ?? current;
+        });
+        lastCloudUpdatedAtRef.current = result.updatedAt;
+        window.localStorage.setItem(cloudProgressUpdatedAtKey, result.updatedAt);
+      } catch {
+        // The local copy remains usable while offline.
+      } finally {
+        pulling = false;
+      }
+    };
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") void pullLatest();
+    };
+    window.addEventListener("focus", pullLatest);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.removeEventListener("focus", pullLatest);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [cloudSyncReady]);
 
   useEffect(() => {
     if (screen !== "practice" || !activeModule || !activeQuestion) {
@@ -354,6 +551,15 @@ export default function Home() {
       practiceTimerEnabledRef.current = false;
     };
   }, [screen, activeId, activeModule, activeQuestion]);
+
+  useEffect(() => {
+    const currentSession = activeSessionRef.current;
+    if (screen !== "practice" || !currentSession) return;
+    preloadPracticeQueue(currentSession, currentSession.current + 1);
+  }, [
+    screen,
+    preloadSessionRevision,
+  ]);
 
   useEffect(() => {
     if (
@@ -397,9 +603,17 @@ export default function Home() {
     context: PracticeContext = "normal",
   ) {
     if (!pool.length) return;
+    if (activeSession) {
+      setSavedSessions((sessions) => ({
+        ...sessions,
+        [storageKey(activeSession.module, activeSession.context)]: activeSession,
+      }));
+    }
     practiceTimerEnabledRef.current = false;
     setPracticeQuestionReady(false);
-    setActiveSession(emptySession(module, context, pool));
+    const session = emptySession(module, context, pool);
+    preloadPracticeQueue(session, 0);
+    setActiveSession(session);
     goTo("practice");
   }
 
@@ -416,6 +630,12 @@ export default function Home() {
       window.localStorage.removeItem(storageKey(module, context));
     }
     if (!saved) return false;
+    if (activeSession) {
+      setSavedSessions((sessions) => ({
+        ...sessions,
+        [storageKey(activeSession.module, activeSession.context)]: activeSession,
+      }));
+    }
     const currentSourceId = saved.questionIds[saved.current];
     const validIds = saved.questionIds.filter(
       (id) => Boolean(questionFor(module, id)) && (!allowedIds || allowedIds.has(id)),
@@ -425,7 +645,9 @@ export default function Home() {
     const current = currentIndex >= 0 ? currentIndex : Math.min(saved.current, validIds.length - 1);
     practiceTimerEnabledRef.current = false;
     setPracticeQuestionReady(false);
-    setActiveSession({ ...saved, module, context, questionIds: validIds, current });
+    const session = { ...saved, module, context, questionIds: validIds, current };
+    preloadPracticeQueue(session, current);
+    setActiveSession(session);
     goTo("practice");
     return true;
   }
@@ -1162,7 +1384,7 @@ export default function Home() {
             <div><span>材料分析</span><strong>{materialQuestions.length} 题</strong></div>
             <div><span>文字推理</span><strong>{verbalQuestions.length} 题</strong></div>
           </div>
-          <div className="board-footer"><span>答案提交后显示</span><span>进度与错题即时保存</span></div>
+          <div className="board-footer"><span>答案提交后显示</span><span>同账号手机 / 电脑自动同步</span></div>
         </aside>
       </section>
 

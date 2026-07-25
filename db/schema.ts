@@ -20,3 +20,15 @@ export const examAttempts = sqliteTable(
     ),
   ],
 );
+
+export const practiceStates = sqliteTable("practice_states", {
+  userEmail: text("user_email").primaryKey(),
+  payloadJson: text("payload_json").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const examDrafts = sqliteTable("exam_drafts", {
+  userEmail: text("user_email").primaryKey(),
+  payloadJson: text("payload_json").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});

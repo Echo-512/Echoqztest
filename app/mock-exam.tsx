@@ -55,7 +55,6 @@ type ActiveModule = {
   correct: Record<string, boolean>;
   questionTimes: Record<string, number>;
   currentSeconds: number;
-  remainingSeconds: number;
   sectionElapsed: number;
   completed: boolean;
 };
@@ -124,9 +123,10 @@ const moduleNames: Record<ModuleKey, string> = {
   verbal: "文字推理",
 };
 const activeExamStorageKey = "qiuzhao-xingce-active-mock-v1";
+const activeExamUpdatedAtKey = "qiuzhao-xingce-active-mock-updated-v1";
 const localHistoryStorageKey = "qiuzhao-xingce-mock-history-cache-v1";
 const lastExamQuestionIdsKey = "qiuzhao-xingce-last-mock-questions-v1";
-const sectionSeconds = 10 * 60;
+const questionSeconds = 70;
 
 function shuffle<T>(items: T[]) {
   const copy = [...items];
@@ -279,7 +279,6 @@ function emptyModule(questions: BankQuestion[]): ActiveModule {
     correct: {},
     questionTimes: {},
     currentSeconds: 0,
-    remainingSeconds: sectionSeconds,
     sectionElapsed: 0,
     completed: false,
   };
@@ -497,12 +496,15 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
   const [history, setHistory] = useState<HistorySummary[]>([]);
   const [localRecords, setLocalRecords] = useState<CompletedExam[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [draftSyncReady, setDraftSyncReady] = useState(false);
   const mockTimerEnabledRef = useRef(false);
   const autoFinishRef = useRef<() => void>(() => undefined);
+  const examRef = useRef<ActiveExam | null>(null);
+  const lastDraftUpdatedAtRef = useRef("");
 
   const activeModuleKey = exam?.moduleOrder[exam.activeModuleIndex];
   const activeModule = activeModuleKey ? exam?.modules[activeModuleKey] : undefined;
-  const activeRemainingSeconds = activeModule?.remainingSeconds;
+  const activeQuestionSeconds = activeModule?.currentSeconds;
   const activeQuestionId =
     activeModule?.questionIds[activeModule.current] ?? "";
   const activeQuestion =
@@ -512,6 +514,7 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
 
   useEffect(() => {
     let cachedRecords: CompletedExam[] = [];
+    let localDraft: ActiveExam | null = null;
     try {
       const cached = window.localStorage.getItem(localHistoryStorageKey);
       if (cached) cachedRecords = JSON.parse(cached) as CompletedExam[];
@@ -519,6 +522,7 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
       if (active) {
         const parsed = JSON.parse(active) as unknown;
         if (validActiveExam(parsed)) {
+          localDraft = parsed;
           window.setTimeout(() => setResumableExam(parsed), 0);
         }
       }
@@ -547,12 +551,86 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
       })
       .catch(() => undefined)
       .finally(() => setHistoryLoading(false));
+
+    const localDraftUpdatedAt =
+      window.localStorage.getItem(activeExamUpdatedAtKey) ?? "";
+    lastDraftUpdatedAtRef.current = localDraftUpdatedAt;
+    fetch("/api/exams/draft", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((payload: { draft?: unknown; updatedAt?: string | null }) => {
+        if (
+          payload.updatedAt &&
+          payload.updatedAt >= localDraftUpdatedAt &&
+          validActiveExam(payload.draft)
+        ) {
+          setResumableExam(payload.draft);
+          window.localStorage.setItem(
+            activeExamStorageKey,
+            JSON.stringify(payload.draft),
+          );
+          window.localStorage.setItem(activeExamUpdatedAtKey, payload.updatedAt);
+          lastDraftUpdatedAtRef.current = payload.updatedAt;
+        } else if (localDraft) {
+          setResumableExam(localDraft);
+        }
+      })
+      .catch(() => undefined)
+      .finally(() => setDraftSyncReady(true));
   }, []);
 
   useEffect(() => {
     if (!exam) return;
+    examRef.current = exam;
     window.localStorage.setItem(activeExamStorageKey, JSON.stringify(exam));
   }, [exam]);
+
+  useEffect(() => {
+    const draft = examRef.current;
+    if (!draft || !draftSyncReady) return;
+    const updatedAt = new Date().toISOString();
+    window.localStorage.setItem(activeExamUpdatedAtKey, updatedAt);
+    const timer = window.setTimeout(() => {
+      fetch("/api/exams/draft", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ draft }),
+        keepalive: true,
+      })
+        .then((response) => (response.ok ? response.json() : Promise.reject()))
+        .then((payload: { updatedAt?: string }) => {
+          if (!payload.updatedAt) return;
+          lastDraftUpdatedAtRef.current = payload.updatedAt;
+          window.localStorage.setItem(activeExamUpdatedAtKey, payload.updatedAt);
+        })
+        .catch(() => undefined);
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [
+    draftSyncReady,
+    exam?.id,
+    exam?.phase,
+    exam?.activeModuleIndex,
+    activeModuleKey,
+    activeQuestionId,
+    activeModule?.selected,
+    activeModule?.answers,
+    activeModule?.questionTimes,
+  ]);
+
+  useEffect(() => {
+    if (!draftSyncReady) return;
+    const timer = window.setInterval(() => {
+      const draft = examRef.current;
+      if (!draft) return;
+      fetch("/api/exams/draft", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ draft }),
+        keepalive: true,
+      }).catch(() => undefined);
+    }, 10_000);
+    return () => window.clearInterval(timer);
+  }, [draftSyncReady]);
 
   useEffect(() => {
     if (view !== "question" || !activeModuleKey || !activeQuestion) {
@@ -593,8 +671,8 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
         if (!currentExam || currentExam.phase !== "question") return currentExam;
         const moduleKey = currentExam.moduleOrder[currentExam.activeModuleIndex];
         const current = currentExam.modules[moduleKey];
-        if (current.remainingSeconds <= 0) return currentExam;
-        const appliedDelta = Math.min(delta, current.remainingSeconds);
+        if (current.currentSeconds >= questionSeconds) return currentExam;
+        const appliedDelta = Math.min(delta, questionSeconds - current.currentSeconds);
         return {
           ...currentExam,
           modules: {
@@ -602,7 +680,6 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
             [moduleKey]: {
               ...current,
               currentSeconds: current.currentSeconds + appliedDelta,
-              remainingSeconds: current.remainingSeconds - appliedDelta,
             },
           },
         };
@@ -722,6 +799,8 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
     setLocalRecords(nextLocal);
     window.localStorage.setItem(localHistoryStorageKey, JSON.stringify(nextLocal));
     window.localStorage.removeItem(activeExamStorageKey);
+    window.localStorage.removeItem(activeExamUpdatedAtKey);
+    examRef.current = null;
     setResumableExam(null);
     setExam(null);
     setReport(record);
@@ -735,6 +814,10 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
       headers: { "content-type": "application/json" },
       body: JSON.stringify(record),
     }).catch(() => undefined);
+    fetch("/api/exams/draft", {
+      method: "DELETE",
+      keepalive: true,
+    }).catch(() => undefined);
   }
 
   function completeModule(snapshot: ActiveExam, moduleState: ActiveModule) {
@@ -742,7 +825,6 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
     const finishedState: ActiveModule = {
       ...moduleState,
       completed: true,
-      sectionElapsed: sectionSeconds - moduleState.remainingSeconds,
     };
     const updated: ActiveExam = {
       ...snapshot,
@@ -757,24 +839,27 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
     setView("between");
   }
 
-  function submitMockAnswer() {
+  function submitMockAnswer(timedOut = false) {
     if (!exam || !activeModuleKey || !activeQuestion || !activeQuestionId) return;
     const moduleState = exam.modules[activeModuleKey];
     const choice = moduleState.selected[activeQuestionId];
-    if (!choice) return;
+    if (!choice && !timedOut) return;
     mockTimerEnabledRef.current = false;
     setQuestionReady(false);
     const updatedModule: ActiveModule = {
       ...moduleState,
-      answers: { ...moduleState.answers, [activeQuestionId]: choice },
+      answers: choice
+        ? { ...moduleState.answers, [activeQuestionId]: choice }
+        : moduleState.answers,
       correct: {
         ...moduleState.correct,
-        [activeQuestionId]: choice === activeQuestion.answer,
+        [activeQuestionId]: Boolean(choice && choice === activeQuestion.answer),
       },
       questionTimes: {
         ...moduleState.questionTimes,
         [activeQuestionId]: moduleState.currentSeconds,
       },
+      sectionElapsed: moduleState.sectionElapsed + moduleState.currentSeconds,
     };
     if (moduleState.current >= moduleState.questionIds.length - 1) {
       completeModule(exam, updatedModule);
@@ -794,46 +879,21 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function finishCurrentModule(timedOut: boolean) {
-    if (!exam || !activeModuleKey || !activeQuestionId) return;
-    mockTimerEnabledRef.current = false;
-    const moduleState = exam.modules[activeModuleKey];
-    let answers = moduleState.answers;
-    let correct = moduleState.correct;
-    let questionTimes = moduleState.questionTimes;
-    const choice = moduleState.selected[activeQuestionId];
-    const question = questionFor(activeModuleKey, activeQuestionId);
-    if (timedOut && choice && question) {
-      answers = { ...answers, [activeQuestionId]: choice };
-      correct = { ...correct, [activeQuestionId]: choice === question.answer };
-      questionTimes = {
-        ...questionTimes,
-        [activeQuestionId]: moduleState.currentSeconds,
-      };
-    }
-    completeModule(exam, {
-      ...moduleState,
-      answers,
-      correct,
-      questionTimes,
-      remainingSeconds: Math.max(0, moduleState.remainingSeconds),
-    });
-  }
-
   useEffect(() => {
-    autoFinishRef.current = () => finishCurrentModule(true);
+    autoFinishRef.current = () => submitMockAnswer(true);
   });
 
   useEffect(() => {
     if (
       view === "question" &&
-      activeRemainingSeconds !== undefined &&
-      activeRemainingSeconds <= 0
+      questionReady &&
+      activeQuestionSeconds !== undefined &&
+      activeQuestionSeconds >= questionSeconds
     ) {
       const timer = window.setTimeout(() => autoFinishRef.current(), 0);
       return () => window.clearTimeout(timer);
     }
-  }, [view, activeRemainingSeconds]);
+  }, [view, questionReady, activeQuestionSeconds]);
 
   function enterNextModule() {
     if (!exam) return;
@@ -908,8 +968,8 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
           <span className="eyebrow">FULL MOCK EXAM</span>
           <h1>三模块真实模考</h1>
           <p>
-            三个模块随机排序，每模块 10 分钟、通常 10 题。不可跳题、不可回看，
-            完成全部模块后统一显示成绩与解析。
+            三个模块随机排序，通常每模块 10 题、每题限时 70 秒。不可跳题、
+            不可回看，完成全部模块后统一显示成绩与解析。
           </p>
           <div className="mock-heading-actions">
             <button
@@ -991,8 +1051,8 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
             <>
               <h1>{moduleNames[activeModuleKey]}</h1>
               <p>
-                本模块 {activeModule?.questionIds.length} 题，限时 10 分钟。
-                开始后只能逐题向前，完成后不能返回修改。
+                本模块 {activeModule?.questionIds.length} 题，每题独立限时 70 秒。
+                倒计时结束会自动保存当前选择并进入下一题，完成后不能返回修改。
               </p>
               <button className="primary-button" type="button" onClick={beginCurrentModule}>
                 开始本模块 →
@@ -1037,13 +1097,15 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
             <small>模块 {exam.activeModuleIndex + 1}/3</small>
             <strong>{moduleNames[activeModuleKey]}</strong>
           </div>
-          <div className="mock-section-timer">
-            <small>本模块剩余</small>
-            <strong>{formatTime(activeModule.remainingSeconds)}</strong>
+          <div className="mock-question-position">
+            <small>当前进度</small>
+            <strong>{activeModule.current + 1}/{activeModule.questionIds.length}</strong>
           </div>
           <div className="mock-question-timer">
-            <small>{questionReady ? "本题计时" : "题目准备中"}</small>
-            <strong>{formatTime(activeModule.currentSeconds)}</strong>
+            <small>{questionReady ? "本题剩余" : "题目准备中"}</small>
+            <strong>
+              {formatTime(Math.max(0, questionSeconds - activeModule.currentSeconds))}
+            </strong>
           </div>
         </header>
         <section className="mock-question-strip" aria-label="题目进度">
@@ -1094,7 +1156,7 @@ export default function MockExam({ onHome, onPractice, onComplete }: MockExamPro
           <button
             className="submit-button"
             type="button"
-            onClick={submitMockAnswer}
+            onClick={() => submitMockAnswer(false)}
             disabled={!choice || !questionReady}
           >
             {activeModule.current === activeModule.questionIds.length - 1

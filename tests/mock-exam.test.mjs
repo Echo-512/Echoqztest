@@ -8,13 +8,15 @@ const hostingUrl = new URL("../.openai/hosting.json", import.meta.url);
 const schemaUrl = new URL("../db/schema.ts", import.meta.url);
 const routeUrl = new URL("../app/api/exams/route.ts", import.meta.url);
 
-test("builds a three-module, ten-minute exam with rare eleven-question sections", async () => {
+test("builds a three-module exam with a 70-second limit per question", async () => {
   const mock = await readFile(mockUrl, "utf8");
   assert.match(mock, /shuffle<ModuleKey>\(\["graphic", "material", "verbal"\]\)/);
-  assert.match(mock, /const sectionSeconds = 10 \* 60/);
+  assert.match(mock, /const questionSeconds = 70/);
   assert.match(mock, /const target = simpleEleven \? 11 : 10/);
   assert.match(mock, /Math\.random\(\) < 0\.12/);
-  assert.match(mock, /不可跳题、不可回看/);
+  assert.match(mock, /不可跳题、\s*不可回看/);
+  assert.match(mock, /submitMockAnswer\(true\)/);
+  assert.match(mock, /每题独立限时 70 秒/);
   assert.match(mock, /SECTION COMPLETE/);
 });
 
@@ -76,4 +78,27 @@ test("saves cloud history, supports review, and sends every mock error to the wr
   assert.match(mock, /onComplete\(outcomes\)/);
   assert.match(page, /function recordMockOutcomes/);
   assert.match(page, /wrongSets\[outcome\.module\]\.add\(outcome\.sourceId\)/);
+});
+
+test("preloads upcoming practice questions and syncs progress for the signed-in account", async () => {
+  const page = await readFile(pageUrl, "utf8");
+  const schema = await readFile(schemaUrl, "utf8");
+  const progressRoute = await readFile(
+    new URL("../app/api/progress/route.ts", import.meta.url),
+    "utf8",
+  );
+  const draftRoute = await readFile(
+    new URL("../app/api/exams/draft/route.ts", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(page, /const preloadAheadCount = 10/);
+  assert.match(page, /function preloadPracticeQueue/);
+  assert.match(page, /practiceImageCache/);
+  assert.match(page, /fetch\("\/api\/progress"/);
+  assert.match(schema, /practiceStates/);
+  assert.match(schema, /examDrafts/);
+  assert.match(progressRoute, /getChatGPTUser/);
+  assert.match(progressRoute, /user\.email/);
+  assert.match(draftRoute, /getChatGPTUser/);
 });

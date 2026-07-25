@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import materialQuestionData from "./material-questions.json";
+import MockExam from "./mock-exam";
 import questionData from "./questions.json";
 import verbalQuestionData from "./verbal-questions.json";
 
@@ -162,6 +163,40 @@ function answerFor(question: BankQuestion) {
   return question.answer;
 }
 
+function practiceImageAssets(module: ModuleKey, question: BankQuestion) {
+  if (module === "graphic") {
+    const graphic = question as GraphicQuestion;
+    return [graphic.image, ...graphic.optionImages];
+  }
+  if (module === "material" && (question as MaterialQuestion).image) {
+    return [(question as MaterialQuestion).image as string];
+  }
+  return [];
+}
+
+function preloadPracticeImage(url: string) {
+  return new Promise<void>((resolve) => {
+    const image = new window.Image();
+    const finish = () => {
+      if (typeof image.decode === "function") {
+        image.decode().catch(() => undefined).finally(resolve);
+      } else {
+        resolve();
+      }
+    };
+    image.onload = finish;
+    image.onerror = () => resolve();
+    image.src = url;
+  });
+}
+
+async function waitForPracticeQuestion(module: ModuleKey, question: BankQuestion) {
+  await Promise.all(practiceImageAssets(module, question).map(preloadPracticeImage));
+  await new Promise<void>((resolve) => {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
+  });
+}
+
 function emptySession(module: ModuleKey, context: PracticeContext, pool: BankQuestion[]): SavedSession {
   return {
     module,
@@ -221,6 +256,8 @@ export default function Home() {
   const [performance, setPerformance] = useState<PerformanceState>(initialPerformance);
   const [persistenceLoaded, setPersistenceLoaded] = useState(false);
   const [wrongModule, setWrongModule] = useState<ModuleKey>("graphic");
+  const [practiceQuestionReady, setPracticeQuestionReady] = useState(false);
+  const practiceTimerEnabledRef = useRef(false);
 
   const activeId =
     activeSession?.questionIds[activeSession.current] ?? questions[0].sourceId;
@@ -301,14 +338,48 @@ export default function Home() {
   }, [activeSession]);
 
   useEffect(() => {
-    if (screen !== "practice" || answered || !activeModule) return;
+    if (screen !== "practice" || !activeModule || !activeQuestion) {
+      practiceTimerEnabledRef.current = false;
+      return;
+    }
+    let cancelled = false;
+    practiceTimerEnabledRef.current = false;
+    waitForPracticeQuestion(activeModule, activeQuestion).then(() => {
+      if (cancelled) return;
+      practiceTimerEnabledRef.current = true;
+      setPracticeQuestionReady(true);
+    });
+    return () => {
+      cancelled = true;
+      practiceTimerEnabledRef.current = false;
+    };
+  }, [screen, activeId, activeModule, activeQuestion]);
+
+  useEffect(() => {
+    if (
+      screen !== "practice" ||
+      answered ||
+      !activeModule ||
+      !practiceQuestionReady
+    ) {
+      return;
+    }
+    const startedAt = Date.now();
+    let appliedSeconds = 0;
     const timer = window.setInterval(() => {
+      if (!practiceTimerEnabledRef.current) return;
+      const elapsedSeconds = Math.floor((Date.now() - startedAt) / 1000);
+      const delta = elapsedSeconds - appliedSeconds;
+      if (delta <= 0) return;
+      appliedSeconds = elapsedSeconds;
       setActiveSession((session) =>
-        session ? { ...session, currentSeconds: session.currentSeconds + 1 } : session,
+        session
+          ? { ...session, currentSeconds: session.currentSeconds + delta }
+          : session,
       );
-    }, 1000);
+    }, 250);
     return () => window.clearInterval(timer);
-  }, [screen, answered, activeId, activeModule]);
+  }, [screen, answered, activeId, activeModule, practiceQuestionReady]);
 
   function goHome() {
     setScreen("home");
@@ -326,6 +397,8 @@ export default function Home() {
     context: PracticeContext = "normal",
   ) {
     if (!pool.length) return;
+    practiceTimerEnabledRef.current = false;
+    setPracticeQuestionReady(false);
     setActiveSession(emptySession(module, context, pool));
     goTo("practice");
   }
@@ -350,6 +423,8 @@ export default function Home() {
     if (!validIds.length) return false;
     const currentIndex = validIds.indexOf(currentSourceId);
     const current = currentIndex >= 0 ? currentIndex : Math.min(saved.current, validIds.length - 1);
+    practiceTimerEnabledRef.current = false;
+    setPracticeQuestionReady(false);
     setActiveSession({ ...saved, module, context, questionIds: validIds, current });
     goTo("practice");
     return true;
@@ -410,6 +485,7 @@ export default function Home() {
     if (!activeSession || !activeQuestion || answered) return;
     const choice = activeSession.selected[activeId];
     if (!choice) return;
+    practiceTimerEnabledRef.current = false;
     const isCorrect = choice === answerFor(activeQuestion);
     setActiveSession({
       ...activeSession,
@@ -442,6 +518,8 @@ export default function Home() {
     }
     const next = activeSession.current + 1;
     const nextId = activeSession.questionIds[next];
+    practiceTimerEnabledRef.current = false;
+    setPracticeQuestionReady(false);
     setActiveSession({
       ...activeSession,
       current: next,
@@ -468,6 +546,35 @@ export default function Home() {
     if (resumeSession(module, "wrong", wrongIds)) return;
     const pool = bankFor(module).filter((question) => wrongIds.has(question.sourceId));
     startSession(module, pool, "wrong");
+  }
+
+  function recordMockOutcomes(
+    outcomes: Array<{ module: ModuleKey; sourceId: string; isCorrect: boolean }>,
+  ) {
+    setPerformance((state) => {
+      const next: PerformanceState = {
+        graphic: { ...state.graphic, wrongIds: [...state.graphic.wrongIds] },
+        material: { ...state.material, wrongIds: [...state.material.wrongIds] },
+        verbal: { ...state.verbal, wrongIds: [...state.verbal.wrongIds] },
+      };
+      const wrongSets: Record<ModuleKey, Set<string>> = {
+        graphic: new Set(next.graphic.wrongIds),
+        material: new Set(next.material.wrongIds),
+        verbal: new Set(next.verbal.wrongIds),
+      };
+      for (const outcome of outcomes) {
+        next[outcome.module].attempts += 1;
+        if (outcome.isCorrect) {
+          next[outcome.module].correct += 1;
+        } else {
+          wrongSets[outcome.module].add(outcome.sourceId);
+        }
+      }
+      for (const moduleKey of ["graphic", "material", "verbal"] as ModuleKey[]) {
+        next[moduleKey].wrongIds = [...wrongSets[moduleKey]];
+      }
+      return next;
+    });
   }
 
   const wrongQuestions = useMemo(
@@ -758,16 +865,11 @@ export default function Home() {
 
   if (screen === "mock") {
     return (
-      <main className="inner-page">
-        <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
-        <section className="empty-state">
-          <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
-          <span className="eyebrow">MOCK EXAM</span>
-          <h1>模考框架已经搭好</h1>
-          <p>待更多大厂历年题加入后，将开放整卷倒计时、统一交卷和成绩报告。</p>
-          <button className="primary-button" type="button" onClick={() => goTo("categories")}>先去分类刷题</button>
-        </section>
-      </main>
+      <MockExam
+        onHome={goHome}
+        onPractice={() => goTo("categories")}
+        onComplete={recordMockOutcomes}
+      />
     );
   }
 
@@ -818,9 +920,17 @@ export default function Home() {
           <div className="question-meta">
             <span>{activeQuestion.sourceId}</span>
             <span>{activeQuestion.difficulty}</span>
-            <em>提交前不会显示答案</em>
+            <em>
+              {answered
+                ? "已提交 · 本题计时已停止"
+                : practiceQuestionReady
+                ? "计时中 · 提交前不会显示答案"
+                : "新题加载中 · 当前暂停计时"}
+            </em>
           </div>
+          <div className={`timed-question-frame ${practiceQuestionReady ? "" : "is-loading"}`}>
           <article
+            key={activeId}
             className={`question-card ${activeSession.module === "material" ? "material-question-card" : ""} ${activeSession.module === "verbal" ? "verbal-question-card" : ""}`}
           >
             {activeSession.module === "graphic" ? (
@@ -907,6 +1017,14 @@ export default function Home() {
               </>
             )}
           </article>
+          {!practiceQuestionReady && (
+            <div className="question-loading-mask" role="status">
+              <div className="mock-loader" aria-hidden="true"><i /><i /><i /></div>
+              <strong>正在载入 {activeId}</strong>
+              <span>新题文字和全部图片显示完成后才开始计时</span>
+            </div>
+          )}
+          </div>
 
           {!answered ? (
             <button
@@ -919,7 +1037,7 @@ export default function Home() {
                     ? submitMaterialAnswer
                     : submitVerbalAnswer
               }
-              disabled={!choice}
+              disabled={!choice || !practiceQuestionReady}
             >
               确认提交
             </button>

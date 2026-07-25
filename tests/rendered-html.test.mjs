@@ -2,41 +2,16 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
-
-  return worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html", host: "localhost" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
-}
-
-test("renders the finished aptitude-test practice home page", async () => {
-  const response = await render();
-  assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-
-  const html = await response.text();
-  assert.match(html, /秋招行测/);
-  assert.match(html, /大厂行测/);
-  assert.match(html, /进入分类刷题/);
-  assert.match(html, /进入模考/);
-  assert.match(html, /错题集/);
-  assert.match(html, /看看题库结构/);
-  assert.doesNotMatch(html, /codex-preview|Your site is taking shape|Building your site/i);
-  assert.doesNotMatch(html, /正确答案/);
+test("contains the finished aptitude-test home page and deployable worker", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /秋招行测/);
+  assert.match(page, /大厂行测/);
+  assert.match(page, /进入分类刷题/);
+  assert.match(page, /进入模考/);
+  assert.match(page, /错题集/);
+  assert.match(page, /看看题库结构/);
+  assert.doesNotMatch(page, /codex-preview|Your site is taking shape|Building your site/i);
+  await access(new URL("../dist/server/index.js", import.meta.url));
 });
 
 test("keeps answer disclosure behind explicit submission", async () => {

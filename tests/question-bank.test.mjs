@@ -42,19 +42,29 @@ test("keeps answers hidden until submit and renders split PDF options as choices
   const page = await readFile(pageUrl, "utf8");
   assert.match(page, /function submitAnswer\(\)/);
   assert.match(page, /提交前不会显示答案/);
-  assert.match(page, /const answered = Boolean\(submitted\[activeId\]\)/);
+  assert.match(page, /const answered = Boolean\(activeSession\?\.submitted\[activeId\]\)/);
   assert.match(page, /source-option-button/);
   assert.match(page, /!answered \?/);
 });
 
-test("saves progress locally, resumes sessions, and times each question separately", async () => {
+test("renders exactly the declared number of graphic options", async () => {
+  const questions = JSON.parse(await readFile(questionsUrl, "utf8"));
+  const page = await readFile(pageUrl, "utf8");
+  assert.ok(questions.some((question) => question.optionCount === 5));
+  assert.match(page, /optionImages\.length === optionCount/);
+  assert.match(page, /letters\.slice\(0, optionCount\)\.map/);
+});
+
+test("saves unanswered progress and times each question separately", async () => {
   const page = await readFile(pageUrl, "utf8");
   assert.match(page, /qiuzhao-xingce-graphic-session-v1/);
   assert.match(page, /window\.localStorage\.setItem/);
   assert.match(page, /继续上次刷题/);
+  assert.match(page, /selected: \{ \.\.\.activeSession\.selected, \[activeId\]: letter \}/);
   assert.match(page, /questionTimes/);
   assert.match(page, /本题计时/);
-  assert.match(page, /setCurrentSeconds\(questionTimes\[nextId\] \?\? 0\)/);
+  assert.match(page, /currentSeconds: activeSession\.questionTimes\[nextId\] \?\? 0/);
+  assert.match(page, /visibilitychange/);
 });
 
 test("provides return navigation at every nested level", async () => {
@@ -62,4 +72,6 @@ test("provides return navigation at every nested level", async () => {
   assert.match(page, /返回首页/);
   assert.match(page, /返回题型/);
   assert.match(page, /返回练习方式/);
+  assert.match(page, /← 返回上一级/);
+  assert.match(page, /function practiceBackScreen\(\)/);
 });

@@ -317,7 +317,8 @@ button:disabled {
 .category-grid,
 .mode-grid,
 .empty-state,
-.result-card {
+.result-card,
+.wrong-dashboard {
   width: min(1080px, calc(100% - 40px));
   margin-left: auto;
   margin-right: auto;
@@ -504,6 +505,16 @@ button.mode-card {
 
 .point-buttons small {
   color: var(--ink-soft);
+}
+
+.verbal-point-buttons {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.verbal-point-buttons button {
+  min-height: 58px;
+  align-items: center;
+  gap: 10px;
 }
 
 .empty-state,
@@ -890,6 +901,19 @@ button.mode-card {
   white-space: pre-wrap;
 }
 
+.verbal-prompt {
+  margin: 0;
+  padding: 32px 34px 24px;
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 2;
+  white-space: pre-wrap;
+}
+
+.verbal-question-card .material-options {
+  padding-top: 8px;
+}
+
 .material-chart-wrap {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -961,6 +985,145 @@ button.mode-card {
   color: white;
 }
 
+.wrong-dashboard {
+  padding-bottom: 100px;
+}
+
+.wrong-analysis-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 20px;
+}
+
+.wrong-chart-card,
+.weak-card,
+.wrong-start-card {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--card);
+  box-shadow: 0 12px 34px rgba(30, 45, 39, 0.06);
+}
+
+.wrong-chart-card {
+  min-height: 330px;
+  padding: 30px;
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  align-items: center;
+  gap: 34px;
+}
+
+.wrong-pie {
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  position: relative;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.wrong-pie::after {
+  content: "";
+  position: absolute;
+  inset: 32px;
+  border-radius: 50%;
+  background: var(--card);
+}
+
+.wrong-pie strong,
+.wrong-pie span {
+  position: relative;
+  z-index: 1;
+}
+
+.wrong-pie strong {
+  font-size: 36px;
+}
+
+.wrong-pie span {
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.wrong-legend h2,
+.weak-card h2,
+.wrong-start-card h2 {
+  margin: 10px 0 20px;
+}
+
+.wrong-legend p {
+  margin: 9px 0;
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.wrong-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+}
+
+.weak-card {
+  padding: 34px;
+}
+
+.weak-card > p,
+.wrong-start-card p {
+  color: var(--ink-soft);
+  line-height: 1.75;
+}
+
+.weak-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.weak-tags span {
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: var(--mint-pale);
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.weak-tags em {
+  margin-left: 7px;
+  color: #7c9187;
+  font-size: 11px;
+  font-style: normal;
+}
+
+.wrong-start-card {
+  margin-top: 20px;
+  padding: 30px 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.wrong-start-card h2 {
+  margin-bottom: 7px;
+}
+
+.wrong-start-card p {
+  margin: 0;
+}
+
+.wrong-start-card .primary-button:disabled {
+  background: #b6beb9;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 @media (max-width: 880px) {
   .nav-links {
     display: none;
@@ -979,6 +1142,10 @@ button.mode-card {
   .structure-grid,
   .category-grid,
   .mode-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wrong-analysis-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1063,7 +1230,8 @@ button.mode-card {
   .category-grid,
   .mode-grid,
   .empty-state,
-  .result-card {
+  .result-card,
+  .wrong-dashboard {
     width: calc(100% - 28px);
   }
 
@@ -1107,6 +1275,12 @@ button.mode-card {
     font-size: 16px;
   }
 
+  .verbal-prompt {
+    padding: 22px 18px 17px;
+    font-size: 16px;
+    line-height: 1.9;
+  }
+
   .material-chart-wrap {
     padding: 8px;
   }
@@ -1141,5 +1315,24 @@ button.mode-card {
   .answer-buttons button {
     min-width: 0;
     min-height: 48px;
+  }
+
+  .verbal-point-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .wrong-chart-card {
+    padding: 24px 18px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .wrong-legend {
+    width: 100%;
+  }
+
+  .wrong-start-card {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

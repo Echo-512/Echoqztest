@@ -57,8 +57,16 @@ test("material analysis opens directly, hides answers, saves progress, and times
   assert.match(page, /startMaterialPractice\(false\)/);
   assert.match(page, /qiuzhao-xingce-material-session-v1/);
   assert.match(page, /function submitMaterialAnswer\(\)/);
-  assert.match(page, /screen !== "material-practice" \|\| materialAnswered/);
-  assert.match(page, /setMaterialCurrentSeconds\(materialQuestionTimes\[nextId\] \?\? 0\)/);
-  assert.match(page, /materialAnswered \?/);
-  assert.match(page, /← 返回题型/);
+  assert.match(page, /screen !== "practice" \|\| answered/);
+  assert.match(page, /currentSeconds: activeSession\.questionTimes\[nextId\] \?\? 0/);
+  assert.match(page, /!answered \?/);
+  assert.match(page, /← 返回上一级/);
+});
+
+test("renders exactly the material options present in the source", async () => {
+  const page = await readFile(pageUrl, "utf8");
+  assert.match(
+    page,
+    /\(activeQuestion as MaterialQuestion \| VerbalQuestion\)\.options\.map/,
+  );
 });

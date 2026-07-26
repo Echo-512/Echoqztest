@@ -477,7 +477,6 @@ export default function Home() {
   const [cloudSyncReady, setCloudSyncReady] = useState(false);
   const [wrongModule, setWrongModule] = useState<ModuleKey>("graphic");
   const [practiceQuestionReady, setPracticeQuestionReady] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const practiceTimerEnabledRef = useRef(false);
   const activeSessionRef = useRef<SavedSession | null>(null);
   const cloudPayloadRef = useRef<CloudPracticePayload | null>(null);
@@ -1725,7 +1724,6 @@ export default function Home() {
 
   return (
     <main className="home-page overview-page has-bottom-nav">
-      <SiteNav onHome={goHome} onPractice={() => goTo("categories")} onSearch={() => setSearchOpen(true)} onProfile={() => goTo("profile")} showCta={false} />
       <section className="hero">
         <article className="hero-banner">
           <div className="hero-copy">
@@ -1765,18 +1763,6 @@ export default function Home() {
           <div><span>＋</span><strong>持续更新</strong><small>题库增加即可扩展</small></div>
         </section>
       </section>
-      {searchOpen && (
-        <div className="search-overlay" role="dialog" aria-modal="true" aria-label="搜索题库">
-          <button className="search-backdrop" type="button" onClick={() => setSearchOpen(false)} aria-label="关闭搜索" />
-          <section className="search-panel">
-            <div><span>搜索题库</span><button type="button" onClick={() => setSearchOpen(false)}>×</button></div>
-            <p>选择你要练习的模块</p>
-            <button type="button" onClick={() => { setSearchOpen(false); goTo("graphic-mode"); }}>🧩 图形推理 <small>{questions.length} 题</small></button>
-            <button type="button" onClick={() => { setSearchOpen(false); startMaterialPractice(false); }}>📊 材料分析 <small>{materialQuestions.length} 题</small></button>
-            <button type="button" onClick={() => { setSearchOpen(false); goTo("verbal-mode"); }}>💬 文字推理 <small>{verbalQuestions.length} 题</small></button>
-          </section>
-        </div>
-      )}
       <BottomNav current="home" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
     </main>
   );

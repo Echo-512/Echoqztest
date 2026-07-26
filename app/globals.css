@@ -4019,6 +4019,10 @@ body { background: var(--paper); }
   pointer-events: none;
 }
 .home-page > * { position: relative; z-index: 1; }
+.has-bottom-nav > .bottom-nav {
+  position: fixed;
+  z-index: 200;
+}
 .logo-mark { background: linear-gradient(145deg, #637d98, #4f667f); }
 .logo em { background: #edf3f7; color: #64788e; }
 .nav-cta,

@@ -19,7 +19,8 @@ type Screen =
   | "result"
   | "wrong-categories"
   | "wrong-dashboard"
-  | "favorite-categories";
+  | "favorite-categories"
+  | "profile";
 
 type GraphicQuestion = {
   sourceId: string;
@@ -146,7 +147,12 @@ const moduleNames: Record<ModuleKey, string> = {
   material: "材料分析",
   verbal: "文字推理",
 };
-const pieColors = ["#174c40", "#4e8b78", "#85b9a5", "#f0c85b", "#b96a5d", "#7e8d86"];
+const moduleIcons: Record<ModuleKey, string> = {
+  graphic: "🧩",
+  material: "📊",
+  verbal: "💬",
+};
+const pieColors = ["#3d4a5c", "#d4685c", "#7f93aa", "#a9bacb", "#cbd6e0", "#8ca2b6"];
 
 function shuffle<T>(items: T[]) {
   const copy = [...items];
@@ -306,7 +312,102 @@ function mergePerformance(value: unknown): PerformanceState {
   };
 }
 
-function SiteNav({ onHome, onPractice }: { onHome: () => void; onPractice: () => void }) {
+function FeatureIcon({ kind }: { kind: "practice" | "mock" | "wrong" | "favorite" }) {
+  if (kind === "practice") {
+    return (
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="6" y="5" width="19" height="22" rx="4" />
+        <path d="M11 11h9M11 16h5" />
+        <path d="m17.5 21 2.2 2.2 4.4-5" />
+      </svg>
+    );
+  }
+  if (kind === "mock") {
+    return (
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M12 4h8M16 4v4" />
+        <circle cx="16" cy="18" r="9" />
+        <path d="M16 12v6l4 2M24 10l2-2" />
+      </svg>
+    );
+  }
+  if (kind === "wrong") {
+    return (
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M8 5h14a3 3 0 0 1 3 3v18H11a3 3 0 0 1-3-3Z" />
+        <path d="M12 10h8M12 14h5M14 20l5 5M19 20l-5 5" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M9 5h14v22l-7-4-7 4Z" />
+      <path d="m16 9 1.5 3 3.3.5-2.4 2.3.6 3.2-3-1.5-3 1.5.6-3.2-2.4-2.3 3.3-.5Z" />
+    </svg>
+  );
+}
+
+function FeatureSketch({ kind }: { kind: "practice" | "mock" | "wrong" | "favorite" }) {
+  if (kind === "practice") {
+    return (
+      <svg viewBox="0 0 96 64" aria-hidden="true">
+        <path d="M10 17a3 3 0 0 1 3-3h31v43H13a3 3 0 0 1-3-3Z" />
+        <path d="M18 25h17M18 32h17M18 39h17M18 46h17" />
+        <path d="M44 57V10a3 3 0 0 1 3-3h27a3 3 0 0 1 3 3v12h6a3 3 0 0 1 3 3v29a3 3 0 0 1-3 3Z" />
+        <path d="M77 22H54" />
+        <path d="m54 39 8 8 15-18" />
+        <path d="M54 52h23" />
+      </svg>
+    );
+  }
+  if (kind === "mock") {
+    return (
+      <svg viewBox="0 0 96 64" aria-hidden="true">
+        <rect x="7" y="20" width="28" height="35" rx="3" />
+        <rect x="12" y="27" width="18" height="20" rx="1" />
+        <path d="M15 31h12M15 35h12M15 39h12M15 43h9" />
+        <path d="M56 8h18M61 4h8M65 4v4" />
+        <path d="m50 14-5-5a3 3 0 0 1 4-4l6 6M80 14l5-5a3 3 0 0 0-4-4l-6 6" />
+        <circle cx="65" cy="35" r="22" />
+        <circle cx="65" cy="35" r="17" />
+        <path d="M65 22v14l9 7M50 54l-4 5M80 54l4 5" />
+        <path d="M48 35h3M79 35h3M65 18v3M65 49v3" />
+      </svg>
+    );
+  }
+  if (kind === "wrong") {
+    return (
+      <svg viewBox="0 0 96 64" aria-hidden="true">
+        <circle cx="47" cy="27" r="19" />
+        <circle cx="47" cy="27" r="13" opacity=".45" />
+        <path d="m61 41 20 17" />
+        <path d="m66 43-5 6" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 96 64" aria-hidden="true">
+      <path d="M13 16h34v39l-17-9-17 9Z" />
+      <path d="m30 22 3.5 7 7.5 1-5.5 5.3 1.3 7.5-6.8-3.6-6.8 3.6 1.3-7.5-5.5-5.3 7.5-1Z" />
+      <path d="M56 18h26a4 4 0 0 1 4 4v33H56Z" />
+      <path d="M63 28h16M63 36h12M63 44h15" />
+    </svg>
+  );
+}
+
+function SiteNav({
+  onHome,
+  onPractice,
+  onProfile,
+  onSearch,
+  showCta = true,
+}: {
+  onHome: () => void;
+  onPractice: () => void;
+  onProfile?: () => void;
+  onSearch?: () => void;
+  showCta?: boolean;
+}) {
   return (
     <nav className="site-nav" aria-label="主导航">
       <button className="logo" type="button" onClick={onHome}>
@@ -316,9 +417,52 @@ function SiteNav({ onHome, onPractice }: { onHome: () => void; onPractice: () =>
       </button>
       <div className="nav-links">
         <button type="button" onClick={onHome}>首页</button>
-        <span>北森题库 · 图形推理 / 材料分析 / 文字推理</span>
+        <span>北森题库 · 大厂行测专项练习</span>
       </div>
-      <button className="nav-cta" type="button" onClick={onPractice}>开始刷题</button>
+      {onSearch && (
+        <button className="nav-icon-button" type="button" onClick={onSearch} aria-label="搜索题库">⌕</button>
+      )}
+      {onProfile && (
+        <button className="profile-entry" type="button" onClick={onProfile}>我的</button>
+      )}
+      {showCta && (
+        <button className="nav-cta" type="button" onClick={onPractice}>开始刷题</button>
+      )}
+    </nav>
+  );
+}
+
+function BottomNav({
+  current,
+  onHome,
+  onPractice,
+  onMock,
+  onProfile,
+}: {
+  current: "home" | "bank" | "mock" | "profile";
+  onHome: () => void;
+  onPractice: () => void;
+  onMock: () => void;
+  onProfile: () => void;
+}) {
+  const items = [
+    { key: "home", icon: "⌂", label: "首页", action: onHome },
+    { key: "bank", icon: "▣", label: "题库", action: onPractice },
+    { key: "mock", icon: "◷", label: "模考", action: onMock },
+    { key: "profile", icon: "☺", label: "我的", action: onProfile },
+  ] as const;
+  return (
+    <nav className="bottom-nav" aria-label="底部导航">
+      {items.map((item) => (
+        <button
+          className={current === item.key ? "active" : ""}
+          type="button"
+          key={item.key}
+          onClick={item.action}
+        >
+          <span>{item.icon}</span><small>{item.label}</small>
+        </button>
+      ))}
     </nav>
   );
 }
@@ -333,6 +477,7 @@ export default function Home() {
   const [cloudSyncReady, setCloudSyncReady] = useState(false);
   const [wrongModule, setWrongModule] = useState<ModuleKey>("graphic");
   const [practiceQuestionReady, setPracticeQuestionReady] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const practiceTimerEnabledRef = useRef(false);
   const activeSessionRef = useRef<SavedSession | null>(null);
   const cloudPayloadRef = useRef<CloudPracticePayload | null>(null);
@@ -372,6 +517,22 @@ export default function Home() {
     activeSession?.module === "verbal" && activeSession.context === "normal"
       ? activeSession
       : savedSessions[storageKey("verbal", "normal")];
+
+  const totalAttempts = (Object.keys(performance) as ModuleKey[]).reduce(
+    (sum, module) => sum + performance[module].attempts,
+    0,
+  );
+  const totalCorrect = (Object.keys(performance) as ModuleKey[]).reduce(
+    (sum, module) => sum + performance[module].correct,
+    0,
+  );
+  const totalFavorites = (Object.keys(favorites) as ModuleKey[]).reduce(
+    (sum, module) => sum + favorites[module].length,
+    0,
+  );
+  const currentSessionAnswered = activeSession
+    ? Object.keys(activeSession.submitted).length
+    : 0;
 
   useEffect(() => {
     let cancelled = false;
@@ -790,6 +951,20 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function previousQuestion() {
+    if (!activeSession || activeSession.current <= 0) return;
+    const previous = activeSession.current - 1;
+    const previousId = activeSession.questionIds[previous];
+    practiceTimerEnabledRef.current = false;
+    setPracticeQuestionReady(false);
+    setActiveSession({
+      ...activeSession,
+      current: previous,
+      currentSeconds: activeSession.questionTimes[previousId] ?? 0,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function practiceBackScreen() {
     if (activeSession?.context === "wrong") return "wrong-dashboard";
     if (activeSession?.context === "favorite") return "favorite-categories";
@@ -913,7 +1088,7 @@ export default function Home() {
 
   if (screen === "categories") {
     return (
-      <main className="inner-page">
+      <main className="inner-page overview-page categories-page has-bottom-nav">
         <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="page-heading">
           <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
@@ -924,7 +1099,7 @@ export default function Home() {
         <section className="category-grid">
           <button className="category-card active-card" type="button" onClick={() => goTo("graphic-mode")}>
             <span>01</span>
-            <h2>图形推理</h2>
+            <h2><span className="module-emoji" aria-hidden="true">🧩</span>图形推理</h2>
             <p>北森题库去重后共 {questions.length} 题，保留 Excel 原题号。</p>
             <strong>进入题库 →</strong>
           </button>
@@ -933,7 +1108,7 @@ export default function Home() {
             type="button"
             onClick={() => startMaterialPractice(false)}
           >
-            <span>02</span><h2>材料分析</h2>
+            <span>02</span><h2><span className="module-emoji" aria-hidden="true">📊</span>材料分析</h2>
             <p>北森图表分析去重后共 {materialQuestions.length} 题，按原题顺序练习。</p>
             <strong>
               {savedMaterial
@@ -942,18 +1117,19 @@ export default function Home() {
             </strong>
           </button>
           <button className="category-card active-card" type="button" onClick={() => goTo("verbal-mode")}>
-            <span>03</span><h2>文字推理</h2>
+            <span>03</span><h2><span className="module-emoji" aria-hidden="true">💬</span>文字推理</h2>
             <p>北森言语理解去重后共 {verbalQuestions.length} 题，均已标注题型、考点和难度。</p>
             <strong>进入题库 →</strong>
           </button>
         </section>
+        <BottomNav current="bank" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
       </main>
     );
   }
 
   if (screen === "graphic-mode") {
     return (
-      <main className="inner-page">
+      <main className="inner-page overview-page mode-overview-page graphic-mode-page has-bottom-nav">
         <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="page-heading compact-heading">
           <button className="back-link" type="button" onClick={() => goTo("categories")}>← 返回题型</button>
@@ -989,13 +1165,14 @@ export default function Home() {
             </div>
           </article>
         </section>
+        <BottomNav current="bank" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
       </main>
     );
   }
 
   if (screen === "verbal-mode") {
     return (
-      <main className="inner-page">
+      <main className="inner-page overview-page mode-overview-page verbal-mode-page has-bottom-nav">
         <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="page-heading compact-heading">
           <button className="back-link" type="button" onClick={() => goTo("categories")}>← 返回题型</button>
@@ -1042,13 +1219,14 @@ export default function Home() {
             </div>
           </article>
         </section>
+        <BottomNav current="bank" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
       </main>
     );
   }
 
   if (screen === "wrong-categories") {
     return (
-      <main className="inner-page">
+      <main className="inner-page overview-page category-overview-page wrong-categories-page has-bottom-nav">
         <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="page-heading">
           <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
@@ -1065,19 +1243,20 @@ export default function Home() {
               onClick={() => openWrongDashboard(module)}
             >
               <span>0{index + 1}</span>
-              <h2>{moduleNames[module]}</h2>
+              <h2><span className="module-emoji" aria-hidden="true">{moduleIcons[module]}</span>{moduleNames[module]}</h2>
               <p>累计作答 {performance[module].attempts} 次，当前错题 {performance[module].wrongIds.length} 道。</p>
               <strong>查看评估与错题 →</strong>
             </button>
           ))}
         </section>
+        <BottomNav current="home" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
       </main>
     );
   }
 
   if (screen === "favorite-categories") {
     return (
-      <main className="inner-page">
+      <main className="inner-page overview-page category-overview-page favorite-categories-page has-bottom-nav">
         <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="page-heading">
           <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
@@ -1095,7 +1274,7 @@ export default function Home() {
               onClick={() => startFavoritePractice(module)}
             >
               <span>0{index + 1}</span>
-              <h2>{moduleNames[module]}</h2>
+              <h2><span className="module-emoji" aria-hidden="true">{moduleIcons[module]}</span>{moduleNames[module]}</h2>
               <p>当前收藏 {favorites[module].length} 道，答对后仍会保留，可反复训练。</p>
               <strong>
                 {favorites[module].length ? "进入收藏题练习 →" : "暂时没有收藏"}
@@ -1103,6 +1282,7 @@ export default function Home() {
             </button>
           ))}
         </section>
+        <BottomNav current="profile" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
       </main>
     );
   }
@@ -1113,7 +1293,7 @@ export default function Home() {
       ? Math.round((stats.correct / stats.attempts) * 100)
       : 0;
     return (
-      <main className="inner-page">
+      <main className="inner-page wrong-dashboard-page overview-page has-bottom-nav">
         <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
         <section className="page-heading compact-heading">
           <button className="back-link" type="button" onClick={() => goTo("wrong-categories")}>← 返回错题分类</button>
@@ -1173,6 +1353,51 @@ export default function Home() {
             </button>
           </article>
         </section>
+        <BottomNav current="profile" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
+      </main>
+    );
+  }
+
+  if (screen === "profile") {
+    const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+    const progressItems = [
+      { module: "graphic" as const, label: "图形推理", total: questions.length },
+      { module: "material" as const, label: "材料分析", total: materialQuestions.length },
+      { module: "verbal" as const, label: "文字推理", total: verbalQuestions.length },
+    ];
+    return (
+      <main className="inner-page profile-page overview-page has-bottom-nav">
+        <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
+        <section className="profile-shell">
+          <button className="back-link profile-back" type="button" onClick={goHome}>← 返回首页</button>
+          <article className="profile-hero-card">
+            <div className="profile-avatar">秋</div>
+            <div><span>我的学习档案</span><h1>秋招同学</h1><p>Lv.1 · 笔试新手　<em>同账号进度自动同步</em></p></div>
+            <button type="button">编辑资料</button>
+          </article>
+          <section className="profile-stats" aria-label="刷题数据">
+            <article><span>累计做题</span><strong>{totalAttempts}</strong></article>
+            <article><span>本次进度</span><strong>{currentSessionAnswered}</strong></article>
+            <article><span>正确率</span><strong>{accuracy}%</strong></article>
+            <article><span>收藏题目</span><strong>{totalFavorites}</strong></article>
+          </section>
+          <div className="profile-columns">
+            <section className="profile-panel learning-links">
+              <div className="section-line"><span>学习记录</span><small>自动保存</small></div>
+              <button type="button" onClick={() => goTo("wrong-categories")}><b>🧩</b><span>错题集<small>集中复盘薄弱题</small></span><em>›</em></button>
+              <button type="button" onClick={() => goTo("favorite-categories")}><b>☆</b><span>收藏夹<small>反复训练犹豫题</small></span><em>›</em></button>
+              <button type="button" onClick={() => goTo("mock")}><b>◷</b><span>模考记录<small>回看限时考试表现</small></span><em>›</em></button>
+            </section>
+            <section className="profile-panel progress-panel">
+              <div className="section-line"><span>北森备考进度</span><small>按作答次数估算</small></div>
+              {progressItems.map((item) => {
+                const percent = Math.min(100, Math.round((performance[item.module].attempts / item.total) * 100));
+                return <div className="profile-progress" key={item.module}><p><span>{item.label}</span><strong>{percent}%</strong></p><i><b style={{ width: `${percent}%` }} /></i></div>;
+              })}
+            </section>
+          </div>
+        </section>
+        <BottomNav current="profile" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
       </main>
     );
   }
@@ -1182,6 +1407,7 @@ export default function Home() {
       <MockExam
         onHome={goHome}
         onPractice={() => goTo("categories")}
+        onProfile={() => goTo("profile")}
         onComplete={recordMockOutcomes}
         favorites={favorites}
         onToggleFavorite={toggleFavorite}
@@ -1206,7 +1432,6 @@ export default function Home() {
       { length: groupEnd - groupStart },
       (_, index) => groupStart + index,
     );
-
     const optionStateClass = (letter: string) => {
       const chosen = choice === letter;
       if (!answered) return chosen ? "selected-choice" : "";
@@ -1373,20 +1598,30 @@ export default function Home() {
           </div>
 
           {!answered ? (
-            <button
-              className="submit-button"
-              type="button"
-              onClick={
-                activeSession.module === "graphic"
-                  ? submitAnswer
-                  : activeSession.module === "material"
-                    ? submitMaterialAnswer
-                    : submitVerbalAnswer
-              }
-              disabled={!choice || !practiceQuestionReady}
-            >
-              确认提交
-            </button>
+            <div className="practice-actions">
+              <button
+                className="practice-previous"
+                type="button"
+                onClick={previousQuestion}
+                disabled={activeSession.current === 0}
+              >
+                ← 上一题
+              </button>
+              <button
+                className="submit-button"
+                type="button"
+                onClick={
+                  activeSession.module === "graphic"
+                    ? submitAnswer
+                    : activeSession.module === "material"
+                      ? submitMaterialAnswer
+                      : submitVerbalAnswer
+                }
+                disabled={!choice || !practiceQuestionReady}
+              >
+                确认提交
+              </button>
+            </div>
           ) : (
             <section className={`analysis-card ${isCorrect ? "analysis-correct" : "analysis-wrong"}`}>
               <div className="analysis-result">
@@ -1425,11 +1660,21 @@ export default function Home() {
                   </>
                 )}
               </div>
-              <button className="next-button" type="button" onClick={nextQuestion}>
-                {activeSession.current === activeSession.questionIds.length - 1
-                  ? "查看成绩"
-                  : "下一题 →"}
-              </button>
+              <div className="analysis-navigation">
+                <button
+                  className="practice-previous"
+                  type="button"
+                  onClick={previousQuestion}
+                  disabled={activeSession.current === 0}
+                >
+                  ← 上一题
+                </button>
+                <button className="next-button" type="button" onClick={nextQuestion}>
+                  {activeSession.current === activeSession.questionIds.length - 1
+                    ? "查看成绩"
+                    : "下一题 →"}
+                </button>
+              </div>
             </section>
           )}
         </section>
@@ -1479,54 +1724,60 @@ export default function Home() {
   }
 
   return (
-    <main className="home-page">
-      <SiteNav onHome={goHome} onPractice={() => goTo("categories")} />
+    <main className="home-page overview-page has-bottom-nav">
+      <SiteNav onHome={goHome} onPractice={() => goTo("categories")} onSearch={() => setSearchOpen(true)} onProfile={() => goTo("profile")} showCta={false} />
       <section className="hero">
-        <div className="hero-copy">
-          <span className="hero-label">FOR 2026 AUTUMN RECRUITMENT</span>
-          <h1>大厂行测，<br />终于有地方<span>练了</span></h1>
-          <p>为秋招学生做的行测刷题站。图形推理、材料分析与文字推理均已开放，只练大厂笔试真正会遇到的题。</p>
-          <div className="hero-actions">
-            <button className="primary-button" type="button" onClick={() => goTo("categories")}>进入分类刷题 →</button>
-            <button className="primary-button secondary-green" type="button" onClick={() => goTo("mock")}>进入模考 →</button>
-            <button className="primary-button secondary-green" type="button" onClick={() => goTo("wrong-categories")}>错题集 →</button>
-            <button className="primary-button favorite-entry" type="button" onClick={() => goTo("favorite-categories")}>收藏夹 ★</button>
-            <a href="#structure">看看题库结构</a>
+        <article className="hero-banner">
+          <div className="hero-copy">
+            <span className="hero-label">2026 秋招 · 北森专项题库</span>
+            <h1>大厂秋招行测<br /><span>刷题平台</span></h1>
+            <p>专项练习北森题库<br />图形推理 · 材料分析 · 文字推理<br /><small>剔除公考无关内容，只练大厂笔试高频题型。</small></p>
           </div>
+        </article>
+        <div className="hero-actions">
+          <button className="hero-action hero-action-primary" type="button" onClick={() => goTo("categories")}>
+            <span className="action-sticker"><FeatureIcon kind="practice" /></span><span><strong>分类专项刷题</strong><small>分模块针对性练习</small></span><span className="feature-sketch"><FeatureSketch kind="practice" /></span>
+          </button>
+          <button className="hero-action hero-action-mock" type="button" onClick={() => goTo("mock")}>
+            <span className="action-sticker"><FeatureIcon kind="mock" /></span><span><strong>全真限时模考</strong><small>模拟真实笔试节奏</small></span><span className="feature-sketch"><FeatureSketch kind="mock" /></span>
+          </button>
+          <button className="hero-action hero-action-wrong" type="button" onClick={() => goTo("wrong-categories")}>
+            <span className="action-sticker"><FeatureIcon kind="wrong" /></span><span><strong>错题集</strong><small>自动归集薄弱考点</small></span><span className="feature-sketch"><FeatureSketch kind="wrong" /></span>
+          </button>
+          <button className="hero-action hero-action-favorite" type="button" onClick={() => goTo("favorite-categories")}>
+            <span className="action-sticker"><FeatureIcon kind="favorite" /></span><span><strong>收藏夹</strong><small>反复训练犹豫题</small></span><span className="feature-sketch"><FeatureSketch kind="favorite" /></span>
+          </button>
         </div>
-        <aside className="hero-board" aria-label="题库概览">
-          <div className="board-top"><span>北森题库 · 三大模块</span><em>持续更新</em></div>
-          <div className="board-score">
-            <div>
-              <span>去重后已录入</span>
-              <strong>{questions.length + materialQuestions.length + verbalQuestions.length}</strong>
-              <small>图形 + 材料 + 文字</small>
-            </div>
-            <div className="mini-chart" aria-hidden="true">
-              {[48, 67, 54, 82, 72, 92, 78].map((height) => (
-                <i key={height} style={{ height: `${height}%` }} />
-              ))}
-            </div>
-          </div>
-          <div className="board-progress">
-            <div><span>图形推理</span><strong>{questions.length} 题</strong></div>
-            <div><span>材料分析</span><strong>{materialQuestions.length} 题</strong></div>
-            <div><span>文字推理</span><strong>{verbalQuestions.length} 题</strong></div>
-          </div>
-          <div className="board-footer"><span>答案提交后显示</span><span>同账号手机 / 电脑自动同步</span></div>
-        </aside>
       </section>
 
       <section className="structure-section" id="structure">
-        <span className="eyebrow">QUESTION BANK</span><h2>题库结构</h2>
-        <div className="structure-grid">
-          <article><span>01</span><h3>图形推理</h3><p>随机或按考点练习 {questions.length} 道去重题，图片优先保留 PDF 原图。</p></article>
-          <article><span>02</span><h3>材料分析</h3><p>按原题顺序练习 {materialQuestions.length} 道去重题，题干与图表分开呈现。</p></article>
-          <article><span>03</span><h3>文字推理</h3><p>随机或按类型练习 {verbalQuestions.length} 道去重题，提交后显示细化考点。</p></article>
-          <article><span>04</span><h3>错题集</h3><p>三大模块分别统计；错题即时加入，答对后自动移出。</p></article>
-          <article><span>05</span><h3>收藏夹</h3><p>三大模块分别收藏；做对也会保留，适合反复训练耗时题与犹豫题。</p></article>
+        <div className="section-title-row"><div><span className="eyebrow">QUESTION BANK</span><h2>题库分类</h2></div><button type="button" onClick={() => goTo("categories")}>查看更多 →</button></div>
+        <div className="home-category-tags">
+          <button type="button" onClick={() => goTo("graphic-mode")}><span><i aria-hidden="true">🧩</i>图形推理</span><small>{questions.length} 题</small></button>
+          <button type="button" onClick={() => startMaterialPractice(false)}><span><i aria-hidden="true">📊</i>材料分析</span><small>{materialQuestions.length} 题</small></button>
+          <button type="button" onClick={() => goTo("verbal-mode")}><span><i aria-hidden="true">💬</i>文字推理</span><small>{verbalQuestions.length} 题</small></button>
         </div>
+        <div className="trust-title"><span className="eyebrow">WHY THIS TOOL</span><h2>为什么选择本站</h2></div>
+        <section className="trust-panel">
+          <div><span>✓</span><strong>定向题库</strong><small>只练大厂笔试内容</small></div>
+          <div><span>◷</span><strong>真实计时</strong><small>题目加载后再开始</small></div>
+          <div><span>↻</span><strong>错题归档</strong><small>提交后立即保存</small></div>
+          <div><span>＋</span><strong>持续更新</strong><small>题库增加即可扩展</small></div>
+        </section>
       </section>
+      {searchOpen && (
+        <div className="search-overlay" role="dialog" aria-modal="true" aria-label="搜索题库">
+          <button className="search-backdrop" type="button" onClick={() => setSearchOpen(false)} aria-label="关闭搜索" />
+          <section className="search-panel">
+            <div><span>搜索题库</span><button type="button" onClick={() => setSearchOpen(false)}>×</button></div>
+            <p>选择你要练习的模块</p>
+            <button type="button" onClick={() => { setSearchOpen(false); goTo("graphic-mode"); }}>🧩 图形推理 <small>{questions.length} 题</small></button>
+            <button type="button" onClick={() => { setSearchOpen(false); startMaterialPractice(false); }}>📊 材料分析 <small>{materialQuestions.length} 题</small></button>
+            <button type="button" onClick={() => { setSearchOpen(false); goTo("verbal-mode"); }}>💬 文字推理 <small>{verbalQuestions.length} 题</small></button>
+          </section>
+        </div>
+      )}
+      <BottomNav current="home" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
     </main>
   );
 }

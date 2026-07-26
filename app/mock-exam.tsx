@@ -100,6 +100,7 @@ type FavoriteState = Record<ModuleKey, string[]>;
 type MockExamProps = {
   onHome: () => void;
   onPractice: () => void;
+  onProfile: () => void;
   favorites: FavoriteState;
   onToggleFavorite: (module: ModuleKey, sourceId: string) => void;
   onComplete: (
@@ -490,9 +491,29 @@ function MockNav({
   );
 }
 
+function MockBottomNav({
+  onHome,
+  onPractice,
+  onProfile,
+}: {
+  onHome: () => void;
+  onPractice: () => void;
+  onProfile: () => void;
+}) {
+  return (
+    <nav className="bottom-nav" aria-label="底部导航">
+      <button type="button" onClick={onHome}><span>⌂</span><small>首页</small></button>
+      <button type="button" onClick={onPractice}><span>▣</span><small>题库</small></button>
+      <button className="active" type="button"><span>◷</span><small>模考</small></button>
+      <button type="button" onClick={onProfile}><span>☺</span><small>我的</small></button>
+    </nav>
+  );
+}
+
 export default function MockExam({
   onHome,
   onPractice,
+  onProfile,
   favorites,
   onToggleFavorite,
   onComplete,
@@ -970,7 +991,7 @@ export default function MockExam({
 
   if (view === "landing") {
     return (
-      <main className="inner-page mock-page">
+      <main className="inner-page mock-page has-bottom-nav">
         <MockNav onHome={onHome} onPractice={onPractice} />
         <section className="page-heading mock-heading">
           <button className="back-link" type="button" onClick={onHome}>← 返回首页</button>
@@ -1022,6 +1043,7 @@ export default function MockExam({
             <div className="mock-history-empty">完成第一场模考后，这里会保存成绩和全部题目。</div>
           )}
         </section>
+        <MockBottomNav onHome={onHome} onPractice={onPractice} onProfile={onProfile} />
       </main>
     );
   }
@@ -1192,7 +1214,7 @@ export default function MockExam({
     const totalQuestions = reportStats.reduce((sum, item) => sum + item.total, 0);
     const totalSeconds = reportStats.reduce((sum, item) => sum + item.seconds, 0);
     return (
-      <main className="inner-page mock-report-page">
+      <main className="inner-page mock-report-page has-bottom-nav">
         <MockNav onHome={onHome} onPractice={onPractice} />
         <section className="mock-report-hero">
           <button className="back-link" type="button" onClick={() => setView("landing")}>
@@ -1281,6 +1303,7 @@ export default function MockExam({
             </div>
           ))}
         </section>
+        <MockBottomNav onHome={onHome} onPractice={onPractice} onProfile={onProfile} />
       </main>
     );
   }

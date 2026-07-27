@@ -312,9 +312,35 @@ function mergeFavorites(value: unknown): FavoriteState {
   if (!value || typeof value !== "object") return initialFavorites;
   const parsed = value as Partial<FavoriteState>;
   return {
-    graphic: [...new Set(parsed.graphic?.filter((id) => graphicById.has(id)) ?? [])],
-    material: [...new Set(parsed.material?.filter((id) => materialById.has(id)) ?? [])],
-    verbal: [...new Set(parsed.verbal?.filter((id) => verbalById.has(id)) ?? [])],
+    graphic: [
+      ...new Set(
+        parsed.graphic?.filter((id) => Boolean(questionFor("graphic", id))) ??
+          [],
+      ),
+    ],
+    material: [
+      ...new Set(
+        parsed.material?.filter((id) =>
+          Boolean(questionFor("material", id)),
+        ) ?? [],
+      ),
+    ],
+    verbal: [
+      ...new Set(
+        parsed.verbal?.filter((id) => Boolean(questionFor("verbal", id))) ??
+          [],
+      ),
+    ],
+  };
+}
+
+function favoriteStateFromQuestionIds(questionIds: string[]): FavoriteState {
+  return {
+    graphic: questionIds.filter(
+      (id) => !id.startsWith("材料-") && !id.startsWith("文字-"),
+    ),
+    material: questionIds.filter((id) => id.startsWith("材料-")),
+    verbal: questionIds.filter((id) => id.startsWith("文字-")),
   };
 }
 
@@ -587,6 +613,7 @@ export default function Home() {
   const { saveUserState } = account;
   const [screen, setScreen] = useState<Screen>("home");
   const [, setQuestionRevision] = useState(0);
+  const [questionsReady, setQuestionsReady] = useState(false);
   const [activeSession, setActiveSession] = useState<SavedSession | null>(null);
   const [savedSessions, setSavedSessions] = useState<Record<string, SavedSession>>({});
   const [performance, setPerformance] = useState<PerformanceState>(initialPerformance);
@@ -615,7 +642,12 @@ export default function Home() {
       .then(() => {
         if (active) setQuestionRevision((revision) => revision + 1);
       })
-      .catch(() => undefined);
+      .catch((error) => {
+        console.error("Supabase 题库同步失败，已使用本地备用题库", error);
+      })
+      .finally(() => {
+        if (active) setQuestionsReady(true);
+      });
     return () => {
       active = false;
     };
@@ -671,8 +703,8 @@ export default function Home() {
           ? "verbal"
           : "graphic";
       cloudProgress[moduleKey].attempts += item.attempts;
+      cloudProgress[moduleKey].correct += item.correct_attempts;
       if (item.is_correct) {
-        cloudProgress[moduleKey].correct += 1;
         resolvedQuestionIds.add(item.question_id);
       } else {
         cloudProgress[moduleKey].wrongIds.push(item.question_id);
@@ -717,6 +749,12 @@ export default function Home() {
   const visiblePerformance = account.session
     ? combinedPerformance
     : performance;
+  const cloudFavorites = useMemo(
+    () => favoriteStateFromQuestionIds(account.favoriteQuestionIds),
+    [account.favoriteQuestionIds],
+  );
+  const visibleFavorites =
+    account.session && account.favoritesLoaded ? cloudFavorites : favorites;
   const totalAttempts = (Object.keys(visiblePerformance) as ModuleKey[]).reduce(
     (sum, module) => sum + visiblePerformance[module].attempts,
     0,
@@ -808,8 +846,11 @@ export default function Home() {
 
   useEffect(() => {
     if (!persistenceLoaded) return;
-    window.localStorage.setItem(favoritesStorageKey, JSON.stringify(favorites));
-  }, [favorites, persistenceLoaded]);
+    window.localStorage.setItem(
+      favoritesStorageKey,
+      JSON.stringify(visibleFavorites),
+    );
+  }, [visibleFavorites, persistenceLoaded]);
 
   useEffect(() => {
     if (!activeSession || !persistenceLoaded) return;
@@ -882,7 +923,11 @@ export default function Home() {
     if (currentSession) {
       sessions[storageKey(currentSession.module, currentSession.context)] = currentSession;
     }
-    const payload: CloudPracticePayload = { sessions, performance, favorites };
+    const payload: CloudPracticePayload = {
+      sessions,
+      performance,
+      favorites: visibleFavorites,
+    };
     cloudPayloadRef.current = payload;
     const timer = window.setTimeout(() => {
       void saveUserState(payload).then((updatedAt) => {
@@ -909,7 +954,7 @@ export default function Home() {
     activeSessionRevision,
     savedSessions,
     performance,
-    favorites,
+    visibleFavorites,
     persistenceLoaded,
     cloudSyncReady,
     account.loading,
@@ -1310,16 +1355,20 @@ export default function Home() {
   }
 
   function toggleFavorite(module: ModuleKey, sourceId: string) {
+    const isFavorite = visibleFavorites[module].includes(sourceId);
     setFavorites((current) => {
       const ids = new Set(current[module]);
-      if (ids.has(sourceId)) ids.delete(sourceId);
+      if (isFavorite) ids.delete(sourceId);
       else ids.add(sourceId);
       return { ...current, [module]: [...ids] };
     });
+    if (account.session) {
+      void account.setQuestionFavorite(sourceId, !isFavorite);
+    }
   }
 
   function startFavoritePractice(module: ModuleKey) {
-    const favoriteIds = new Set(favorites[module]);
+    const favoriteIds = new Set(visibleFavorites[module]);
     if (!favoriteIds.size) return;
     if (resumeSession(module, "favorite", favoriteIds)) return;
     const pool = bankFor(module).filter((question) =>
@@ -1408,6 +1457,18 @@ export default function Home() {
     });
     return `conic-gradient(${segments.join(",")})`;
   }, [wrongCategoryCounts]);
+
+  if (!questionsReady) {
+    return (
+      <main className="inner-page overview-page">
+        <section className="loading-panel" aria-live="polite">
+          <span>QUESTION BANK</span>
+          <h1>正在同步最新题库…</h1>
+          <p>将优先读取 Supabase，完成后再进入刷题与模考。</p>
+        </section>
+      </main>
+    );
+  }
 
   if (screen === "categories") {
     return (
@@ -1593,14 +1654,14 @@ export default function Home() {
               className="category-card active-card favorite-category-card"
               type="button"
               key={module}
-              disabled={!favorites[module].length}
+              disabled={!visibleFavorites[module].length}
               onClick={() => startFavoritePractice(module)}
             >
               <span>0{index + 1}</span>
               <h2><span className="module-emoji" aria-hidden="true">{moduleIcons[module]}</span>{moduleNames[module]}</h2>
-              <p>当前收藏 {favorites[module].length} 道，答对后仍会保留，可反复训练。</p>
+              <p>当前收藏 {visibleFavorites[module].length} 道，答对后仍会保留，可反复训练。</p>
               <strong>
-                {favorites[module].length ? "进入收藏题练习 →" : "暂时没有收藏"}
+                {visibleFavorites[module].length ? "进入收藏题练习 →" : "暂时没有收藏"}
               </strong>
             </button>
           ))}
@@ -1690,9 +1751,10 @@ export default function Home() {
       (sum, item) => sum + item.attempts,
       0,
     );
-    const cloudCorrect = account.questionProgress.filter(
-      (item) => item.is_correct,
-    ).length;
+    const cloudCorrect = account.questionProgress.reduce(
+      (sum, item) => sum + item.correct_attempts,
+      0,
+    );
     const cloudRecordedAttempts =
       cloudAttempts + account.completedExamQuestionCount;
     const cloudRecordedCorrect =
@@ -1711,16 +1773,19 @@ export default function Home() {
         Object.keys(saved.submitted),
       ),
     );
+    account.questionProgress.forEach((item) =>
+      answeredQuestionIds.add(item.question_id),
+    );
+    account.completedExamQuestionIds.forEach((id) =>
+      answeredQuestionIds.add(id),
+    );
     if (activeSession) {
       Object.keys(activeSession.submitted).forEach((id) =>
         answeredQuestionIds.add(id),
       );
     }
     const practicedQuestionCount = account.session
-      ? Math.max(
-          account.questionProgress.length + account.completedExamQuestionCount,
-          answeredQuestionIds.size,
-        )
+      ? answeredQuestionIds.size
       : currentSessionAnswered;
     const memberIsCurrent =
       Boolean(account.profile?.is_member) &&
@@ -1882,7 +1947,7 @@ export default function Home() {
         onPractice={() => goTo("categories")}
         onProfile={() => goTo("profile")}
         onComplete={recordMockOutcomes}
-        favorites={favorites}
+        favorites={visibleFavorites}
         onToggleFavorite={toggleFavorite}
       />
     );
@@ -1895,7 +1960,7 @@ export default function Home() {
     const optionCount = activeQuestion.optionCount;
     const questionTime =
       activeSession.questionTimes[activeId] ?? activeSession.currentSeconds;
-    const isFavorite = favorites[activeSession.module].includes(activeId);
+    const isFavorite = visibleFavorites[activeSession.module].includes(activeId);
     const groupStart = Math.floor(activeSession.current / 10) * 10;
     const groupEnd = Math.min(
       groupStart + 10,

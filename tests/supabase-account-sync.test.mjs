@@ -65,7 +65,9 @@ test("updates the displayed profile name immediately after saving", async () => 
   assert.match(account, /data:\s*\{\s*user:\s*updatedUser\s*\}/);
   assert.match(account, /setSession\(\(currentSession\)/);
   assert.match(account, /setProfile\(\(currentProfile\)/);
-  assert.match(account, /\.upsert\(\s*\{\s*id:\s*session\.user\.id/);
+  assert.match(account, /\.from\("users"\)\s*\.update\(\{/);
+  assert.match(account, /\.eq\("id", session\.user\.id\)/);
+  assert.doesNotMatch(account, /\.upsert\(\s*\{\s*id:\s*session\.user\.id/);
   assert.match(page, /account\.session\?\.user\.user_metadata\?\.full_name/);
   assert.match(page, /account\.session\?\.user\.email\?\.split\("@"\)/);
   assert.match(page, /account\.session \? "用户" : "游客"/);
@@ -84,26 +86,52 @@ test("never replaces saved account progress with an empty snapshot", async () =>
 });
 
 test("accepts new Supabase-only questions and reads mock history back", async () => {
+  const page = await readFile(pageUrl, "utf8");
   const questionSync = await readFile(questionSyncUrl, "utf8");
   const mock = await readFile(mockUrl, "utf8");
   assert.match(questionSync, /function createQuestion/);
   assert.match(questionSync, /graphicQuestions\.push\(question\)/);
   assert.match(questionSync, /materialQuestions\.push\(question\)/);
   assert.match(questionSync, /verbalQuestions\.push\(question\)/);
+  assert.match(page, /正在同步最新题库/);
+  assert.match(page, /refreshQuestionsFromSupabase\(\)/);
   assert.match(mock, /\.from\("exam_records"\)\s*\.select\("exam_id,details,created_at"\)/);
   assert.match(mock, /onConflict: "user_id,exam_id"/);
 });
 
-test("stores membership period and idempotent exam identifiers", async () => {
+test("stores membership, protected history, exact practice totals, and favorites", async () => {
   const schema = await readFile(schemaUrl, "utf8");
   assert.match(schema, /membership_started_at timestamptz/);
   assert.match(schema, /membership_expiry timestamptz/);
   assert.match(schema, /exam_id text not null/);
   assert.match(schema, /unique \(user_id, exam_id\)/);
   assert.match(schema, /email text unique not null/);
-  assert.match(
+  assert.match(schema, /correct_attempts integer not null default 0/);
+  assert.match(schema, /create table if not exists public\.user_favorites/);
+  assert.match(schema, /is_active boolean not null default true/);
+  assert.match(schema, /revoke delete, truncate[\s\S]*public\.user_favorites/);
+  assert.doesNotMatch(
     schema,
-    /revoke delete on public\.user_progress, public\.exam_records, public\.user_state/,
+    /create policy (?:progress|exams|state|favorites)_delete_self/,
   );
-  assert.doesNotMatch(schema, /create policy (?:progress|exams|state)_delete_self/);
+});
+
+test("keeps a signed-in device active for seven days of inactivity", async () => {
+  const account = await readFile(accountUrl, "utf8");
+  assert.match(account, /LOGIN_INACTIVITY_WINDOW_MS = 7 \* 24 \* 60 \* 60 \* 1000/);
+  assert.match(account, /LAST_ACTIVE_AT_KEY/);
+  assert.match(account, /Date\.now\(\) - lastActiveAt <= LOGIN_INACTIVITY_WINDOW_MS/);
+  assert.match(account, /window\.localStorage\.setItem\(LAST_ACTIVE_AT_KEY/);
+  assert.match(account, /await supabase\.auth\.signOut\(\)/);
+});
+
+test("reads independent Supabase favorites and cumulative correct attempts", async () => {
+  const account = await readFile(accountUrl, "utf8");
+  const page = await readFile(pageUrl, "utf8");
+  assert.match(account, /\.from\("user_favorites"\)/);
+  assert.match(account, /\.eq\("is_active", true\)/);
+  assert.match(account, /setQuestionFavorite/);
+  assert.match(account, /correct_attempts:/);
+  assert.match(page, /cloudProgress\[moduleKey\]\.correct \+= item\.correct_attempts/);
+  assert.match(page, /account\.completedExamQuestionIds/);
 });

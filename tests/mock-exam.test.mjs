@@ -99,7 +99,10 @@ test("preloads upcoming practice questions and syncs progress for the signed-in 
   assert.match(page, /function preloadPracticeQueue/);
   assert.match(page, /practiceImageCache/);
   assert.match(page, /fetch\("\/api\/progress"/);
-  assert.match(page, /const payload: CloudPracticePayload = \{ sessions, performance, favorites \}/);
+  assert.match(
+    page,
+    /const payload: CloudPracticePayload = \{\s*sessions,\s*performance,\s*favorites: visibleFavorites/,
+  );
   assert.match(schema, /practiceStates/);
   assert.match(schema, /examDrafts/);
   assert.match(progressRoute, /getChatGPTUser/);
@@ -116,7 +119,8 @@ test("supports account-synced favorites in practice and mock exam", async () => 
   assert.match(page, /function toggleFavorite/);
   assert.match(page, /function startFavoritePractice/);
   assert.match(page, /className=\{`favorite-toggle/);
-  assert.match(page, /favorites=\{favorites\}/);
+  assert.match(page, /favorites=\{visibleFavorites\}/);
+  assert.match(page, /account\.setQuestionFavorite\(sourceId, !isFavorite\)/);
   assert.match(mock, /onToggleFavorite/);
   assert.match(mock, /取消收藏本题/);
 });

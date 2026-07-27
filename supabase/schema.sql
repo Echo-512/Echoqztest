@@ -46,13 +46,20 @@ create index if not exists questions_difficulty_idx on public.questions(difficul
 create table if not exists public.user_progress (
   id bigserial primary key,
   user_id uuid not null references public.users(id) on delete cascade,
-  question_id text not null references public.questions(id) on delete cascade,
+  question_id text not null references public.questions(id) on delete restrict,
   user_answer text,
   is_correct boolean,
   attempts integer not null default 1 check (attempts > 0),
+  correct_attempts integer not null default 0 check (correct_attempts >= 0),
   updated_at timestamptz not null default now(),
   unique (user_id, question_id)
 );
+
+alter table public.user_progress
+  add column if not exists correct_attempts integer not null default 0;
+update public.user_progress
+set correct_attempts = case when is_correct then 1 else 0 end
+where correct_attempts = 0;
 
 create index if not exists user_progress_question_id_idx
   on public.user_progress(question_id);
@@ -81,6 +88,18 @@ create table if not exists public.user_state (
   payload jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
+
+create table if not exists public.user_favorites (
+  user_id uuid not null references public.users(id) on delete cascade,
+  question_id text not null references public.questions(id) on delete restrict,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, question_id)
+);
+
+create index if not exists user_favorites_active_idx
+  on public.user_favorites(user_id, is_active);
 
 create or replace function public.handle_new_auth_user()
 returns trigger
@@ -149,6 +168,7 @@ alter table public.questions enable row level security;
 alter table public.user_progress enable row level security;
 alter table public.exam_records enable row level security;
 alter table public.user_state enable row level security;
+alter table public.user_favorites enable row level security;
 
 drop policy if exists questions_read on public.questions;
 create policy questions_read on public.questions
@@ -205,6 +225,19 @@ create policy state_update_self on public.user_state
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
 
+drop policy if exists favorites_select_self on public.user_favorites;
+drop policy if exists favorites_insert_self on public.user_favorites;
+drop policy if exists favorites_update_self on public.user_favorites;
+drop policy if exists favorites_delete_self on public.user_favorites;
+create policy favorites_select_self on public.user_favorites
+  for select to authenticated using ((select auth.uid()) = user_id);
+create policy favorites_insert_self on public.user_favorites
+  for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy favorites_update_self on public.user_favorites
+  for update to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+
 grant usage on schema public to anon, authenticated;
 grant select on public.questions to anon, authenticated;
 revoke insert, update on public.users from authenticated;
@@ -216,7 +249,9 @@ grant update (email, phone, full_name, last_sign_in_at)
 grant select, insert, update on public.user_progress to authenticated;
 grant select, insert, update on public.exam_records to authenticated;
 grant select, insert, update on public.user_state to authenticated;
-revoke delete on public.user_progress, public.exam_records, public.user_state
+grant select, insert, update on public.user_favorites to authenticated;
+revoke delete, truncate
+  on public.user_progress, public.exam_records, public.user_state, public.user_favorites
   from authenticated;
 grant usage, select on sequence public.user_progress_id_seq to authenticated;
 grant usage, select on sequence public.exam_records_id_seq to authenticated;

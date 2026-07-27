@@ -14,6 +14,8 @@ import { supabase } from "./supabase-client";
 
 const REMEMBER_KEY = "qiuzhao-remember-login";
 const ACTIVE_SESSION_KEY = "qiuzhao-active-session";
+const LAST_ACTIVE_AT_KEY = "qiuzhao-last-active-at";
+const LOGIN_INACTIVITY_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 export type AccountProfile = {
   id: string;
@@ -31,6 +33,7 @@ export type CloudQuestionProgress = {
   user_answer: string | null;
   is_correct: boolean | null;
   attempts: number;
+  correct_attempts: number;
   updated_at: string;
 };
 
@@ -56,9 +59,12 @@ type AccountContextValue = {
   userState: unknown;
   userStateUpdatedAt: string | null;
   userStateLoaded: boolean;
+  favoriteQuestionIds: string[];
+  favoritesLoaded: boolean;
   completedExamCount: number;
   completedExamQuestionCount: number;
   completedExamCorrectCount: number;
+  completedExamQuestionIds: string[];
   examPerformance: CloudExamPerformance;
   loading: boolean;
   authOpen: boolean;
@@ -73,6 +79,10 @@ type AccountContextValue = {
     isCorrect: boolean,
   ) => Promise<void>;
   saveUserState: (payload: unknown) => Promise<string | null>;
+  setQuestionFavorite: (
+    questionId: string,
+    isFavorite: boolean,
+  ) => Promise<void>;
   updateFullName: (fullName: string) => Promise<void>;
 };
 
@@ -139,22 +149,49 @@ function summarizeExamPerformance(
   return performance;
 }
 
+function collectExamQuestionIds(rows: CloudExamSummary[]) {
+  const questionIds = new Set<string>();
+  for (const row of rows) {
+    if (!row.details || typeof row.details !== "object") continue;
+    const modules = (row.details as { modules?: unknown }).modules;
+    if (!modules || typeof modules !== "object") continue;
+    for (const rawModule of Object.values(
+      modules as Record<string, unknown>,
+    )) {
+      if (!rawModule || typeof rawModule !== "object") continue;
+      const ids = (rawModule as { questionIds?: unknown }).questionIds;
+      if (!Array.isArray(ids)) continue;
+      ids.forEach((id) => {
+        if (typeof id === "string") questionIds.add(id);
+      });
+    }
+  }
+  return [...questionIds];
+}
+
 async function ensureProfile(user: User) {
   const fullName =
     typeof user.user_metadata?.full_name === "string"
       ? user.user_metadata.full_name
       : null;
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("users")
-    .upsert(
-      {
-        id: user.id,
-        email: user.email ?? null,
-        full_name: fullName,
-      },
-      { onConflict: "id" },
-    );
+    .update({
+      email: user.email ?? null,
+      full_name: fullName,
+    })
+    .eq("id", user.id)
+    .select("id")
+    .maybeSingle();
   if (error) throw error;
+  if (data) return;
+
+  const { error: insertError } = await supabase.from("users").insert({
+    id: user.id,
+    email: user.email ?? null,
+    full_name: fullName,
+  });
+  if (insertError) throw insertError;
 }
 
 async function recordSuccessfulLogin(user: User) {
@@ -162,16 +199,27 @@ async function recordSuccessfulLogin(user: User) {
     typeof user.user_metadata?.full_name === "string"
       ? user.user_metadata.full_name
       : null;
-  const { error } = await supabase.from("users").upsert(
-    {
-      id: user.id,
+  const lastSignInAt = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("users")
+    .update({
       email: user.email ?? null,
       full_name: fullName,
-      last_sign_in_at: new Date().toISOString(),
-    },
-    { onConflict: "id" },
-  );
+      last_sign_in_at: lastSignInAt,
+    })
+    .eq("id", user.id)
+    .select("id")
+    .maybeSingle();
   if (error) throw error;
+  if (data) return;
+
+  const { error: insertError } = await supabase.from("users").insert({
+    id: user.id,
+    email: user.email ?? null,
+    full_name: fullName,
+    last_sign_in_at: lastSignInAt,
+  });
+  if (insertError) throw insertError;
 }
 
 function accessFor() {
@@ -519,11 +567,16 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     null,
   );
   const [userStateLoaded, setUserStateLoaded] = useState(false);
+  const [favoriteQuestionIds, setFavoriteQuestionIds] = useState<string[]>([]);
+  const [favoritesLoaded, setFavoritesLoaded] = useState(false);
   const [completedExamCount, setCompletedExamCount] = useState(0);
   const [completedExamQuestionCount, setCompletedExamQuestionCount] =
     useState(0);
   const [completedExamCorrectCount, setCompletedExamCorrectCount] =
     useState(0);
+  const [completedExamQuestionIds, setCompletedExamQuestionIds] = useState<
+    string[]
+  >([]);
   const [examPerformance, setExamPerformance] =
     useState<CloudExamPerformance>(emptyExamPerformance);
   const [loading, setLoading] = useState(true);
@@ -532,6 +585,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const refreshAccountData = useCallback(async () => {
     setLoading(true);
     setUserStateLoaded(false);
+    setFavoritesLoaded(false);
     try {
       const {
         data: { session: currentSession },
@@ -545,15 +599,24 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         setUserState(null);
         setUserStateUpdatedAt(null);
         setUserStateLoaded(true);
+        setFavoriteQuestionIds([]);
+        setFavoritesLoaded(true);
         setCompletedExamCount(0);
         setCompletedExamQuestionCount(0);
         setCompletedExamCorrectCount(0);
+        setCompletedExamQuestionIds([]);
         setExamPerformance(emptyExamPerformance());
         return;
       }
 
       await ensureProfile(currentSession.user);
-      const [profileResult, progressResult, stateResult, examResult] =
+      const [
+        profileResult,
+        progressResult,
+        stateResult,
+        examResult,
+        favoritesResult,
+      ] =
         await Promise.all([
         supabase
           .from("users")
@@ -564,7 +627,9 @@ export function AccountProvider({ children }: { children: ReactNode }) {
           .single(),
         supabase
           .from("user_progress")
-          .select("question_id,user_answer,is_correct,attempts,updated_at")
+          .select(
+            "question_id,user_answer,is_correct,attempts,correct_attempts,updated_at",
+          )
           .eq("user_id", currentSession.user.id)
           .order("updated_at", { ascending: false }),
         supabase
@@ -576,29 +641,56 @@ export function AccountProvider({ children }: { children: ReactNode }) {
           .from("exam_records")
           .select("total_questions,correct_count,details")
           .eq("user_id", currentSession.user.id),
+        supabase
+          .from("user_favorites")
+          .select("question_id")
+          .eq("user_id", currentSession.user.id)
+          .eq("is_active", true),
       ]);
-      if (stateResult.error) throw stateResult.error;
-      setUserState(stateResult.data?.payload ?? null);
-      setUserStateUpdatedAt(stateResult.data?.updated_at ?? null);
+      if (stateResult.error) {
+        console.error("学习状态读取失败", stateResult.error);
+      } else {
+        setUserState(stateResult.data?.payload ?? null);
+        setUserStateUpdatedAt(stateResult.data?.updated_at ?? null);
+      }
       setUserStateLoaded(true);
-      if (profileResult.error) throw profileResult.error;
-      setProfile(profileResult.data as AccountProfile);
-      if (progressResult.error) throw progressResult.error;
-      setQuestionProgress(
-        (progressResult.data ?? []) as CloudQuestionProgress[],
-      );
-      if (examResult.error) throw examResult.error;
-      const examRows = (examResult.data ?? []) as CloudExamSummary[];
-      setCompletedExamCount(examRows.length);
-      setCompletedExamQuestionCount(
-        examRows.reduce((sum, row) => sum + row.total_questions, 0),
-      );
-      setCompletedExamCorrectCount(
-        examRows.reduce((sum, row) => sum + row.correct_count, 0),
-      );
-      setExamPerformance(summarizeExamPerformance(examRows));
+      if (profileResult.error) {
+        console.error("用户资料读取失败", profileResult.error);
+      } else {
+        setProfile(profileResult.data as AccountProfile);
+      }
+      if (progressResult.error) {
+        console.error("普通刷题记录读取失败", progressResult.error);
+      } else {
+        setQuestionProgress(
+          (progressResult.data ?? []) as CloudQuestionProgress[],
+        );
+      }
+      if (examResult.error) {
+        console.error("模考统计读取失败", examResult.error);
+      } else {
+        const examRows = (examResult.data ?? []) as CloudExamSummary[];
+        setCompletedExamCount(examRows.length);
+        setCompletedExamQuestionCount(
+          examRows.reduce((sum, row) => sum + row.total_questions, 0),
+        );
+        setCompletedExamCorrectCount(
+          examRows.reduce((sum, row) => sum + row.correct_count, 0),
+        );
+        setCompletedExamQuestionIds(collectExamQuestionIds(examRows));
+        setExamPerformance(summarizeExamPerformance(examRows));
+      }
+      if (favoritesResult.error) {
+        console.error("收藏夹读取失败", favoritesResult.error);
+      } else {
+        setFavoriteQuestionIds(
+          (favoritesResult.data ?? []).map((row) => row.question_id),
+        );
+        setFavoritesLoaded(true);
+      }
     } catch (error) {
       console.error("账号云同步失败", error);
+      setUserStateLoaded(true);
     } finally {
       setLoading(false);
     }
@@ -613,8 +705,26 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       const remembered = window.localStorage.getItem(REMEMBER_KEY) === "1";
       const activeSession =
         window.sessionStorage.getItem(ACTIVE_SESSION_KEY) === "1";
-      if (currentSession && !remembered && !activeSession) {
+      const savedLastActiveAt =
+        window.localStorage.getItem(LAST_ACTIVE_AT_KEY);
+      let lastActiveAt = savedLastActiveAt
+        ? Number(savedLastActiveAt)
+        : Number.NaN;
+      if (
+        currentSession &&
+        !Number.isFinite(lastActiveAt) &&
+        (remembered || activeSession)
+      ) {
+        lastActiveAt = Date.now();
+      }
+      const withinLoginWindow =
+        Number.isFinite(lastActiveAt) &&
+        Date.now() - lastActiveAt <= LOGIN_INACTIVITY_WINDOW_MS;
+      if (currentSession && !withinLoginWindow) {
+        window.localStorage.removeItem(LAST_ACTIVE_AT_KEY);
         await supabase.auth.signOut();
+      } else if (currentSession) {
+        window.localStorage.setItem(LAST_ACTIVE_AT_KEY, String(Date.now()));
       }
       if (active) await refreshAccountData();
     };
@@ -635,6 +745,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const onAuthenticated = useCallback(
     async (remember: boolean) => {
       window.sessionStorage.setItem(ACTIVE_SESSION_KEY, "1");
+      window.localStorage.setItem(LAST_ACTIVE_AT_KEY, String(Date.now()));
       if (remember) window.localStorage.setItem(REMEMBER_KEY, "1");
       else window.localStorage.removeItem(REMEMBER_KEY);
       try {
@@ -652,6 +763,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     window.localStorage.removeItem(REMEMBER_KEY);
+    window.localStorage.removeItem(LAST_ACTIVE_AT_KEY);
     window.sessionStorage.removeItem(ACTIVE_SESSION_KEY);
     await supabase.auth.signOut();
     setSession(null);
@@ -660,9 +772,12 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     setUserState(null);
     setUserStateUpdatedAt(null);
     setUserStateLoaded(true);
+    setFavoriteQuestionIds([]);
+    setFavoritesLoaded(true);
     setCompletedExamCount(0);
     setCompletedExamQuestionCount(0);
     setCompletedExamCorrectCount(0);
+    setCompletedExamQuestionIds([]);
     setExamPerformance(emptyExamPerformance());
   }, []);
 
@@ -678,6 +793,8 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         user_answer: userAnswer,
         is_correct: isCorrect,
         attempts: (existing?.attempts ?? 0) + 1,
+        correct_attempts:
+          (existing?.correct_attempts ?? 0) + (isCorrect ? 1 : 0),
         updated_at: new Date().toISOString(),
       };
       const { error } = await supabase
@@ -693,6 +810,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
           user_answer: row.user_answer,
           is_correct: row.is_correct,
           attempts: row.attempts,
+          correct_attempts: row.correct_attempts,
           updated_at: row.updated_at,
         },
         ...items.filter((item) => item.question_id !== questionId),
@@ -722,6 +840,33 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     [session],
   );
 
+  const setQuestionFavorite = useCallback(
+    async (questionId: string, isFavorite: boolean) => {
+      if (!session) return;
+      const previousIds = favoriteQuestionIds;
+      setFavoriteQuestionIds((current) => {
+        const next = new Set(current);
+        if (isFavorite) next.add(questionId);
+        else next.delete(questionId);
+        return [...next];
+      });
+      const { error } = await supabase.from("user_favorites").upsert(
+        {
+          user_id: session.user.id,
+          question_id: questionId,
+          is_active: isFavorite,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,question_id" },
+      );
+      if (error) {
+        setFavoriteQuestionIds(previousIds);
+        console.error("收藏夹同步失败", error);
+      }
+    },
+    [favoriteQuestionIds, session],
+  );
+
   const updateFullName = useCallback(
     async (fullName: string) => {
       if (!session) return;
@@ -732,14 +877,11 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       if (authError) throw authError;
       const { error: profileError } = await supabase
         .from("users")
-        .upsert(
-          {
-            id: session.user.id,
-            email: session.user.email ?? null,
-            full_name: fullName,
-          },
-          { onConflict: "id" },
-        );
+        .update({
+          email: session.user.email ?? null,
+          full_name: fullName,
+        })
+        .eq("id", session.user.id);
       if (profileError) throw profileError;
 
       if (updatedUser) {
@@ -765,9 +907,12 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       userState,
       userStateUpdatedAt,
       userStateLoaded,
+      favoriteQuestionIds,
+      favoritesLoaded,
       completedExamCount,
       completedExamQuestionCount,
       completedExamCorrectCount,
+      completedExamQuestionIds,
       examPerformance,
       loading,
       authOpen,
@@ -778,6 +923,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       refreshAccountData,
       saveQuestionProgress,
       saveUserState,
+      setQuestionFavorite,
       updateFullName,
     }),
     [
@@ -787,9 +933,12 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       userState,
       userStateUpdatedAt,
       userStateLoaded,
+      favoriteQuestionIds,
+      favoritesLoaded,
       completedExamCount,
       completedExamQuestionCount,
       completedExamCorrectCount,
+      completedExamQuestionIds,
       examPerformance,
       loading,
       authOpen,
@@ -797,6 +946,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       refreshAccountData,
       saveQuestionProgress,
       saveUserState,
+      setQuestionFavorite,
       updateFullName,
     ],
   );

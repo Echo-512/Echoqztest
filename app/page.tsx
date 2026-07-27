@@ -473,6 +473,7 @@ function BottomNav({
 
 export default function Home() {
   const account = useAccount();
+  const { saveUserState } = account;
   const [screen, setScreen] = useState<Screen>("home");
   const [, setQuestionRevision] = useState(0);
   const [activeSession, setActiveSession] = useState<SavedSession | null>(null);
@@ -652,7 +653,7 @@ export default function Home() {
     const localUpdatedAt = new Date().toISOString();
     window.localStorage.setItem(cloudProgressUpdatedAtKey, localUpdatedAt);
     const timer = window.setTimeout(() => {
-      void account.saveUserState(payload);
+      void saveUserState(payload);
       fetch("/api/progress", {
         method: "PUT",
         headers: { "content-type": "application/json" },
@@ -675,7 +676,7 @@ export default function Home() {
     favorites,
     persistenceLoaded,
     cloudSyncReady,
-    account.saveUserState,
+    saveUserState,
   ]);
 
   useEffect(() => {
@@ -683,10 +684,13 @@ export default function Home() {
     const stateKey = `${account.session.user.id}:${JSON.stringify(account.userState).length}`;
     if (appliedAccountStateRef.current === stateKey) return;
     const payload = account.userState as Partial<CloudPracticePayload>;
-    if (payload.sessions) setSavedSessions(normalizeSessions(payload.sessions));
-    if (payload.performance) setPerformance(mergePerformance(payload.performance));
-    if (payload.favorites) setFavorites(mergeFavorites(payload.favorites));
     appliedAccountStateRef.current = stateKey;
+    const timer = window.setTimeout(() => {
+      if (payload.sessions) setSavedSessions(normalizeSessions(payload.sessions));
+      if (payload.performance) setPerformance(mergePerformance(payload.performance));
+      if (payload.favorites) setFavorites(mergeFavorites(payload.favorites));
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [account.session, account.userState, persistenceLoaded]);
 
   useEffect(() => {
@@ -1787,10 +1791,10 @@ export default function Home() {
         </article>
         <div className="hero-actions">
           <button className="hero-action hero-action-primary" type="button" onClick={() => goTo("categories")}>
-            <span className="action-sticker"><FeatureIcon kind="practice" /></span><span><strong>分类专项刷题</strong><small>分模块针对性练习</small></span><span className="feature-sketch"><FeatureSketch kind="practice" /></span>
+            <span className="action-sticker"><FeatureIcon kind="practice" /></span><span><strong>进入分类刷题</strong><small>分模块针对性练习</small></span><span className="feature-sketch"><FeatureSketch kind="practice" /></span>
           </button>
           <button className="hero-action hero-action-mock" type="button" onClick={() => goTo("mock")}>
-            <span className="action-sticker"><FeatureIcon kind="mock" /></span><span><strong>全真限时模考</strong><small>模拟真实笔试节奏</small></span><span className="feature-sketch"><FeatureSketch kind="mock" /></span>
+            <span className="action-sticker"><FeatureIcon kind="mock" /></span><span><strong>进入模考</strong><small>模拟真实笔试节奏</small></span><span className="feature-sketch"><FeatureSketch kind="mock" /></span>
           </button>
           <button className="hero-action hero-action-wrong" type="button" onClick={() => goTo("wrong-categories")}>
             <span className="action-sticker"><FeatureIcon kind="wrong" /></span><span><strong>错题集</strong><small>自动归集薄弱考点</small></span><span className="feature-sketch"><FeatureSketch kind="wrong" /></span>
@@ -1802,7 +1806,7 @@ export default function Home() {
       </section>
 
       <section className="structure-section" id="structure">
-        <div className="section-title-row"><div><span className="eyebrow">QUESTION BANK</span><h2>题库分类</h2></div><button type="button" onClick={() => goTo("categories")}>查看更多 →</button></div>
+        <div className="section-title-row"><div><span className="eyebrow">QUESTION BANK</span><h2>题库分类</h2></div><button type="button" onClick={() => goTo("categories")}>看看题库结构 →</button></div>
         <div className="home-category-tags">
           <button type="button" onClick={() => goTo("graphic-mode")}><span><i aria-hidden="true">🧩</i>图形推理</span><small>{questions.length} 题</small></button>
           <button type="button" onClick={() => startMaterialPractice(false)}><span><i aria-hidden="true">📊</i>材料分析</span><small>{materialQuestions.length} 题</small></button>

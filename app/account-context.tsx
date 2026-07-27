@@ -114,12 +114,6 @@ function AuthDialog({
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!open) return;
-    setError("");
-    setMessage("");
-  }, [open, mode]);
-
   if (!open) return null;
 
   const passwordValid = PASSWORD_PATTERN.test(password);
@@ -527,11 +521,13 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   return (
     <AccountContext.Provider value={value}>
       {children}
-      <AuthDialog
-        open={authOpen}
-        onClose={() => setAuthOpen(false)}
-        onAuthenticated={onAuthenticated}
-      />
+      {authOpen && (
+        <AuthDialog
+          open
+          onClose={() => setAuthOpen(false)}
+          onAuthenticated={onAuthenticated}
+        />
+      )}
     </AccountContext.Provider>
   );
 }

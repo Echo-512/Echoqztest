@@ -167,9 +167,22 @@ function bankFor(module: ModuleKey): BankQuestion[] {
 }
 
 function questionFor(module: ModuleKey, sourceId: string) {
-  if (module === "graphic") return graphicById.get(sourceId);
-  if (module === "material") return materialById.get(sourceId);
-  return verbalById.get(sourceId);
+  if (module === "graphic") {
+    return (
+      graphicById.get(sourceId) ??
+      graphicQuestions.find((question) => question.sourceId === sourceId)
+    );
+  }
+  if (module === "material") {
+    return (
+      materialById.get(sourceId) ??
+      materialQuestions.find((question) => question.sourceId === sourceId)
+    );
+  }
+  return (
+    verbalById.get(sourceId) ??
+    verbalQuestions.find((question) => question.sourceId === sourceId)
+  );
 }
 
 function questionPoints(module: ModuleKey, question: BankQuestion) {
@@ -364,6 +377,29 @@ function validActiveExam(value: unknown): value is ActiveExam {
   return exam.moduleOrder.every((module) =>
     exam.modules[module]?.questionIds?.every((id) => Boolean(questionFor(module, id))),
   );
+}
+
+function validCompletedExam(value: unknown): value is CompletedExam {
+  if (!value || typeof value !== "object") return false;
+  const record = value as CompletedExam;
+  if (
+    typeof record.id !== "string" ||
+    typeof record.startedAt !== "string" ||
+    typeof record.completedAt !== "string" ||
+    !Array.isArray(record.moduleOrder) ||
+    record.moduleOrder.length !== 3 ||
+    !record.modules
+  ) {
+    return false;
+  }
+  return record.moduleOrder.every((module) => {
+    const state = record.modules[module];
+    return (
+      Boolean(state) &&
+      Array.isArray(state.questionIds) &&
+      state.questionIds.every((id) => typeof id === "string")
+    );
+  });
 }
 
 function QuestionBody({
@@ -582,6 +618,47 @@ export default function MockExam({
       })
       .catch(() => undefined)
       .finally(() => setHistoryLoading(false));
+
+    void (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data, error } = await supabase
+        .from("exam_records")
+        .select("exam_id,details,created_at")
+        .order("created_at", { ascending: false })
+        .limit(30);
+      if (error) {
+        console.error("模考历史同步失败", error);
+        return;
+      }
+      const cloudRecords = (data ?? [])
+        .map((row) => row.details)
+        .filter(validCompletedExam);
+      if (!cloudRecords.length) return;
+      setLocalRecords((current) => {
+        const merged = new Map(current.map((record) => [record.id, record]));
+        for (const record of cloudRecords) merged.set(record.id, record);
+        const records = [...merged.values()]
+          .sort((left, right) => right.completedAt.localeCompare(left.completedAt))
+          .slice(0, 30);
+        window.localStorage.setItem(
+          localHistoryStorageKey,
+          JSON.stringify(records),
+        );
+        return records;
+      });
+      setHistory((current) => {
+        const merged = new Map(current.map((item) => [item.id, item]));
+        for (const record of cloudRecords) {
+          merged.set(record.id, summaryFromRecord(record));
+        }
+        return [...merged.values()].sort((left, right) =>
+          right.completedAt.localeCompare(left.completedAt),
+        );
+      });
+    })();
 
     const localDraftUpdatedAt =
       window.localStorage.getItem(activeExamUpdatedAtKey) ?? "";
@@ -829,15 +906,19 @@ export default function MockExam({
       if (!user) return;
 
       const summary = summaryFromRecord(record);
-      const { error } = await supabase.from("exam_records").insert({
-        user_id: user.id,
-        score: summary.totalCorrect,
-        total_questions: summary.totalQuestions,
-        correct_count: summary.totalCorrect,
-        time_used: summary.durationSeconds,
-        details: record,
-        created_at: new Date().toISOString(),
-      });
+      const { error } = await supabase.from("exam_records").upsert(
+        {
+          user_id: user.id,
+          exam_id: record.id,
+          score: summary.totalCorrect,
+          total_questions: summary.totalQuestions,
+          correct_count: summary.totalCorrect,
+          time_used: summary.durationSeconds,
+          details: record,
+          created_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,exam_id" },
+      );
 
       if (error) {
         console.error("模考记录同步失败", error);
@@ -967,6 +1048,16 @@ export default function MockExam({
       return;
     }
     try {
+      const { data: cloudRecord } = await supabase
+        .from("exam_records")
+        .select("details")
+        .eq("exam_id", id)
+        .maybeSingle();
+      if (validCompletedExam(cloudRecord?.details)) {
+        setReport(cloudRecord.details);
+        setView("report");
+        return;
+      }
       const response = await fetch(`/api/exams?id=${encodeURIComponent(id)}`);
       if (!response.ok) return;
       const payload = (await response.json()) as { record?: CompletedExam };

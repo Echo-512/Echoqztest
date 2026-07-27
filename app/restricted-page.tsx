@@ -9,11 +9,8 @@ export default function RestrictedPage({ onBack }: RestrictedPageProps) {
     <main className="restricted-page">
       <section className="restricted-card" aria-labelledby="restricted-title">
         <span className="restricted-eyebrow">MEMBERSHIP</span>
-        <h1 id="restricted-title">免费期已结束，请充值</h1>
-        <p>会员支付功能即将上线，敬请期待。</p>
-        <button type="button" disabled>
-          暂未开放
-        </button>
+        <h1 id="restricted-title">当前版本免费开放</h1>
+        <p>会员状态会同步保存，微信支付将在收款信息确定后再接入。</p>
         <button className="restricted-back" type="button" onClick={onBack}>
           返回首页
         </button>

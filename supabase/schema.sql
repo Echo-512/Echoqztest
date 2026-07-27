@@ -4,12 +4,18 @@
 create table if not exists public.users (
   id uuid primary key references auth.users(id) on delete cascade,
   email text unique not null,
+  phone text unique,
   full_name text,
   created_at timestamptz not null default now(),
   last_sign_in_at timestamptz,
   is_member boolean not null default false,
+  membership_started_at timestamptz,
   membership_expiry timestamptz
 );
+
+alter table public.users add column if not exists phone text unique;
+alter table public.users
+  add column if not exists membership_started_at timestamptz;
 
 create table if not exists public.questions (
   id text primary key,
@@ -48,16 +54,27 @@ create table if not exists public.user_progress (
   unique (user_id, question_id)
 );
 
+create index if not exists user_progress_question_id_idx
+  on public.user_progress(question_id);
+
 create table if not exists public.exam_records (
   id bigserial primary key,
   user_id uuid not null references public.users(id) on delete cascade,
+  exam_id text not null,
   score integer not null default 0,
   total_questions integer not null check (total_questions > 0),
   correct_count integer not null default 0,
   time_used integer not null default 0,
   details jsonb not null default '[]'::jsonb,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  unique (user_id, exam_id)
 );
+
+alter table public.exam_records add column if not exists exam_id text;
+update public.exam_records set exam_id = id::text where exam_id is null;
+alter table public.exam_records alter column exam_id set not null;
+create unique index if not exists exam_records_user_exam_idx
+  on public.exam_records(user_id, exam_id);
 
 create table if not exists public.user_state (
   user_id uuid primary key references public.users(id) on delete cascade,
@@ -74,23 +91,28 @@ begin
   insert into public.users (
     id,
     email,
+    phone,
     full_name,
     created_at,
     last_sign_in_at,
     is_member,
+    membership_started_at,
     membership_expiry
   )
   values (
     new.id,
-    coalesce(new.email, ''),
+    new.email,
+    new.phone,
     nullif(new.raw_user_meta_data ->> 'full_name', ''),
     coalesce(new.created_at, now()),
     new.last_sign_in_at,
     false,
+    null,
     null
   )
   on conflict (id) do update set
     email = excluded.email,
+    phone = excluded.phone,
     last_sign_in_at = excluded.last_sign_in_at;
   return new;
 end;
@@ -112,6 +134,7 @@ as $$
   update public.users
   set
     is_member = true,
+    membership_started_at = now(),
     membership_expiry = now() + interval '30 days'
   where id = p_user_id;
 $$;
@@ -135,58 +158,66 @@ drop policy if exists users_select_self on public.users;
 drop policy if exists users_insert_self on public.users;
 drop policy if exists users_update_self on public.users;
 create policy users_select_self on public.users
-  for select to authenticated using (auth.uid() = id);
+  for select to authenticated using ((select auth.uid()) = id);
 create policy users_insert_self on public.users
-  for insert to authenticated with check (auth.uid() = id);
+  for insert to authenticated with check ((select auth.uid()) = id);
 create policy users_update_self on public.users
-  for update to authenticated using (auth.uid() = id) with check (auth.uid() = id);
+  for update to authenticated
+  using ((select auth.uid()) = id)
+  with check ((select auth.uid()) = id);
 
 drop policy if exists progress_select_self on public.user_progress;
 drop policy if exists progress_insert_self on public.user_progress;
 drop policy if exists progress_update_self on public.user_progress;
 drop policy if exists progress_delete_self on public.user_progress;
 create policy progress_select_self on public.user_progress
-  for select to authenticated using (auth.uid() = user_id);
+  for select to authenticated using ((select auth.uid()) = user_id);
 create policy progress_insert_self on public.user_progress
-  for insert to authenticated with check (auth.uid() = user_id);
+  for insert to authenticated with check ((select auth.uid()) = user_id);
 create policy progress_update_self on public.user_progress
-  for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for update to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 create policy progress_delete_self on public.user_progress
-  for delete to authenticated using (auth.uid() = user_id);
+  for delete to authenticated using ((select auth.uid()) = user_id);
 
 drop policy if exists exams_select_self on public.exam_records;
 drop policy if exists exams_insert_self on public.exam_records;
 drop policy if exists exams_update_self on public.exam_records;
 drop policy if exists exams_delete_self on public.exam_records;
 create policy exams_select_self on public.exam_records
-  for select to authenticated using (auth.uid() = user_id);
+  for select to authenticated using ((select auth.uid()) = user_id);
 create policy exams_insert_self on public.exam_records
-  for insert to authenticated with check (auth.uid() = user_id);
+  for insert to authenticated with check ((select auth.uid()) = user_id);
 create policy exams_update_self on public.exam_records
-  for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for update to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 create policy exams_delete_self on public.exam_records
-  for delete to authenticated using (auth.uid() = user_id);
+  for delete to authenticated using ((select auth.uid()) = user_id);
 
 drop policy if exists state_select_self on public.user_state;
 drop policy if exists state_insert_self on public.user_state;
 drop policy if exists state_update_self on public.user_state;
 drop policy if exists state_delete_self on public.user_state;
 create policy state_select_self on public.user_state
-  for select to authenticated using (auth.uid() = user_id);
+  for select to authenticated using ((select auth.uid()) = user_id);
 create policy state_insert_self on public.user_state
-  for insert to authenticated with check (auth.uid() = user_id);
+  for insert to authenticated with check ((select auth.uid()) = user_id);
 create policy state_update_self on public.user_state
-  for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for update to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 create policy state_delete_self on public.user_state
-  for delete to authenticated using (auth.uid() = user_id);
+  for delete to authenticated using ((select auth.uid()) = user_id);
 
 grant usage on schema public to anon, authenticated;
 grant select on public.questions to anon, authenticated;
 revoke insert, update on public.users from authenticated;
 grant select on public.users to authenticated;
-grant insert (id, email, full_name, created_at, last_sign_in_at)
+grant insert (id, email, phone, full_name, created_at, last_sign_in_at)
   on public.users to authenticated;
-grant update (email, full_name, last_sign_in_at)
+grant update (email, phone, full_name, last_sign_in_at)
   on public.users to authenticated;
 grant select, insert, update, delete on public.user_progress to authenticated;
 grant select, insert, update, delete on public.exam_records to authenticated;

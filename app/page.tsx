@@ -173,6 +173,17 @@ function formatTime(seconds: number) {
   return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
 }
 
+function formatMembershipDate(value: string | null) {
+  if (!value) return "未设置";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
 function storageKey(module: ModuleKey, context: PracticeContext) {
   return sessionStorageKeys[`${module}-${context}`];
 }
@@ -184,9 +195,22 @@ function bankFor(module: ModuleKey): BankQuestion[] {
 }
 
 function questionFor(module: ModuleKey, sourceId: string) {
-  if (module === "graphic") return graphicById.get(sourceId);
-  if (module === "material") return materialById.get(sourceId);
-  return verbalById.get(sourceId);
+  if (module === "graphic") {
+    return (
+      graphicById.get(sourceId) ??
+      questions.find((question) => question.sourceId === sourceId)
+    );
+  }
+  if (module === "material") {
+    return (
+      materialById.get(sourceId) ??
+      materialQuestions.find((question) => question.sourceId === sourceId)
+    );
+  }
+  return (
+    verbalById.get(sourceId) ??
+    verbalQuestions.find((question) => question.sourceId === sourceId)
+  );
 }
 
 function answerFor(question: BankQuestion) {
@@ -482,8 +506,16 @@ export default function Home() {
   const [favorites, setFavorites] = useState<FavoriteState>(initialFavorites);
   const [persistenceLoaded, setPersistenceLoaded] = useState(false);
   const [cloudSyncReady, setCloudSyncReady] = useState(false);
+  const [accountStateReadyFor, setAccountStateReadyFor] = useState<
+    string | null
+  >(null);
   const [wrongModule, setWrongModule] = useState<ModuleKey>("graphic");
   const [practiceQuestionReady, setPracticeQuestionReady] = useState(false);
+  const [profileEditing, setProfileEditing] = useState(false);
+  const [profileNameDraft, setProfileNameDraft] = useState("");
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileEditError, setProfileEditError] = useState("");
+  const [profileReferenceTime] = useState(() => Date.now());
   const practiceTimerEnabledRef = useRef(false);
   const activeSessionRef = useRef<SavedSession | null>(null);
   const cloudPayloadRef = useRef<CloudPracticePayload | null>(null);
@@ -543,10 +575,6 @@ export default function Home() {
   );
   const totalCorrect = (Object.keys(performance) as ModuleKey[]).reduce(
     (sum, module) => sum + performance[module].correct,
-    0,
-  );
-  const totalFavorites = (Object.keys(favorites) as ModuleKey[]).reduce(
-    (sum, module) => sum + favorites[module].length,
     0,
   );
   const currentSessionAnswered = activeSession
@@ -642,7 +670,55 @@ export default function Home() {
   }, [activeSession]);
 
   useEffect(() => {
+    if (!persistenceLoaded || account.loading) return;
+    const userId = account.session?.user.id;
+    const timer = window.setTimeout(() => {
+      if (!userId) {
+        setAccountStateReadyFor("anonymous");
+        return;
+      }
+
+      const stateKey = `${userId}:${account.userStateUpdatedAt ?? "empty"}`;
+      if (appliedAccountStateRef.current === stateKey) {
+        setAccountStateReadyFor(userId);
+        return;
+      }
+
+      const localUpdatedAt =
+        window.localStorage.getItem(cloudProgressUpdatedAtKey) ?? "";
+      const cloudIsCurrent =
+        Boolean(account.userState) &&
+        Boolean(account.userStateUpdatedAt) &&
+        (!localUpdatedAt ||
+          (account.userStateUpdatedAt as string) >= localUpdatedAt);
+      if (cloudIsCurrent) {
+        const payload = account.userState as Partial<CloudPracticePayload>;
+        if (payload.sessions) setSavedSessions(normalizeSessions(payload.sessions));
+        if (payload.performance) {
+          setPerformance(mergePerformance(payload.performance));
+        }
+        if (payload.favorites) setFavorites(mergeFavorites(payload.favorites));
+        window.localStorage.setItem(
+          cloudProgressUpdatedAtKey,
+          account.userStateUpdatedAt as string,
+        );
+      }
+      appliedAccountStateRef.current = stateKey;
+      setAccountStateReadyFor(userId);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [
+    account.loading,
+    account.session,
+    account.userState,
+    account.userStateUpdatedAt,
+    persistenceLoaded,
+  ]);
+
+  useEffect(() => {
     if (!persistenceLoaded || !cloudSyncReady) return;
+    const userId = account.session?.user.id;
+    if (account.loading || (userId && accountStateReadyFor !== userId)) return;
     const sessions = { ...savedSessions };
     const currentSession = activeSessionRef.current;
     if (currentSession) {
@@ -653,7 +729,11 @@ export default function Home() {
     const localUpdatedAt = new Date().toISOString();
     window.localStorage.setItem(cloudProgressUpdatedAtKey, localUpdatedAt);
     const timer = window.setTimeout(() => {
-      void saveUserState(payload);
+      void saveUserState(payload).then((updatedAt) => {
+        if (!updatedAt) return;
+        lastCloudUpdatedAtRef.current = updatedAt;
+        window.localStorage.setItem(cloudProgressUpdatedAtKey, updatedAt);
+      });
       fetch("/api/progress", {
         method: "PUT",
         headers: { "content-type": "application/json" },
@@ -676,22 +756,11 @@ export default function Home() {
     favorites,
     persistenceLoaded,
     cloudSyncReady,
+    account.loading,
+    account.session,
+    accountStateReadyFor,
     saveUserState,
   ]);
-
-  useEffect(() => {
-    if (!persistenceLoaded || !account.session || !account.userState) return;
-    const stateKey = `${account.session.user.id}:${JSON.stringify(account.userState).length}`;
-    if (appliedAccountStateRef.current === stateKey) return;
-    const payload = account.userState as Partial<CloudPracticePayload>;
-    appliedAccountStateRef.current = stateKey;
-    const timer = window.setTimeout(() => {
-      if (payload.sessions) setSavedSessions(normalizeSessions(payload.sessions));
-      if (payload.performance) setPerformance(mergePerformance(payload.performance));
-      if (payload.favorites) setFavorites(mergeFavorites(payload.favorites));
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, [account.session, account.userState, persistenceLoaded]);
 
   useEffect(() => {
     if (!activeSession) return;
@@ -839,6 +908,36 @@ export default function Home() {
     }
     setScreen(nextScreen);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function openProfileEditor() {
+    if (!account.session) {
+      account.openAuth();
+      return;
+    }
+    setProfileNameDraft(account.profile?.full_name ?? "");
+    setProfileEditError("");
+    setProfileEditing(true);
+  }
+
+  async function saveProfileName() {
+    const fullName = profileNameDraft.trim();
+    if (!fullName) {
+      setProfileEditError("请输入姓名或昵称");
+      return;
+    }
+    setProfileSaving(true);
+    setProfileEditError("");
+    try {
+      await account.updateFullName(fullName);
+      setProfileEditing(false);
+    } catch (error) {
+      setProfileEditError(
+        error instanceof Error ? error.message : "资料保存失败，请稍后重试",
+      );
+    } finally {
+      setProfileSaving(false);
+    }
   }
 
   function startSession(
@@ -1415,7 +1514,29 @@ export default function Home() {
   }
 
   if (screen === "profile") {
-    const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+    const cloudAttempts = account.questionProgress.reduce(
+      (sum, item) => sum + item.attempts,
+      0,
+    );
+    const cloudCorrect = account.questionProgress.filter(
+      (item) => item.is_correct,
+    ).length;
+    const cloudAccuracy = account.questionProgress.length
+      ? Math.round((cloudCorrect / account.questionProgress.length) * 100)
+      : 0;
+    const accuracy = account.session
+      ? cloudAccuracy
+      : totalAttempts
+        ? Math.round((totalCorrect / totalAttempts) * 100)
+        : 0;
+    const memberIsCurrent =
+      Boolean(account.profile?.is_member) &&
+      (!account.profile?.membership_expiry ||
+        Date.parse(account.profile.membership_expiry) > profileReferenceTime);
+    const profileName =
+      account.profile?.full_name?.trim() ||
+      account.profile?.email?.split("@")[0] ||
+      "游客";
     const progressItems = [
       { module: "graphic" as const, label: "图形推理", total: questions.length },
       { module: "material" as const, label: "材料分析", total: materialQuestions.length },
@@ -1427,15 +1548,65 @@ export default function Home() {
         <section className="profile-shell">
           <button className="back-link profile-back" type="button" onClick={goHome}>← 返回首页</button>
           <article className="profile-hero-card">
-            <div className="profile-avatar">秋</div>
-            <div><span>我的学习档案</span><h1>秋招同学</h1><p>Lv.1 · 笔试新手　<em>同账号进度自动同步</em></p></div>
-            <button type="button">编辑资料</button>
+            <div
+              className={`profile-avatar ${account.session ? "" : "guest-avatar"}`}
+              aria-label={account.session ? "用户头像" : "游客头像"}
+            >
+              {account.session ? profileName.slice(0, 1) : "人"}
+            </div>
+            <div>
+              <span>我的学习档案</span>
+              <h1>{profileName}</h1>
+              <p>
+                {account.session
+                  ? memberIsCurrent
+                    ? "会员有效"
+                    : "当前免费开放"
+                  : "登录后保存学习数据"}
+                {"　"}
+                <em>
+                  {account.session ? "同账号进度自动同步" : "游客模式"}
+                </em>
+              </p>
+              {account.profile?.is_member && (
+                <small>
+                  订阅时间：
+                  {formatMembershipDate(account.profile.membership_started_at)}
+                  {" 至 "}
+                  {formatMembershipDate(account.profile.membership_expiry)}
+                </small>
+              )}
+            </div>
+            <div className="profile-account-actions">
+              {account.session ? (
+                <>
+                  <button type="button" onClick={openProfileEditor}>
+                    编辑资料
+                  </button>
+                  <button
+                    className="profile-signout"
+                    type="button"
+                    onClick={() => void account.signOut()}
+                  >
+                    退出登录
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="profile-login"
+                  type="button"
+                  onClick={account.openAuth}
+                >
+                  登录 / 注册
+                </button>
+              )}
+            </div>
           </article>
           <section className="profile-stats" aria-label="刷题数据">
-            <article><span>累计做题</span><strong>{totalAttempts}</strong></article>
-            <article><span>本次进度</span><strong>{currentSessionAnswered}</strong></article>
+            <article><span>累计做题</span><strong>{account.session ? cloudAttempts : totalAttempts}</strong></article>
+            <article><span>已练题目</span><strong>{account.session ? account.questionProgress.length : currentSessionAnswered}</strong></article>
             <article><span>正确率</span><strong>{accuracy}%</strong></article>
-            <article><span>收藏题目</span><strong>{totalFavorites}</strong></article>
+            <article><span>完成套数</span><strong>{account.session ? account.completedExamCount : 0}</strong></article>
           </section>
           <div className="profile-columns">
             <section className="profile-panel learning-links">
@@ -1453,6 +1624,53 @@ export default function Home() {
             </section>
           </div>
         </section>
+        {profileEditing && (
+          <div
+            className="auth-overlay"
+            role="presentation"
+            onMouseDown={() => setProfileEditing(false)}
+          >
+            <section
+              className="auth-dialog profile-edit-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-label="编辑个人资料"
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <button
+                className="auth-close"
+                type="button"
+                onClick={() => setProfileEditing(false)}
+              >
+                ×
+              </button>
+              <span className="auth-kicker">PROFILE</span>
+              <h2>编辑个人资料</h2>
+              <p>姓名或昵称会显示在“我的”页面。</p>
+              <label className="auth-field">
+                <span>姓名 / 昵称</span>
+                <input
+                  value={profileNameDraft}
+                  maxLength={30}
+                  autoFocus
+                  placeholder="请输入姓名或昵称"
+                  onChange={(event) => setProfileNameDraft(event.target.value)}
+                />
+              </label>
+              <button
+                className="auth-primary"
+                type="button"
+                disabled={profileSaving || !profileNameDraft.trim()}
+                onClick={() => void saveProfileName()}
+              >
+                {profileSaving ? "保存中…" : "保存"}
+              </button>
+              {profileEditError && (
+                <p className="auth-error">{profileEditError}</p>
+              )}
+            </section>
+          </div>
+        )}
         <BottomNav current="profile" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
       </main>
     );

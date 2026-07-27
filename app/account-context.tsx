@@ -12,18 +12,17 @@ import {
 } from "react";
 import { supabase } from "./supabase-client";
 
-const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{9,}$/;
-const FREE_CUTOFF_UTC = Date.parse("2026-08-02T00:00:00.000Z");
 const REMEMBER_KEY = "qiuzhao-remember-login";
 const ACTIVE_SESSION_KEY = "qiuzhao-active-session";
 
 export type AccountProfile = {
   id: string;
-  email: string;
+  email: string | null;
   full_name: string | null;
   created_at: string;
   last_sign_in_at: string | null;
   is_member: boolean;
+  membership_started_at: string | null;
   membership_expiry: string | null;
 };
 
@@ -40,6 +39,8 @@ type AccountContextValue = {
   profile: AccountProfile | null;
   questionProgress: CloudQuestionProgress[];
   userState: unknown;
+  userStateUpdatedAt: string | null;
+  completedExamCount: number;
   loading: boolean;
   authOpen: boolean;
   hasAccess: boolean;
@@ -52,26 +53,31 @@ type AccountContextValue = {
     userAnswer: string,
     isCorrect: boolean,
   ) => Promise<void>;
-  saveUserState: (payload: unknown) => Promise<void>;
+  saveUserState: (payload: unknown) => Promise<string | null>;
   updateFullName: (fullName: string) => Promise<void>;
 };
 
 const AccountContext = createContext<AccountContextValue | null>(null);
 
 async function ensureProfile(user: User) {
-  const email = user.email ?? "";
   const fullName =
     typeof user.user_metadata?.full_name === "string"
       ? user.user_metadata.full_name
       : null;
   const { error } = await supabase
     .from("users")
-    .upsert({ id: user.id, email, full_name: fullName }, { onConflict: "id" });
+    .upsert(
+      {
+        id: user.id,
+        email: user.email ?? null,
+        full_name: fullName,
+      },
+      { onConflict: "id" },
+    );
   if (error) throw error;
 }
 
 async function recordSuccessfulLogin(user: User) {
-  const email = user.email ?? "";
   const fullName =
     typeof user.user_metadata?.full_name === "string"
       ? user.user_metadata.full_name
@@ -79,7 +85,7 @@ async function recordSuccessfulLogin(user: User) {
   const { error } = await supabase.from("users").upsert(
     {
       id: user.id,
-      email,
+      email: user.email ?? null,
       full_name: fullName,
       last_sign_in_at: new Date().toISOString(),
     },
@@ -88,12 +94,10 @@ async function recordSuccessfulLogin(user: User) {
   if (error) throw error;
 }
 
-function accessFor(profile: AccountProfile | null) {
-  if (Date.now() < FREE_CUTOFF_UTC) return true;
-  if (!profile) return false;
-  if (!profile.is_member) return false;
-  if (!profile.membership_expiry) return true;
-  return Date.parse(profile.membership_expiry) > Date.now();
+function accessFor() {
+  // 收款主体尚未确定，当前版本保持免费开放。会员字段仍会从
+  // Supabase 同步，后续接入微信支付时可以直接启用权限判断。
+  return true;
 }
 
 function AuthDialog({
@@ -107,56 +111,85 @@ function AuthDialog({
 }) {
   const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [remember, setRemember] = useState(true);
+  const [codeSent, setCodeSent] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = window.setInterval(() => {
+      setCooldown((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [cooldown]);
+
   if (!open) return null;
 
-  const passwordValid = PASSWORD_PATTERN.test(password);
-  const passwordsMatch = password === confirmPassword;
+  const normalizedEmail = email.trim().toLowerCase();
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
 
-  const register = async () => {
-    if (!passwordValid) {
-      setError("密码需至少9位，且包含字母和数字");
-      return;
+  const resetFeedback = () => {
+    setMessage("");
+    setError("");
+  };
+
+  const switchMode = (nextMode: "login" | "register" | "forgot") => {
+    setMode(nextMode);
+    setOtp("");
+    setPassword("");
+    setConfirmPassword("");
+    setCodeSent(false);
+    setVerified(false);
+    setCooldown(0);
+    resetFeedback();
+  };
+
+  const closeDialog = async () => {
+    if (verified && mode !== "login") {
+      await supabase.auth.signOut();
     }
-    if (!passwordsMatch) {
-      setError("两次输入的密码不一致");
+    onClose();
+  };
+
+  const sendCode = async () => {
+    if (!emailValid) {
+      setError("请输入正确的邮箱地址");
       return;
     }
     setBusy(true);
     setError("");
     setMessage("");
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email: normalizedEmail,
       options: {
-        emailRedirectTo:
-          typeof window === "undefined" ? undefined : window.location.origin,
+        shouldCreateUser: mode === "register",
       },
     });
     setBusy(false);
-    if (signUpError) {
-      setError(signUpError.message);
+    if (otpError) {
+      setError(otpError.message);
       return;
     }
-    if (data.session) {
-      await onAuthenticated(remember);
-      onClose();
-      return;
-    }
-    setMessage("验证邮件已发送。请点击邮件中的确认链接，激活后再登录。");
+    setCodeSent(true);
+    setCooldown(60);
+    setMessage("验证码已发送，请查看邮箱。");
   };
 
   const login = async () => {
+    if (!emailValid || !password) {
+      setError("请输入邮箱和密码");
+      return;
+    }
     setBusy(true);
     setError("");
     const { error: loginError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: normalizedEmail,
       password,
     });
     setBusy(false);
@@ -164,39 +197,75 @@ function AuthDialog({
       setError("邮箱或密码不正确");
       return;
     }
-    await onAuthenticated(remember);
+    await onAuthenticated(true);
     onClose();
   };
 
-  const sendResetEmail = async () => {
-    setBusy(true);
-    setError("");
-    setMessage("");
-    const { error: resetError } =
-      await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo:
-          typeof window === "undefined"
-            ? undefined
-            : `${window.location.origin}/?reset-password=1`,
-      });
-    setBusy(false);
-    if (resetError) {
-      setError(resetError.message);
+  const verifyEmail = async () => {
+    if (!emailValid || !/^\d{6}$/.test(otp)) {
+      setError("请输入邮箱和 6 位验证码");
       return;
     }
-    setMessage("重置密码邮件已发送，请通过邮件中的链接设置新密码。");
+    setBusy(true);
+    setError("");
+    const {
+      data,
+      error: verifyError,
+    } = await supabase.auth.verifyOtp({
+      email: normalizedEmail,
+      token: otp,
+      type: "email",
+    });
+    setBusy(false);
+    if (verifyError || !data.session) {
+      setError(verifyError?.message ?? "验证码无效或已过期");
+      return;
+    }
+    setVerified(true);
+    setMessage(
+      mode === "register"
+        ? "邮箱验证成功，请设置登录密码。"
+        : "身份验证成功，请设置新密码。",
+    );
   };
 
-  const switchMode = (nextMode: "login" | "register" | "forgot") => {
-    setMode(nextMode);
-    setPassword("");
-    setConfirmPassword("");
+  const savePassword = async () => {
+    if (!password || password !== confirmPassword) {
+      setError(password ? "两次输入的密码不一致" : "请输入新密码");
+      return;
+    }
+    setBusy(true);
     setError("");
-    setMessage("");
+    const { error: passwordError } = await supabase.auth.updateUser({
+      password,
+    });
+    setBusy(false);
+    if (passwordError) {
+      setError(passwordError.message);
+      return;
+    }
+    setVerified(false);
+    await onAuthenticated(true);
+    onClose();
   };
+
+  const title =
+    mode === "login"
+      ? "登录学习账号"
+      : mode === "register"
+        ? verified
+          ? "设置登录密码"
+          : "注册学习账号"
+        : verified
+          ? "设置新密码"
+          : "找回密码";
 
   return (
-    <div className="auth-overlay" role="presentation" onMouseDown={onClose}>
+    <div
+      className="auth-overlay"
+      role="presentation"
+      onMouseDown={() => void closeDialog()}
+    >
       <section
         className="auth-dialog"
         role="dialog"
@@ -204,75 +273,95 @@ function AuthDialog({
         aria-label="登录或注册"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <button className="auth-close" type="button" onClick={onClose}>
+        <button
+          className="auth-close"
+          type="button"
+          onClick={() => void closeDialog()}
+        >
           ×
         </button>
         <span className="auth-kicker">ACCOUNT</span>
-        <h2>
-          {mode === "login"
-            ? "登录秋招行测"
-            : mode === "register"
-              ? "创建学习账号"
-              : "找回密码"}
-        </h2>
+        <h2>{title}</h2>
         <p>
           {mode === "login"
-            ? "登录后，手机与电脑的进度会自动同步。"
-            : mode === "register"
-              ? "注册后请通过验证邮件激活账号，平台不会公开你的邮箱。"
-              : "输入注册邮箱，我们会发送密码重置链接。"}
+            ? "登录后，手机与电脑的练习进度和模考记录会自动同步。"
+            : verified
+              ? "密码强度将按照你在 Supabase 中配置的安全规则校验。"
+              : mode === "register"
+                ? "先验证邮箱，验证成功后设置登录密码。"
+                : "通过邮箱验证码确认身份后，即可设置新密码。"}
         </p>
 
-        <label className="auth-field">
-          <span>邮箱</span>
-          <input
-            type="email"
-            value={email}
-            autoComplete="email"
-            placeholder="name@example.com"
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </label>
-
-        {mode !== "forgot" && (
-          <label className={`auth-field ${mode === "register" && password && !passwordValid ? "invalid" : ""}`}>
-              <span>密码</span>
-              <input
-                type="password"
-                value={password}
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
-                placeholder={mode === "login" ? "请输入密码" : "至少9位，包含字母和数字"}
-                onChange={(event) => setPassword(event.target.value)}
-              />
-              {mode === "register" && password && !passwordValid && (
-                <small>密码需至少9位，且包含字母和数字</small>
+        {!verified && (
+          <label className="auth-field">
+            <span>邮箱</span>
+            <div className={mode === "login" ? undefined : "auth-code-row"}>
+            <input
+              type="email"
+              inputMode="email"
+              value={email}
+              autoComplete="email"
+              placeholder="请输入邮箱地址"
+              onChange={(event) => setEmail(event.target.value)}
+            />
+              {mode !== "login" && (
+                <button
+                  type="button"
+                  disabled={busy || cooldown > 0 || !emailValid}
+                  onClick={() => void sendCode()}
+                >
+                  {cooldown > 0
+                    ? `${cooldown} 秒后重试`
+                    : codeSent
+                      ? "重新获取"
+                      : "获取验证码"}
+                </button>
               )}
+            </div>
           </label>
         )}
 
-        {mode === "register" && (
-            <label className={`auth-field ${confirmPassword && !passwordsMatch ? "invalid" : ""}`}>
-              <span>确认密码</span>
-              <input
-                type="password"
-                value={confirmPassword}
-                autoComplete="new-password"
-                placeholder="请再次输入密码"
-                onChange={(event) => setConfirmPassword(event.target.value)}
-              />
-              {confirmPassword && !passwordsMatch && <small>两次输入的密码不一致</small>}
-            </label>
+        {mode !== "login" && !verified && (
+          <label className="auth-field">
+            <span>验证码</span>
+            <input
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              maxLength={6}
+              value={otp}
+              placeholder="请输入 6 位验证码"
+              onChange={(event) =>
+                setOtp(event.target.value.replace(/\D/g, ""))
+              }
+            />
+          </label>
         )}
 
-        {mode !== "forgot" && (
-            <label className="remember-login">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(event) => setRemember(event.target.checked)}
-              />
-              <span>自动登录</span>
-            </label>
+        {(mode === "login" || verified) && (
+          <label className="auth-field">
+            <span>{verified ? "新密码" : "密码"}</span>
+            <input
+              type="password"
+              value={password}
+              autoComplete={verified ? "new-password" : "current-password"}
+              placeholder={verified ? "请输入符合安全要求的新密码" : "请输入密码"}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </label>
+        )}
+
+        {verified && (
+          <label className="auth-field">
+            <span>确认新密码</span>
+            <input
+              type="password"
+              value={confirmPassword}
+              autoComplete="new-password"
+              placeholder="请再次输入新密码"
+              onChange={(event) => setConfirmPassword(event.target.value)}
+            />
+          </label>
         )}
 
         <button
@@ -280,36 +369,36 @@ function AuthDialog({
           type="button"
           disabled={
             busy ||
-            !email.trim() ||
-            (mode === "login" && !password) ||
-            (mode === "register" && (!passwordValid || !passwordsMatch))
+            (mode === "login"
+              ? !emailValid || !password
+              : verified
+                ? !password || !confirmPassword
+                : !emailValid || !/^\d{6}$/.test(otp))
           }
-          onClick={
-            mode === "login"
-              ? login
-              : mode === "register"
-                ? register
-                : sendResetEmail
+          onClick={() =>
+            void (mode === "login"
+              ? login()
+              : verified
+                ? savePassword()
+                : verifyEmail())
           }
         >
           {busy
             ? "请稍候…"
             : mode === "login"
               ? "登录"
-              : mode === "register"
-                ? "注册并发送验证邮件"
-                : "发送重置邮件"}
+              : verified
+                ? mode === "register"
+                  ? "完成注册"
+                  : "保存新密码"
+                : "验证邮箱"}
         </button>
 
         {message && <p className="auth-message">{message}</p>}
         {error && <p className="auth-error">{error}</p>}
 
-        <footer className="auth-footer">
-          {mode !== "login" ? (
-            <button type="button" onClick={() => switchMode("login")}>
-              返回登录
-            </button>
-          ) : (
+        <footer className="auth-footer auth-mode-links">
+          {mode === "login" ? (
             <>
               <button type="button" onClick={() => switchMode("register")}>
                 注册账号
@@ -318,6 +407,10 @@ function AuthDialog({
                 忘记密码
               </button>
             </>
+          ) : (
+            <button type="button" onClick={() => switchMode("login")}>
+              返回登录
+            </button>
           )}
         </footer>
       </section>
@@ -332,46 +425,71 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     CloudQuestionProgress[]
   >([]);
   const [userState, setUserState] = useState<unknown>(null);
+  const [userStateUpdatedAt, setUserStateUpdatedAt] = useState<string | null>(
+    null,
+  );
+  const [completedExamCount, setCompletedExamCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState(false);
 
   const refreshAccountData = useCallback(async () => {
-    const {
-      data: { session: currentSession },
-    } = await supabase.auth.getSession();
-    setSession(currentSession);
-    if (!currentSession) {
-      setProfile(null);
-      setQuestionProgress([]);
-      setUserState(null);
+    setLoading(true);
+    try {
+      const {
+        data: { session: currentSession },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      setSession(currentSession);
+      if (!currentSession) {
+        setProfile(null);
+        setQuestionProgress([]);
+        setUserState(null);
+        setUserStateUpdatedAt(null);
+        setCompletedExamCount(0);
+        return;
+      }
+
+      await ensureProfile(currentSession.user);
+      const [profileResult, progressResult, stateResult, examCountResult] =
+        await Promise.all([
+        supabase
+          .from("users")
+          .select(
+            "id,email,full_name,created_at,last_sign_in_at,is_member,membership_started_at,membership_expiry",
+          )
+          .eq("id", currentSession.user.id)
+          .single(),
+        supabase
+          .from("user_progress")
+          .select("question_id,user_answer,is_correct,attempts,updated_at")
+          .order("updated_at", { ascending: false }),
+        supabase
+          .from("user_state")
+          .select("payload,updated_at")
+          .eq("user_id", currentSession.user.id)
+          .maybeSingle(),
+        supabase
+          .from("exam_records")
+          .select("*", { count: "exact", head: true }),
+      ]);
+      if (profileResult.error) throw profileResult.error;
+      if (progressResult.error) throw progressResult.error;
+      if (stateResult.error) throw stateResult.error;
+      if (examCountResult.error) throw examCountResult.error;
+
+      setProfile(profileResult.data as AccountProfile);
+      setQuestionProgress(
+        (progressResult.data ?? []) as CloudQuestionProgress[],
+      );
+      setUserState(stateResult.data?.payload ?? null);
+      setUserStateUpdatedAt(stateResult.data?.updated_at ?? null);
+      setCompletedExamCount(examCountResult.count ?? 0);
+    } catch (error) {
+      console.error("账号云同步失败", error);
+    } finally {
       setLoading(false);
-      return;
     }
-    await ensureProfile(currentSession.user);
-    const [profileResult, progressResult, stateResult] = await Promise.all([
-      supabase
-        .from("users")
-        .select(
-          "id,email,full_name,created_at,last_sign_in_at,is_member,membership_expiry",
-        )
-        .eq("id", currentSession.user.id)
-        .single(),
-      supabase
-        .from("user_progress")
-        .select("question_id,user_answer,is_correct,attempts,updated_at")
-        .order("updated_at", { ascending: false }),
-      supabase
-        .from("user_state")
-        .select("payload")
-        .eq("user_id", currentSession.user.id)
-        .maybeSingle(),
-    ]);
-    if (profileResult.data) setProfile(profileResult.data as AccountProfile);
-    setQuestionProgress(
-      (progressResult.data ?? []) as CloudQuestionProgress[],
-    );
-    setUserState(stateResult.data?.payload ?? null);
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -424,6 +542,8 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     setProfile(null);
     setQuestionProgress([]);
     setUserState(null);
+    setUserStateUpdatedAt(null);
+    setCompletedExamCount(0);
   }, []);
 
   const saveQuestionProgress = useCallback(
@@ -443,7 +563,10 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase
         .from("user_progress")
         .upsert(row, { onConflict: "user_id,question_id" });
-      if (error) return;
+      if (error) {
+        console.error("单题进度同步失败", error);
+        return;
+      }
       setQuestionProgress((items) => [
         {
           question_id: row.question_id,
@@ -460,15 +583,21 @@ export function AccountProvider({ children }: { children: ReactNode }) {
 
   const saveUserState = useCallback(
     async (payload: unknown) => {
-      if (!session) return;
-      await supabase.from("user_state").upsert(
+      if (!session) return null;
+      const updatedAt = new Date().toISOString();
+      const { error } = await supabase.from("user_state").upsert(
         {
           user_id: session.user.id,
           payload,
-          updated_at: new Date().toISOString(),
+          updated_at: updatedAt,
         },
         { onConflict: "user_id" },
       );
+      if (error) {
+        console.error("学习进度同步失败", error);
+        return null;
+      }
+      return updatedAt;
     },
     [session],
   );
@@ -476,11 +605,15 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const updateFullName = useCallback(
     async (fullName: string) => {
       if (!session) return;
-      await supabase.auth.updateUser({ data: { full_name: fullName } });
-      await supabase
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { full_name: fullName },
+      });
+      if (authError) throw authError;
+      const { error: profileError } = await supabase
         .from("users")
         .update({ full_name: fullName })
         .eq("id", session.user.id);
+      if (profileError) throw profileError;
       await refreshAccountData();
     },
     [refreshAccountData, session],
@@ -492,9 +625,11 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       profile,
       questionProgress,
       userState,
+      userStateUpdatedAt,
+      completedExamCount,
       loading,
       authOpen,
-      hasAccess: accessFor(profile),
+      hasAccess: accessFor(),
       openAuth: () => setAuthOpen(true),
       closeAuth: () => setAuthOpen(false),
       signOut,
@@ -508,6 +643,8 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       profile,
       questionProgress,
       userState,
+      userStateUpdatedAt,
+      completedExamCount,
       loading,
       authOpen,
       signOut,

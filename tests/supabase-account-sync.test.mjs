@@ -7,6 +7,7 @@ const pageUrl = new URL("../app/page.tsx", import.meta.url);
 const questionSyncUrl = new URL("../app/question-sync.ts", import.meta.url);
 const mockUrl = new URL("../app/mock-exam.tsx", import.meta.url);
 const schemaUrl = new URL("../supabase/schema.sql", import.meta.url);
+const netlifyUrl = new URL("../netlify.toml", import.meta.url);
 
 test("uses email OTP registration, password login, and verified reset", async () => {
   const account = await readFile(accountUrl, "utf8");
@@ -38,7 +39,24 @@ test("keeps visitor and signed-in account actions in the profile hero", async ()
   assert.match(page, /退出登录/);
   assert.match(page, /account\.questionProgress\.reduce/);
   assert.match(page, /account\.completedExamCount/);
+  assert.match(page, /account\.completedExamQuestionCount/);
+  assert.match(page, /account\.completedExamCorrectCount/);
   assert.match(page, /account\.openAuth\(\)/);
+});
+
+test("uses native Next.js output on Netlify and includes cloud exam totals", async () => {
+  const account = await readFile(accountUrl, "utf8");
+  const page = await readFile(pageUrl, "utf8");
+  const netlify = await readFile(netlifyUrl, "utf8");
+  assert.match(netlify, /command = "pnpm exec next build"/);
+  assert.match(netlify, /publish = "\.next"/);
+  assert.match(account, /\.select\("total_questions,correct_count,details"\)/);
+  assert.match(account, /setCompletedExamQuestionCount/);
+  assert.match(account, /setCompletedExamCorrectCount/);
+  assert.match(account, /summarizeExamPerformance/);
+  assert.match(page, /cloudAttempts \+ account\.completedExamQuestionCount/);
+  assert.match(page, /cloudCorrect \+ account\.completedExamCorrectCount/);
+  assert.match(page, /combinedPerformance\[wrongModule\]\.wrongIds/);
 });
 
 test("updates the displayed profile name immediately after saving", async () => {
@@ -61,7 +79,7 @@ test("never replaces saved account progress with an empty snapshot", async () =>
   assert.match(page, /function preservePracticePayload/);
   assert.match(page, /Math\.max\(\s*current\[module\]\.attempts/);
   assert.match(page, /if \(!account\.userStateLoaded\) return/);
-  assert.match(page, /Math\.max\(cloudAttempts, totalAttempts\)/);
+  assert.match(page, /Math\.max\(cloudRecordedAttempts, totalAttempts\)/);
   assert.doesNotMatch(page, /const cloudIsCurrent/);
 });
 
@@ -83,4 +101,9 @@ test("stores membership period and idempotent exam identifiers", async () => {
   assert.match(schema, /exam_id text not null/);
   assert.match(schema, /unique \(user_id, exam_id\)/);
   assert.match(schema, /email text unique not null/);
+  assert.match(
+    schema,
+    /revoke delete on public\.user_progress, public\.exam_records, public\.user_state/,
+  );
+  assert.doesNotMatch(schema, /create policy (?:progress|exams|state)_delete_self/);
 });

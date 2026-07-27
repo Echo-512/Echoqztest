@@ -34,6 +34,21 @@ export type CloudQuestionProgress = {
   updated_at: string;
 };
 
+type CloudExamSummary = {
+  total_questions: number;
+  correct_count: number;
+  details: unknown;
+};
+
+export type CloudExamPerformance = Record<
+  "graphic" | "material" | "verbal",
+  {
+    attempts: number;
+    correct: number;
+    wrongIds: string[];
+  }
+>;
+
 type AccountContextValue = {
   session: Session | null;
   profile: AccountProfile | null;
@@ -42,6 +57,9 @@ type AccountContextValue = {
   userStateUpdatedAt: string | null;
   userStateLoaded: boolean;
   completedExamCount: number;
+  completedExamQuestionCount: number;
+  completedExamCorrectCount: number;
+  examPerformance: CloudExamPerformance;
   loading: boolean;
   authOpen: boolean;
   hasAccess: boolean;
@@ -59,6 +77,67 @@ type AccountContextValue = {
 };
 
 const AccountContext = createContext<AccountContextValue | null>(null);
+
+function emptyExamPerformance(): CloudExamPerformance {
+  return {
+    graphic: { attempts: 0, correct: 0, wrongIds: [] },
+    material: { attempts: 0, correct: 0, wrongIds: [] },
+    verbal: { attempts: 0, correct: 0, wrongIds: [] },
+  };
+}
+
+function summarizeExamPerformance(
+  rows: CloudExamSummary[],
+): CloudExamPerformance {
+  const performance = emptyExamPerformance();
+  const wrongIds = {
+    graphic: new Set<string>(),
+    material: new Set<string>(),
+    verbal: new Set<string>(),
+  };
+
+  for (const row of rows) {
+    if (!row.details || typeof row.details !== "object") continue;
+    const modules = (row.details as { modules?: unknown }).modules;
+    if (!modules || typeof modules !== "object") continue;
+
+    for (const moduleKey of [
+      "graphic",
+      "material",
+      "verbal",
+    ] as const) {
+      const rawModule = (modules as Record<string, unknown>)[moduleKey];
+      if (!rawModule || typeof rawModule !== "object") continue;
+      const parsedModule = rawModule as {
+        questionIds?: unknown;
+        correct?: unknown;
+      };
+      const questionIds = Array.isArray(parsedModule.questionIds)
+        ? parsedModule.questionIds.filter(
+            (id): id is string => typeof id === "string",
+          )
+        : [];
+      const correctness =
+        parsedModule.correct && typeof parsedModule.correct === "object"
+          ? (parsedModule.correct as Record<string, unknown>)
+          : {};
+
+      performance[moduleKey].attempts += questionIds.length;
+      for (const questionId of questionIds) {
+        if (correctness[questionId] === true) {
+          performance[moduleKey].correct += 1;
+        } else {
+          wrongIds[moduleKey].add(questionId);
+        }
+      }
+    }
+  }
+
+  for (const moduleKey of ["graphic", "material", "verbal"] as const) {
+    performance[moduleKey].wrongIds = [...wrongIds[moduleKey]];
+  }
+  return performance;
+}
 
 async function ensureProfile(user: User) {
   const fullName =
@@ -441,6 +520,12 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   );
   const [userStateLoaded, setUserStateLoaded] = useState(false);
   const [completedExamCount, setCompletedExamCount] = useState(0);
+  const [completedExamQuestionCount, setCompletedExamQuestionCount] =
+    useState(0);
+  const [completedExamCorrectCount, setCompletedExamCorrectCount] =
+    useState(0);
+  const [examPerformance, setExamPerformance] =
+    useState<CloudExamPerformance>(emptyExamPerformance);
   const [loading, setLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState(false);
 
@@ -461,11 +546,14 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         setUserStateUpdatedAt(null);
         setUserStateLoaded(true);
         setCompletedExamCount(0);
+        setCompletedExamQuestionCount(0);
+        setCompletedExamCorrectCount(0);
+        setExamPerformance(emptyExamPerformance());
         return;
       }
 
       await ensureProfile(currentSession.user);
-      const [profileResult, progressResult, stateResult, examCountResult] =
+      const [profileResult, progressResult, stateResult, examResult] =
         await Promise.all([
         supabase
           .from("users")
@@ -477,6 +565,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         supabase
           .from("user_progress")
           .select("question_id,user_answer,is_correct,attempts,updated_at")
+          .eq("user_id", currentSession.user.id)
           .order("updated_at", { ascending: false }),
         supabase
           .from("user_state")
@@ -485,7 +574,8 @@ export function AccountProvider({ children }: { children: ReactNode }) {
           .maybeSingle(),
         supabase
           .from("exam_records")
-          .select("*", { count: "exact", head: true }),
+          .select("total_questions,correct_count,details")
+          .eq("user_id", currentSession.user.id),
       ]);
       if (stateResult.error) throw stateResult.error;
       setUserState(stateResult.data?.payload ?? null);
@@ -497,8 +587,16 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       setQuestionProgress(
         (progressResult.data ?? []) as CloudQuestionProgress[],
       );
-      if (examCountResult.error) throw examCountResult.error;
-      setCompletedExamCount(examCountResult.count ?? 0);
+      if (examResult.error) throw examResult.error;
+      const examRows = (examResult.data ?? []) as CloudExamSummary[];
+      setCompletedExamCount(examRows.length);
+      setCompletedExamQuestionCount(
+        examRows.reduce((sum, row) => sum + row.total_questions, 0),
+      );
+      setCompletedExamCorrectCount(
+        examRows.reduce((sum, row) => sum + row.correct_count, 0),
+      );
+      setExamPerformance(summarizeExamPerformance(examRows));
     } catch (error) {
       console.error("账号云同步失败", error);
     } finally {
@@ -563,6 +661,9 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     setUserStateUpdatedAt(null);
     setUserStateLoaded(true);
     setCompletedExamCount(0);
+    setCompletedExamQuestionCount(0);
+    setCompletedExamCorrectCount(0);
+    setExamPerformance(emptyExamPerformance());
   }, []);
 
   const saveQuestionProgress = useCallback(
@@ -665,6 +766,9 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       userStateUpdatedAt,
       userStateLoaded,
       completedExamCount,
+      completedExamQuestionCount,
+      completedExamCorrectCount,
+      examPerformance,
       loading,
       authOpen,
       hasAccess: accessFor(),
@@ -684,6 +788,9 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       userStateUpdatedAt,
       userStateLoaded,
       completedExamCount,
+      completedExamQuestionCount,
+      completedExamCorrectCount,
+      examPerformance,
       loading,
       authOpen,
       signOut,

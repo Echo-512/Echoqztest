@@ -178,8 +178,6 @@ create policy progress_update_self on public.user_progress
   for update to authenticated
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
-create policy progress_delete_self on public.user_progress
-  for delete to authenticated using ((select auth.uid()) = user_id);
 
 drop policy if exists exams_select_self on public.exam_records;
 drop policy if exists exams_insert_self on public.exam_records;
@@ -193,8 +191,6 @@ create policy exams_update_self on public.exam_records
   for update to authenticated
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
-create policy exams_delete_self on public.exam_records
-  for delete to authenticated using ((select auth.uid()) = user_id);
 
 drop policy if exists state_select_self on public.user_state;
 drop policy if exists state_insert_self on public.user_state;
@@ -208,8 +204,6 @@ create policy state_update_self on public.user_state
   for update to authenticated
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
-create policy state_delete_self on public.user_state
-  for delete to authenticated using ((select auth.uid()) = user_id);
 
 grant usage on schema public to anon, authenticated;
 grant select on public.questions to anon, authenticated;
@@ -219,8 +213,10 @@ grant insert (id, email, phone, full_name, created_at, last_sign_in_at)
   on public.users to authenticated;
 grant update (email, phone, full_name, last_sign_in_at)
   on public.users to authenticated;
-grant select, insert, update, delete on public.user_progress to authenticated;
-grant select, insert, update, delete on public.exam_records to authenticated;
-grant select, insert, update, delete on public.user_state to authenticated;
+grant select, insert, update on public.user_progress to authenticated;
+grant select, insert, update on public.exam_records to authenticated;
+grant select, insert, update on public.user_state to authenticated;
+revoke delete on public.user_progress, public.exam_records, public.user_state
+  from authenticated;
 grant usage, select on sequence public.user_progress_id_seq to authenticated;
 grant usage, select on sequence public.exam_records_id_seq to authenticated;

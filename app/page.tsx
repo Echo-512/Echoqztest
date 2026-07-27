@@ -656,12 +656,73 @@ export default function Home() {
       ? activeSession
       : savedSessions[storageKey("verbal", "normal")];
 
-  const totalAttempts = (Object.keys(performance) as ModuleKey[]).reduce(
-    (sum, module) => sum + performance[module].attempts,
+  const combinedPerformance = useMemo<PerformanceState>(() => {
+    const cloudProgress: PerformanceState = {
+      graphic: { attempts: 0, correct: 0, wrongIds: [] },
+      material: { attempts: 0, correct: 0, wrongIds: [] },
+      verbal: { attempts: 0, correct: 0, wrongIds: [] },
+    };
+    const resolvedQuestionIds = new Set<string>();
+
+    for (const item of account.questionProgress) {
+      const moduleKey: ModuleKey = item.question_id.startsWith("材料-")
+        ? "material"
+        : item.question_id.startsWith("文字-")
+          ? "verbal"
+          : "graphic";
+      cloudProgress[moduleKey].attempts += item.attempts;
+      if (item.is_correct) {
+        cloudProgress[moduleKey].correct += 1;
+        resolvedQuestionIds.add(item.question_id);
+      } else {
+        cloudProgress[moduleKey].wrongIds.push(item.question_id);
+      }
+    }
+
+    return (["graphic", "material", "verbal"] as ModuleKey[]).reduce(
+      (result, module) => {
+        const current = performance[module];
+        const exam = account.examPerformance[module];
+        const cloud = cloudProgress[module];
+        const attempts = Math.max(
+          current.attempts,
+          exam.attempts + cloud.attempts,
+        );
+        const wrongIds = new Set([
+          ...current.wrongIds,
+          ...exam.wrongIds,
+          ...cloud.wrongIds,
+        ]);
+        for (const questionId of resolvedQuestionIds) {
+          wrongIds.delete(questionId);
+        }
+        result[module] = {
+          attempts,
+          correct: Math.min(
+            attempts,
+            Math.max(current.correct, exam.correct + cloud.correct),
+          ),
+          wrongIds: [...wrongIds],
+        };
+        return result;
+      },
+      {
+        graphic: { attempts: 0, correct: 0, wrongIds: [] },
+        material: { attempts: 0, correct: 0, wrongIds: [] },
+        verbal: { attempts: 0, correct: 0, wrongIds: [] },
+      } as PerformanceState,
+    );
+  }, [account.examPerformance, account.questionProgress, performance]);
+
+  const visiblePerformance = account.session
+    ? combinedPerformance
+    : performance;
+  const totalAttempts = (Object.keys(visiblePerformance) as ModuleKey[]).reduce(
+    (sum, module) => sum + visiblePerformance[module].attempts,
     0,
   );
-  const totalCorrect = (Object.keys(performance) as ModuleKey[]).reduce(
-    (sum, module) => sum + performance[module].correct,
+  const totalCorrect = (Object.keys(visiblePerformance) as ModuleKey[]).reduce(
+    (sum, module) => sum + visiblePerformance[module].correct,
     0,
   );
   const currentSessionAnswered = activeSession
@@ -1241,7 +1302,7 @@ export default function Home() {
   }
 
   function startWrongPractice(module: ModuleKey) {
-    const wrongIds = new Set(performance[module].wrongIds);
+    const wrongIds = new Set(combinedPerformance[module].wrongIds);
     if (!wrongIds.size) return;
     if (resumeSession(module, "wrong", wrongIds)) return;
     const pool = bankFor(module).filter((question) => wrongIds.has(question.sourceId));
@@ -1298,10 +1359,10 @@ export default function Home() {
 
   const wrongQuestions = useMemo(
     () =>
-      performance[wrongModule].wrongIds
+      combinedPerformance[wrongModule].wrongIds
         .map((id) => questionFor(wrongModule, id))
         .filter((question): question is BankQuestion => Boolean(question)),
-    [performance, wrongModule],
+    [combinedPerformance, wrongModule],
   );
 
   const wrongCategoryCounts = useMemo(() => {
@@ -1506,7 +1567,7 @@ export default function Home() {
             >
               <span>0{index + 1}</span>
               <h2><span className="module-emoji" aria-hidden="true">{moduleIcons[module]}</span>{moduleNames[module]}</h2>
-              <p>累计作答 {performance[module].attempts} 次，当前错题 {performance[module].wrongIds.length} 道。</p>
+              <p>累计作答 {combinedPerformance[module].attempts} 次，当前错题 {combinedPerformance[module].wrongIds.length} 道。</p>
               <strong>查看评估与错题 →</strong>
             </button>
           ))}
@@ -1550,7 +1611,7 @@ export default function Home() {
   }
 
   if (screen === "wrong-dashboard") {
-    const stats = performance[wrongModule];
+    const stats = combinedPerformance[wrongModule];
     const accuracy = stats.attempts
       ? Math.round((stats.correct / stats.attempts) * 100)
       : 0;
@@ -1632,14 +1693,18 @@ export default function Home() {
     const cloudCorrect = account.questionProgress.filter(
       (item) => item.is_correct,
     ).length;
-    const cloudAccuracy = account.questionProgress.length
-      ? Math.round((cloudCorrect / account.questionProgress.length) * 100)
+    const cloudRecordedAttempts =
+      cloudAttempts + account.completedExamQuestionCount;
+    const cloudRecordedCorrect =
+      cloudCorrect + account.completedExamCorrectCount;
+    const cloudAccuracy = cloudRecordedAttempts
+      ? Math.round((cloudRecordedCorrect / cloudRecordedAttempts) * 100)
       : 0;
     const accuracy = totalAttempts
       ? Math.round((totalCorrect / totalAttempts) * 100)
       : cloudAccuracy;
     const profileAttempts = account.session
-      ? Math.max(cloudAttempts, totalAttempts)
+      ? Math.max(cloudRecordedAttempts, totalAttempts)
       : totalAttempts;
     const answeredQuestionIds = new Set(
       Object.values(savedSessions).flatMap((saved) =>
@@ -1652,7 +1717,10 @@ export default function Home() {
       );
     }
     const practicedQuestionCount = account.session
-      ? Math.max(account.questionProgress.length, answeredQuestionIds.size)
+      ? Math.max(
+          account.questionProgress.length + account.completedExamQuestionCount,
+          answeredQuestionIds.size,
+        )
       : currentSessionAnswered;
     const memberIsCurrent =
       Boolean(account.profile?.is_member) &&
@@ -1749,7 +1817,7 @@ export default function Home() {
             <section className="profile-panel progress-panel">
               <div className="section-line"><span>北森备考进度</span><small>按作答次数估算</small></div>
               {progressItems.map((item) => {
-                const percent = Math.min(100, Math.round((performance[item.module].attempts / item.total) * 100));
+                const percent = Math.min(100, Math.round((combinedPerformance[item.module].attempts / item.total) * 100));
                 return <div className="profile-progress" key={item.module}><p><span>{item.label}</span><strong>{percent}%</strong></p><i><b style={{ width: `${percent}%` }} /></i></div>;
               })}
             </section>

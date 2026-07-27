@@ -5806,3 +5806,60 @@ body { background: var(--paper); }
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+.restricted-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f4f6fa;
+  color: #3d4a5c;
+}
+
+.restricted-card {
+  width: min(520px, 100%);
+  padding: clamp(28px, 6vw, 52px);
+  border: 1px solid #e1e6ef;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 18px 55px rgba(61, 74, 92, 0.1);
+  text-align: center;
+}
+
+.restricted-eyebrow {
+  color: #707e90;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.restricted-card h1 {
+  margin: 14px 0 10px;
+  font-size: clamp(28px, 6vw, 42px);
+}
+
+.restricted-card p {
+  margin: 0 0 28px;
+  color: #707e90;
+}
+
+.restricted-card button {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: 16px;
+  font: inherit;
+  font-weight: 700;
+}
+
+.restricted-card button:disabled {
+  color: #8994a3;
+  background: #e1e6ef;
+  cursor: not-allowed;
+}
+
+.restricted-card .restricted-back {
+  margin-top: 12px;
+  color: #3d4a5c;
+  background: #eef2f8;
+  cursor: pointer;
+}

@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useAccount } from "./account-context";
 import materialQuestionData from "./material-questions.json";
 import MockExam from "./mock-exam";
+import { refreshQuestionsFromSupabase } from "./question-sync";
 import questionData from "./questions.json";
+import RestrictedPage from "./restricted-page";
 import verbalQuestionData from "./verbal-questions.json";
 
 type Difficulty = "入门" | "提高" | "强化";
@@ -20,7 +23,8 @@ type Screen =
   | "wrong-categories"
   | "wrong-dashboard"
   | "favorite-categories"
-  | "profile";
+  | "profile"
+  | "membership";
 
 type GraphicQuestion = {
   sourceId: string;
@@ -468,7 +472,9 @@ function BottomNav({
 }
 
 export default function Home() {
+  const account = useAccount();
   const [screen, setScreen] = useState<Screen>("home");
+  const [, setQuestionRevision] = useState(0);
   const [activeSession, setActiveSession] = useState<SavedSession | null>(null);
   const [savedSessions, setSavedSessions] = useState<Record<string, SavedSession>>({});
   const [performance, setPerformance] = useState<PerformanceState>(initialPerformance);
@@ -481,6 +487,19 @@ export default function Home() {
   const activeSessionRef = useRef<SavedSession | null>(null);
   const cloudPayloadRef = useRef<CloudPracticePayload | null>(null);
   const lastCloudUpdatedAtRef = useRef("");
+  const appliedAccountStateRef = useRef("");
+
+  useEffect(() => {
+    let active = true;
+    refreshQuestionsFromSupabase()
+      .then(() => {
+        if (active) setQuestionRevision((revision) => revision + 1);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const activeId =
     activeSession?.questionIds[activeSession.current] ?? questions[0].sourceId;
@@ -633,6 +652,7 @@ export default function Home() {
     const localUpdatedAt = new Date().toISOString();
     window.localStorage.setItem(cloudProgressUpdatedAtKey, localUpdatedAt);
     const timer = window.setTimeout(() => {
+      void account.saveUserState(payload);
       fetch("/api/progress", {
         method: "PUT",
         headers: { "content-type": "application/json" },
@@ -655,7 +675,19 @@ export default function Home() {
     favorites,
     persistenceLoaded,
     cloudSyncReady,
+    account.saveUserState,
   ]);
+
+  useEffect(() => {
+    if (!persistenceLoaded || !account.session || !account.userState) return;
+    const stateKey = `${account.session.user.id}:${JSON.stringify(account.userState).length}`;
+    if (appliedAccountStateRef.current === stateKey) return;
+    const payload = account.userState as Partial<CloudPracticePayload>;
+    if (payload.sessions) setSavedSessions(normalizeSessions(payload.sessions));
+    if (payload.performance) setPerformance(mergePerformance(payload.performance));
+    if (payload.favorites) setFavorites(mergeFavorites(payload.favorites));
+    appliedAccountStateRef.current = stateKey;
+  }, [account.session, account.userState, persistenceLoaded]);
 
   useEffect(() => {
     if (!activeSession) return;
@@ -793,6 +825,14 @@ export default function Home() {
   }
 
   function goTo(nextScreen: Screen) {
+    if (nextScreen === "mock" && !account.session) {
+      account.openAuth();
+      return;
+    }
+    if (nextScreen === "mock" && !account.hasAccess) {
+      setScreen("membership");
+      return;
+    }
     setScreen(nextScreen);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -803,6 +843,14 @@ export default function Home() {
     context: PracticeContext = "normal",
   ) {
     if (!pool.length) return;
+    if (!account.session) {
+      account.openAuth();
+      return;
+    }
+    if (!account.hasAccess) {
+      setScreen("membership");
+      return;
+    }
     if (activeSession) {
       setSavedSessions((sessions) => ({
         ...sessions,
@@ -918,6 +966,7 @@ export default function Home() {
       },
     });
     recordAttempt(activeSession.module, activeId, isCorrect, activeSession.context);
+    void account.saveQuestionProgress(activeId, choice, isCorrect);
   }
 
   function submitAnswer() {
@@ -1355,6 +1404,10 @@ export default function Home() {
         <BottomNav current="profile" onHome={goHome} onPractice={() => goTo("categories")} onMock={() => goTo("mock")} onProfile={() => goTo("profile")} />
       </main>
     );
+  }
+
+  if (screen === "membership") {
+    return <RestrictedPage onBack={() => goTo("home")} />;
   }
 
   if (screen === "profile") {

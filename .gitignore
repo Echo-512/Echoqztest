@@ -44,3 +44,4 @@ next-env.d.ts
 /tmp/
 __pycache__/
 *.pyc
+/app/归档.zip

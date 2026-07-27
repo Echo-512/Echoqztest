@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import materialQuestionData from "./material-questions.json";
 import questionData from "./questions.json";
+import { supabase } from "./supabase-client";
 import verbalQuestionData from "./verbal-questions.json";
 
 type Difficulty = "入门" | "提高" | "强化";
@@ -821,6 +822,28 @@ export default function MockExam({
         isCorrect: record.modules[moduleKey].correct[sourceId],
       })),
     );
+    void (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const summary = summaryFromRecord(record);
+      const { error } = await supabase.from("exam_records").insert({
+        user_id: user.id,
+        score: summary.totalCorrect,
+        total_questions: summary.totalQuestions,
+        correct_count: summary.totalCorrect,
+        time_used: summary.durationSeconds,
+        details: record,
+        created_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        console.error("模考记录同步失败", error);
+      }
+    })();
+
     onComplete(outcomes);
     const nextLocal = [
       record,

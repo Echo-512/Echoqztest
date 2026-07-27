@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { AccountProvider } from "./account-context";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,5 +30,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="zh-CN"><body>{children}</body></html>;
+  return (
+    <html lang="zh-CN">
+      <body>
+        <AccountProvider>{children}</AccountProvider>
+      </body>
+    </html>
+  );
 }

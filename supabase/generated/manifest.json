@@ -1,0 +1,71 @@
+{
+  "total": 1424,
+  "byType": {
+    "图形推理": 247,
+    "材料分析": 423,
+    "文字推理": 754
+  },
+  "batches": [
+    {
+      "fileName": "questions-001.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-002.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-003.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-004.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-005.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-006.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-007.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-008.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-009.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-010.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-011.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-012.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-013.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-014.sql",
+      "count": 100
+    },
+    {
+      "fileName": "questions-015.sql",
+      "count": 24
+    }
+  ],
+  "generatedAt": "2026-07-27T08:25:16.982Z"
+}

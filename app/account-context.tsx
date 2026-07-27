@@ -40,6 +40,7 @@ type AccountContextValue = {
   questionProgress: CloudQuestionProgress[];
   userState: unknown;
   userStateUpdatedAt: string | null;
+  userStateLoaded: boolean;
   completedExamCount: number;
   loading: boolean;
   authOpen: boolean;
@@ -438,12 +439,14 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const [userStateUpdatedAt, setUserStateUpdatedAt] = useState<string | null>(
     null,
   );
+  const [userStateLoaded, setUserStateLoaded] = useState(false);
   const [completedExamCount, setCompletedExamCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState(false);
 
   const refreshAccountData = useCallback(async () => {
     setLoading(true);
+    setUserStateLoaded(false);
     try {
       const {
         data: { session: currentSession },
@@ -456,6 +459,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         setQuestionProgress([]);
         setUserState(null);
         setUserStateUpdatedAt(null);
+        setUserStateLoaded(true);
         setCompletedExamCount(0);
         return;
       }
@@ -483,17 +487,17 @@ export function AccountProvider({ children }: { children: ReactNode }) {
           .from("exam_records")
           .select("*", { count: "exact", head: true }),
       ]);
+      if (stateResult.error) throw stateResult.error;
+      setUserState(stateResult.data?.payload ?? null);
+      setUserStateUpdatedAt(stateResult.data?.updated_at ?? null);
+      setUserStateLoaded(true);
       if (profileResult.error) throw profileResult.error;
       setProfile(profileResult.data as AccountProfile);
       if (progressResult.error) throw progressResult.error;
-      if (stateResult.error) throw stateResult.error;
-      if (examCountResult.error) throw examCountResult.error;
-
       setQuestionProgress(
         (progressResult.data ?? []) as CloudQuestionProgress[],
       );
-      setUserState(stateResult.data?.payload ?? null);
-      setUserStateUpdatedAt(stateResult.data?.updated_at ?? null);
+      if (examCountResult.error) throw examCountResult.error;
       setCompletedExamCount(examCountResult.count ?? 0);
     } catch (error) {
       console.error("账号云同步失败", error);
@@ -557,6 +561,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     setQuestionProgress([]);
     setUserState(null);
     setUserStateUpdatedAt(null);
+    setUserStateLoaded(true);
     setCompletedExamCount(0);
   }, []);
 
@@ -658,6 +663,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       questionProgress,
       userState,
       userStateUpdatedAt,
+      userStateLoaded,
       completedExamCount,
       loading,
       authOpen,
@@ -676,6 +682,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       questionProgress,
       userState,
       userStateUpdatedAt,
+      userStateLoaded,
       completedExamCount,
       loading,
       authOpen,

@@ -53,6 +53,18 @@ test("updates the displayed profile name immediately after saving", async () => 
   assert.match(page, /account\.session \? "用户" : "游客"/);
 });
 
+test("never replaces saved account progress with an empty snapshot", async () => {
+  const account = await readFile(accountUrl, "utf8");
+  const page = await readFile(pageUrl, "utf8");
+  assert.match(account, /userStateLoaded: boolean/);
+  assert.match(account, /setUserStateLoaded\(true\)/);
+  assert.match(page, /function preservePracticePayload/);
+  assert.match(page, /Math\.max\(\s*current\[module\]\.attempts/);
+  assert.match(page, /if \(!account\.userStateLoaded\) return/);
+  assert.match(page, /Math\.max\(cloudAttempts, totalAttempts\)/);
+  assert.doesNotMatch(page, /const cloudIsCurrent/);
+});
+
 test("accepts new Supabase-only questions and reads mock history back", async () => {
   const questionSync = await readFile(questionSyncUrl, "utf8");
   const mock = await readFile(mockUrl, "utf8");

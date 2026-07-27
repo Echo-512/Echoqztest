@@ -340,6 +340,93 @@ function mergePerformance(value: unknown): PerformanceState {
   };
 }
 
+function preservePerformance(
+  current: PerformanceState,
+  incoming: unknown,
+): PerformanceState {
+  const next = mergePerformance(incoming);
+  return (["graphic", "material", "verbal"] as ModuleKey[]).reduce(
+    (result, module) => {
+      const attempts = Math.max(
+        current[module].attempts,
+        next[module].attempts,
+      );
+      result[module] = {
+        attempts,
+        correct: Math.min(
+          attempts,
+          Math.max(current[module].correct, next[module].correct),
+        ),
+        wrongIds: [
+          ...new Set([
+            ...current[module].wrongIds,
+            ...next[module].wrongIds,
+          ]),
+        ],
+      };
+      return result;
+    },
+    {
+      graphic: { ...initialPerformance.graphic },
+      material: { ...initialPerformance.material },
+      verbal: { ...initialPerformance.verbal },
+    } as PerformanceState,
+  );
+}
+
+function preserveFavorites(
+  current: FavoriteState,
+  incoming: unknown,
+): FavoriteState {
+  const next = mergeFavorites(incoming);
+  return {
+    graphic: [...new Set([...current.graphic, ...next.graphic])],
+    material: [...new Set([...current.material, ...next.material])],
+    verbal: [...new Set([...current.verbal, ...next.verbal])],
+  };
+}
+
+function sessionProgressScore(session: SavedSession) {
+  return (
+    Object.keys(session.submitted).length * 1000 +
+    Object.keys(session.selected).length * 10 +
+    session.current
+  );
+}
+
+function preserveSessions(
+  current: Record<string, SavedSession>,
+  incoming: unknown,
+) {
+  const next = normalizeSessions(incoming);
+  const merged = { ...current };
+  for (const [key, nextSession] of Object.entries(next)) {
+    const currentSession = merged[key];
+    if (
+      !currentSession ||
+      sessionProgressScore(nextSession) > sessionProgressScore(currentSession)
+    ) {
+      merged[key] = nextSession;
+    }
+  }
+  return merged;
+}
+
+function preservePracticePayload(
+  current: CloudPracticePayload,
+  incoming: unknown,
+): CloudPracticePayload {
+  const next =
+    incoming && typeof incoming === "object"
+      ? (incoming as Partial<CloudPracticePayload>)
+      : {};
+  return {
+    sessions: preserveSessions(current.sessions, next.sessions),
+    performance: preservePerformance(current.performance, next.performance),
+    favorites: preserveFavorites(current.favorites, next.favorites),
+  };
+}
+
 function FeatureIcon({ kind }: { kind: "practice" | "mock" | "wrong" | "favorite" }) {
   if (kind === "practice") {
     return (
@@ -621,14 +708,18 @@ export default function Home() {
             payload?: CloudPracticePayload | null;
             updatedAt?: string | null;
           };
-          if (
-            result.payload &&
-            result.updatedAt &&
-            (!localUpdatedAt || result.updatedAt >= localUpdatedAt)
-          ) {
-            sessions = normalizeSessions(result.payload.sessions);
-            nextPerformance = mergePerformance(result.payload.performance);
-            nextFavorites = mergeFavorites(result.payload.favorites);
+          if (result.payload && result.updatedAt) {
+            const merged = preservePracticePayload(
+              {
+                sessions,
+                performance: nextPerformance,
+                favorites: nextFavorites,
+              },
+              result.payload,
+            );
+            sessions = merged.sessions;
+            nextPerformance = merged.performance;
+            nextFavorites = merged.favorites;
             lastCloudUpdatedAtRef.current = result.updatedAt;
             window.localStorage.setItem(cloudProgressUpdatedAtKey, result.updatedAt);
           }
@@ -678,29 +769,25 @@ export default function Home() {
         return;
       }
 
+      if (!account.userStateLoaded) return;
       const stateKey = `${userId}:${account.userStateUpdatedAt ?? "empty"}`;
       if (appliedAccountStateRef.current === stateKey) {
         setAccountStateReadyFor(userId);
         return;
       }
 
-      const localUpdatedAt =
-        window.localStorage.getItem(cloudProgressUpdatedAtKey) ?? "";
-      const cloudIsCurrent =
-        Boolean(account.userState) &&
-        Boolean(account.userStateUpdatedAt) &&
-        (!localUpdatedAt ||
-          (account.userStateUpdatedAt as string) >= localUpdatedAt);
-      if (cloudIsCurrent) {
-        const payload = account.userState as Partial<CloudPracticePayload>;
-        if (payload.sessions) setSavedSessions(normalizeSessions(payload.sessions));
-        if (payload.performance) {
-          setPerformance(mergePerformance(payload.performance));
-        }
-        if (payload.favorites) setFavorites(mergeFavorites(payload.favorites));
+      const merged = preservePracticePayload(
+        { sessions: savedSessions, performance, favorites },
+        account.userState,
+      );
+      setSavedSessions(merged.sessions);
+      setPerformance(merged.performance);
+      setFavorites(merged.favorites);
+      cloudPayloadRef.current = merged;
+      if (account.userStateUpdatedAt) {
         window.localStorage.setItem(
           cloudProgressUpdatedAtKey,
-          account.userStateUpdatedAt as string,
+          account.userStateUpdatedAt,
         );
       }
       appliedAccountStateRef.current = stateKey;
@@ -712,13 +799,23 @@ export default function Home() {
     account.session,
     account.userState,
     account.userStateUpdatedAt,
+    account.userStateLoaded,
     persistenceLoaded,
+    savedSessions,
+    performance,
+    favorites,
   ]);
 
   useEffect(() => {
     if (!persistenceLoaded || !cloudSyncReady) return;
     const userId = account.session?.user.id;
-    if (account.loading || (userId && accountStateReadyFor !== userId)) return;
+    if (
+      account.loading ||
+      (userId && !account.userStateLoaded) ||
+      (userId && accountStateReadyFor !== userId)
+    ) {
+      return;
+    }
     const sessions = { ...savedSessions };
     const currentSession = activeSessionRef.current;
     if (currentSession) {
@@ -726,8 +823,6 @@ export default function Home() {
     }
     const payload: CloudPracticePayload = { sessions, performance, favorites };
     cloudPayloadRef.current = payload;
-    const localUpdatedAt = new Date().toISOString();
-    window.localStorage.setItem(cloudProgressUpdatedAtKey, localUpdatedAt);
     const timer = window.setTimeout(() => {
       void saveUserState(payload).then((updatedAt) => {
         if (!updatedAt) return;
@@ -758,6 +853,7 @@ export default function Home() {
     cloudSyncReady,
     account.loading,
     account.session,
+    account.userStateLoaded,
     accountStateReadyFor,
     saveUserState,
   ]);
@@ -812,13 +908,24 @@ export default function Home() {
         ) {
           return;
         }
-        const sessions = normalizeSessions(result.payload.sessions);
-        setSavedSessions(sessions);
-        setPerformance(mergePerformance(result.payload.performance));
-        setFavorites(mergeFavorites(result.payload.favorites));
+        setSavedSessions((current) =>
+          preserveSessions(current, result.payload?.sessions),
+        );
+        setPerformance((current) =>
+          preservePerformance(current, result.payload?.performance),
+        );
+        setFavorites((current) =>
+          preserveFavorites(current, result.payload?.favorites),
+        );
         setActiveSession((current) => {
           if (!current) return current;
-          return sessions[storageKey(current.module, current.context)] ?? current;
+          const sessions = normalizeSessions(result.payload?.sessions);
+          const incoming =
+            sessions[storageKey(current.module, current.context)];
+          return incoming &&
+            sessionProgressScore(incoming) > sessionProgressScore(current)
+            ? incoming
+            : current;
         });
         lastCloudUpdatedAtRef.current = result.updatedAt;
         window.localStorage.setItem(cloudProgressUpdatedAtKey, result.updatedAt);
@@ -1528,11 +1635,25 @@ export default function Home() {
     const cloudAccuracy = account.questionProgress.length
       ? Math.round((cloudCorrect / account.questionProgress.length) * 100)
       : 0;
-    const accuracy = account.session
-      ? cloudAccuracy
-      : totalAttempts
-        ? Math.round((totalCorrect / totalAttempts) * 100)
-        : 0;
+    const accuracy = totalAttempts
+      ? Math.round((totalCorrect / totalAttempts) * 100)
+      : cloudAccuracy;
+    const profileAttempts = account.session
+      ? Math.max(cloudAttempts, totalAttempts)
+      : totalAttempts;
+    const answeredQuestionIds = new Set(
+      Object.values(savedSessions).flatMap((saved) =>
+        Object.keys(saved.submitted),
+      ),
+    );
+    if (activeSession) {
+      Object.keys(activeSession.submitted).forEach((id) =>
+        answeredQuestionIds.add(id),
+      );
+    }
+    const practicedQuestionCount = account.session
+      ? Math.max(account.questionProgress.length, answeredQuestionIds.size)
+      : currentSessionAnswered;
     const memberIsCurrent =
       Boolean(account.profile?.is_member) &&
       (!account.profile?.membership_expiry ||
@@ -1613,8 +1734,8 @@ export default function Home() {
             </div>
           </article>
           <section className="profile-stats" aria-label="刷题数据">
-            <article><span>累计做题</span><strong>{account.session ? cloudAttempts : totalAttempts}</strong></article>
-            <article><span>已练题目</span><strong>{account.session ? account.questionProgress.length : currentSessionAnswered}</strong></article>
+            <article><span>累计做题</span><strong>{profileAttempts}</strong></article>
+            <article><span>已练题目</span><strong>{practicedQuestionCount}</strong></article>
             <article><span>正确率</span><strong>{accuracy}%</strong></article>
             <article><span>完成套数</span><strong>{account.session ? account.completedExamCount : 0}</strong></article>
           </section>

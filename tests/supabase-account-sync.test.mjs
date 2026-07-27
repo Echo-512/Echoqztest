@@ -21,6 +21,15 @@ test("uses email OTP registration, password login, and verified reset", async ()
   assert.match(account, /忘记密码/);
 });
 
+test("closes login immediately and returns completed registration to login", async () => {
+  const account = await readFile(accountUrl, "utf8");
+  assert.match(account, /onClose\(\);\s*void onAuthenticated\(true\);/);
+  assert.match(account, /const completedMode = mode;/);
+  assert.match(account, /await supabase\.auth\.signOut\(\)/);
+  assert.match(account, /switchMode\("login"\)/);
+  assert.match(account, /注册成功，请使用邮箱和密码登录/);
+});
+
 test("keeps visitor and signed-in account actions in the profile hero", async () => {
   const page = await readFile(pageUrl, "utf8");
   assert.match(page, /"游客"/);

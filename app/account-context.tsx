@@ -197,8 +197,8 @@ function AuthDialog({
       setError("邮箱或密码不正确");
       return;
     }
-    await onAuthenticated(true);
     onClose();
+    void onAuthenticated(true);
   };
 
   const verifyEmail = async () => {
@@ -234,19 +234,29 @@ function AuthDialog({
       setError(password ? "两次输入的密码不一致" : "请输入新密码");
       return;
     }
+    const completedMode = mode;
     setBusy(true);
     setError("");
     const { error: passwordError } = await supabase.auth.updateUser({
       password,
     });
-    setBusy(false);
     if (passwordError) {
+      setBusy(false);
       setError(passwordError.message);
       return;
     }
-    setVerified(false);
-    await onAuthenticated(true);
-    onClose();
+    const { error: signOutError } = await supabase.auth.signOut();
+    setBusy(false);
+    if (signOutError) {
+      setError(signOutError.message);
+      return;
+    }
+    switchMode("login");
+    setMessage(
+      completedMode === "register"
+        ? "注册成功，请使用邮箱和密码登录。"
+        : "密码已更新，请重新登录。",
+    );
   };
 
   const title =
@@ -525,10 +535,14 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       window.sessionStorage.setItem(ACTIVE_SESSION_KEY, "1");
       if (remember) window.localStorage.setItem(REMEMBER_KEY, "1");
       else window.localStorage.removeItem(REMEMBER_KEY);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) await recordSuccessfulLogin(user);
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) await recordSuccessfulLogin(user);
+      } catch (error) {
+        console.error("登录记录同步失败", error);
+      }
       await refreshAccountData();
     },
     [refreshAccountData],

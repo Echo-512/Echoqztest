@@ -1,12 +1,61 @@
 import vinext from "vinext";
-import { defineConfig } from "vite";
-import hostingConfig from "./.openai/hosting.json";
-import { sites } from "./build/sites-vite-plugin";
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
+import { resolve } from "node:path";
+import { defineConfig, type Plugin } from "vite";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
 
-const { d1, r2 } = hostingConfig;
+type HostingConfig = {
+  d1?: string;
+  r2?: string;
+};
+
+function loadHostingConfig(): HostingConfig {
+  const configPath = resolve(process.cwd(), ".openai", "hosting.json");
+  if (!existsSync(configPath)) return {};
+
+  try {
+    return JSON.parse(readFileSync(configPath, "utf8")) as HostingConfig;
+  } catch {
+    console.warn("Skipping invalid .openai/hosting.json during this build.");
+    return {};
+  }
+}
+
+// Keep the Sites packaging behavior self-contained so generic hosts such as
+// Netlify can still build an exported archive even if hidden metadata or the
+// local build helper was omitted from that archive.
+function sites(): Plugin {
+  let root = process.cwd();
+
+  return {
+    name: "sites",
+    apply: "build",
+    configResolved(config) {
+      root = config.root;
+    },
+    closeBundle() {
+      const outputDirectory = resolve(root, "dist", ".openai");
+      const hostingConfigPath = resolve(root, ".openai", "hosting.json");
+      const drizzleSource = resolve(root, "drizzle");
+
+      rmSync(outputDirectory, { recursive: true, force: true });
+      mkdirSync(outputDirectory, { recursive: true });
+
+      if (existsSync(hostingConfigPath)) {
+        cpSync(hostingConfigPath, resolve(outputDirectory, "hosting.json"));
+      }
+      if (existsSync(drizzleSource)) {
+        cpSync(drizzleSource, resolve(outputDirectory, "drizzle"), {
+          recursive: true,
+        });
+      }
+    },
+  };
+}
+
+const { d1, r2 } = loadHostingConfig();
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";

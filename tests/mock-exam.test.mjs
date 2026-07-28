@@ -98,7 +98,7 @@ test("preloads upcoming practice questions and syncs progress for the signed-in 
     "utf8",
   );
 
-  assert.match(page, /const preloadAheadCount = 10/);
+  assert.match(page, /const preloadAheadCount = 5/);
   assert.match(page, /function preloadPracticeQueue/);
   assert.match(page, /practiceImageCache/);
   assert.match(page, /fetch\("\/api\/progress"/);

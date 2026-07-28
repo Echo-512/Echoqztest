@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFile, rename, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
@@ -13,6 +14,7 @@ const supabasePublishableKey =
   process.env.VITE_SUPABASE_ANON_KEY ??
   defaultSupabasePublishableKey;
 const appDirectory = fileURLToPath(new URL("../app/", import.meta.url));
+const publicDirectory = fileURLToPath(new URL("../public/", import.meta.url));
 const pageSize = 1000;
 const selectedColumns = [
   "id",
@@ -253,7 +255,16 @@ for (const { fileName } of snapshots) {
 }
 
 const counts = snapshots.map(({ questions }) => questions.length);
+const cacheVersion = createHash("sha256")
+  .update(JSON.stringify(snapshots.map(({ questions }) => questions)))
+  .digest("hex")
+  .slice(0, 16);
+await writeFile(
+  `${publicDirectory}question-cache-version.json`,
+  `${JSON.stringify({ version: cacheVersion })}\n`,
+  "utf8",
+);
 
 console.log(
-  `Supabase 题库快照已生成：图形 ${counts[0]} 道，材料 ${counts[1]} 道，文字 ${counts[2]} 道，共 ${counts.reduce((sum, count) => sum + count, 0)} 道。`,
+  `Supabase 题库快照已生成：图形 ${counts[0]} 道，材料 ${counts[1]} 道，文字 ${counts[2]} 道，共 ${counts.reduce((sum, count) => sum + count, 0)} 道；图片缓存版本 ${cacheVersion}。`,
 );

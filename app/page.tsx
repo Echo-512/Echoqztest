@@ -99,6 +99,34 @@ type CloudPracticePayload = {
 const questions = questionData as GraphicQuestion[];
 const materialQuestions = materialQuestionData as MaterialQuestion[];
 const verbalQuestions = verbalQuestionData as VerbalQuestion[];
+const orderedGraphicQuestions = [...questions].sort((left, right) =>
+  left.sourceId.localeCompare(right.sourceId, "zh-CN", {
+    numeric: true,
+    sensitivity: "base",
+  }),
+);
+const allQuestionImageUrls = [
+  ...new Set([
+    ...questions.flatMap((question) => [
+      question.image,
+      ...question.optionImages,
+    ]),
+    ...materialQuestions.flatMap((question) =>
+      question.image ? [question.image] : [],
+    ),
+  ]),
+];
+const priorityQuestionImageUrls = [
+  ...new Set([
+    ...orderedGraphicQuestions.slice(0, 5).flatMap((question) => [
+      question.image,
+      ...question.optionImages,
+    ]),
+    ...materialQuestions.slice(0, 5).flatMap((question) =>
+      question.image ? [question.image] : [],
+    ),
+  ]),
+];
 const graphicById = new Map(questions.map((question) => [question.sourceId, question]));
 const materialById = new Map(
   materialQuestions.map((question) => [question.sourceId, question]),
@@ -133,7 +161,7 @@ const sessionStorageKeys: Record<`${ModuleKey}-${PracticeContext}`, string> = {
 const performanceStorageKey = "qiuzhao-xingce-performance-v1";
 const favoritesStorageKey = "qiuzhao-xingce-favorites-v1";
 const cloudProgressUpdatedAtKey = "qiuzhao-xingce-cloud-progress-updated-v1";
-const preloadAheadCount = 10;
+const preloadAheadCount = 5;
 const practiceImageCache = new Map<string, Promise<void>>();
 const initialPerformance: PerformanceState = {
   graphic: { attempts: 0, correct: 0, wrongIds: [] },
@@ -746,6 +774,51 @@ export default function Home() {
   const currentSessionAnswered = activeSession
     ? Object.keys(activeSession.submitted).length
     : 0;
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const registration = await navigator.serviceWorker.register(
+            "/question-cache-sw.js",
+            { scope: "/" },
+          );
+          const ready = await navigator.serviceWorker.ready;
+          let version = "fallback-v1";
+          try {
+            const response = await fetch("/question-cache-version.json", {
+              cache: "no-store",
+            });
+            if (response.ok) {
+              const payload = (await response.json()) as { version?: string };
+              if (payload.version) version = payload.version;
+            }
+          } catch {
+            // A missing version file only affects cache rotation, not practice.
+          }
+          if (cancelled) return;
+          const worker =
+            ready.active ??
+            registration.active ??
+            navigator.serviceWorker.controller;
+          worker?.postMessage({
+            type: "CACHE_QUESTION_IMAGES",
+            version,
+            priorityUrls: priorityQuestionImageUrls,
+            urls: allQuestionImageUrls,
+          });
+        } catch {
+          // Browsers without persistent service-worker storage keep normal loading.
+        }
+      })();
+    }, 500);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -1446,7 +1519,7 @@ export default function Home() {
           <button className="back-link" type="button" onClick={goHome}>← 返回首页</button>
           <span className="eyebrow">CATEGORY PRACTICE</span>
           <h1>选择题型</h1>
-          <p>图形推理和文字推理支持随机/按类型练习；材料分析按原题顺序直接开始。</p>
+          <p>图形推理当前支持按原题号顺序核对；文字推理支持随机/按类型练习；材料分析按原题顺序直接开始。</p>
         </section>
         <section className="category-grid">
           <button className="category-card active-card" type="button" onClick={() => goTo("graphic-mode")}>
@@ -1487,7 +1560,7 @@ export default function Home() {
           <button className="back-link" type="button" onClick={() => goTo("categories")}>← 返回题型</button>
           <span className="eyebrow">GRAPHIC REASONING</span>
           <h1>图形推理怎么练？</h1>
-          <p>随机进入真实节奏，或按大类集中训练薄弱考点。</p>
+          <p>当前为临时核对模式：按原题号顺序练习，或按大类集中训练薄弱考点。</p>
           {savedGraphic && (
             <button className="resume-mode" type="button" onClick={resumePractice}>
               继续上次刷题 · 已完成 {Object.keys(savedGraphic.submitted ?? {}).length} 题 →
@@ -1495,11 +1568,15 @@ export default function Home() {
           )}
         </section>
         <section className="mode-grid">
-          <button className="mode-card featured-mode" type="button" onClick={() => startPractice(shuffle(questions))}>
+          <button
+            className="mode-card featured-mode"
+            type="button"
+            onClick={() => startPractice(orderedGraphicQuestions)}
+          >
             <span className="mode-number">01</span>
-            <h2>随机刷题</h2>
-            <p>打乱全部 {questions.length} 道去重题，逐题计时、提交后判题。</p>
-            <strong>开始随机刷题 →</strong>
+            <h2>顺序刷题</h2>
+            <p>按原题号从 1-* 到 2-* 排列全部 {questions.length} 道题，跳号按原样保留。</p>
+            <strong>从第一题开始核对 →</strong>
           </button>
           <article className="mode-card">
             <span className="mode-number">02</span>

@@ -23,6 +23,11 @@ test("temporarily opens graphic practice in natural source-id order", async () =
   assert.match(page, /numeric: true/);
   assert.match(page, /startPractice\(orderedGraphicQuestions\)/);
   assert.doesNotMatch(page, /startPractice\(shuffle\(questions\)\)/);
+  assert.match(
+    page,
+    /orderedIds: orderedGraphicQuestions\.map\(\(question\) => question\.sourceId\)/,
+  );
+  assert.match(page, /continueFromFirstUnanswered: true/);
   assert.match(page, /<h2>顺序刷题<\/h2>/);
   assert.match(page, /跳号按原样保留/);
 });

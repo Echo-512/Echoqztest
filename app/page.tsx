@@ -81,6 +81,12 @@ type SavedSession = {
   currentSeconds: number;
 };
 
+type ResumeOptions = {
+  allowedIds?: Set<string>;
+  orderedIds?: string[];
+  continueFromFirstUnanswered?: boolean;
+};
+
 type ModulePerformance = {
   attempts: number;
   correct: number;
@@ -1241,8 +1247,13 @@ export default function Home() {
   function resumeSession(
     module: ModuleKey,
     context: PracticeContext = "normal",
-    allowedIds?: Set<string>,
+    options: ResumeOptions = {},
   ) {
+    const {
+      allowedIds,
+      orderedIds,
+      continueFromFirstUnanswered = false,
+    } = options;
     let saved = savedSessions[storageKey(module, context)];
     try {
       const raw = window.localStorage.getItem(storageKey(module, context));
@@ -1258,12 +1269,20 @@ export default function Home() {
       }));
     }
     const currentSourceId = saved.questionIds[saved.current];
-    const validIds = saved.questionIds.filter(
+    const validIds = (orderedIds ?? saved.questionIds).filter(
       (id) => Boolean(questionFor(module, id)) && (!allowedIds || allowedIds.has(id)),
     );
     if (!validIds.length) return false;
     const currentIndex = validIds.indexOf(currentSourceId);
-    const current = currentIndex >= 0 ? currentIndex : Math.min(saved.current, validIds.length - 1);
+    const firstUnanswered = continueFromFirstUnanswered
+      ? validIds.findIndex((id) => !saved.submitted[id])
+      : -1;
+    const current =
+      firstUnanswered >= 0
+        ? firstUnanswered
+        : currentIndex >= 0
+          ? currentIndex
+          : Math.min(saved.current, validIds.length - 1);
     practiceTimerEnabledRef.current = false;
     setPracticeQuestionReady(false);
     const session = { ...saved, module, context, questionIds: validIds, current };
@@ -1278,7 +1297,10 @@ export default function Home() {
   }
 
   function resumePractice() {
-    resumeSession("graphic");
+    resumeSession("graphic", "normal", {
+      orderedIds: orderedGraphicQuestions.map((question) => question.sourceId),
+      continueFromFirstUnanswered: true,
+    });
   }
 
   function startMaterialPractice(reset = false) {
@@ -1402,7 +1424,7 @@ export default function Home() {
   function startWrongPractice(module: ModuleKey) {
     const wrongIds = new Set(combinedPerformance[module].wrongIds);
     if (!wrongIds.size) return;
-    if (resumeSession(module, "wrong", wrongIds)) return;
+    if (resumeSession(module, "wrong", { allowedIds: wrongIds })) return;
     const pool = bankFor(module).filter((question) => wrongIds.has(question.sourceId));
     startSession(module, pool, "wrong");
   }
@@ -1423,7 +1445,7 @@ export default function Home() {
   function startFavoritePractice(module: ModuleKey) {
     const favoriteIds = new Set(visibleFavorites[module]);
     if (!favoriteIds.size) return;
-    if (resumeSession(module, "favorite", favoriteIds)) return;
+    if (resumeSession(module, "favorite", { allowedIds: favoriteIds })) return;
     const pool = bankFor(module).filter((question) =>
       favoriteIds.has(question.sourceId),
     );

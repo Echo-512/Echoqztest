@@ -598,14 +598,9 @@ function MockNav({
   return (
     <nav className="site-nav" aria-label="主导航">
       <button className="logo" type="button" onClick={onHome}>
-        <span className="logo-mark">Q</span>
-        秋招行测
-        <em>beta</em>
+        <img className="brand-mark-image" src="/offer-assets/brand-mark.svg" alt="" />
+        <strong className="brand-wordmark">Offer Fawn</strong>
       </button>
-      <div className="nav-links">
-        <button type="button" onClick={onHome}>首页</button>
-        <span>北森题库 · 三模块模拟考试</span>
-      </div>
       <button className="nav-cta" type="button" onClick={onPractice}>分类刷题</button>
     </nav>
   );
@@ -622,10 +617,10 @@ function MockBottomNav({
 }) {
   return (
     <nav className="bottom-nav" aria-label="底部导航">
-      <button type="button" onClick={onHome}><span>⌂</span><small>首页</small></button>
-      <button type="button" onClick={onPractice}><span>▣</span><small>题库</small></button>
-      <button className="active" type="button"><span>◷</span><small>模考</small></button>
-      <button type="button" onClick={onProfile}><span>☺</span><small>我的</small></button>
+      <button type="button" onClick={onHome}><img className="nav-deer-icon" src="/offer-assets/nav-deer-head.svg" alt="" /><small>首页</small></button>
+      <button type="button" onClick={onPractice}><img className="nav-deer-icon" src="/offer-assets/nav-deer-head.svg" alt="" /><small>题库</small></button>
+      <button className="active" type="button"><img className="nav-deer-icon" src="/offer-assets/nav-deer-head.svg" alt="" /><small>模考</small></button>
+      <button type="button" onClick={onProfile}><img className="nav-deer-icon" src="/offer-assets/nav-deer-head.svg" alt="" /><small>我的</small></button>
     </nav>
   );
 }
@@ -648,6 +643,7 @@ export default function MockExam({
   const [historyLoading, setHistoryLoading] = useState(true);
   const [draftSyncReady, setDraftSyncReady] = useState(false);
   const mockTimerEnabledRef = useRef(false);
+  const prepareRevisionRef = useRef(0);
   const autoFinishRef = useRef<() => void>(() => undefined);
   const examRef = useRef<ActiveExam | null>(null);
   const lastDraftUpdatedAtRef = useRef("");
@@ -904,6 +900,7 @@ export default function MockExam({
   }, [view, questionReady, activeModuleKey, activeQuestionId]);
 
   async function prepareExam(nextExam: ActiveExam) {
+    const revision = ++prepareRevisionRef.current;
     setView("preparing");
     mockTimerEnabledRef.current = false;
     setQuestionReady(false);
@@ -915,6 +912,7 @@ export default function MockExam({
       moduleState.current + initialModulePreloadCount,
     );
     await preloadQuestionBatch(moduleKey, initialQuestionIds);
+    if (revision !== prepareRevisionRef.current) return;
     setView(nextExam.phase);
   }
 
@@ -943,6 +941,15 @@ export default function MockExam({
 
   function resumeExam() {
     if (resumableExam) void prepareExam(resumableExam);
+  }
+
+  function exitMockExam() {
+    prepareRevisionRef.current += 1;
+    mockTimerEnabledRef.current = false;
+    setQuestionReady(false);
+    const draft = examRef.current ?? exam;
+    if (draft) setResumableExam(draft);
+    setView("landing");
   }
 
   function beginCurrentModule() {
@@ -1232,12 +1239,8 @@ export default function MockExam({
         <MockNav onHome={onHome} onPractice={onPractice} />
         <section className="page-heading mock-heading">
           <button className="back-link" type="button" onClick={onHome}>← 返回首页</button>
-          <span className="eyebrow">FULL MOCK EXAM</span>
           <h1>三模块真实模考</h1>
-          <p>
-            三个模块随机排序，通常每模块 10 题、每题限时 70 秒。不可跳题、
-            不可回看，完成全部模块后统一显示成绩与解析。
-          </p>
+          <p className="visually-hidden">考试过程中不可跳题、不可回看。</p>
           <div className="mock-heading-actions">
             <button
               className="primary-button"
@@ -1254,13 +1257,16 @@ export default function MockExam({
           </div>
         </section>
         <section className="mock-rules">
-          <article><span>01</span><h2>首批优先</h2><p>模块顺序随机生成，只先准备首个模块前 5 题，进入更快。</p></article>
-          <article><span>02</span><h2>连续作答</h2><p>顶部圆点只显示进度，不能点击跳题；提交后直接进入下一题。</p></article>
-          <article><span>03</span><h2>后台准备</h2><p>作答第一模块时分批准备后续模块，全部完成后统一结算。</p></article>
+          <article><img src="/offer-assets/mock-rule-generated.svg" alt="" /><h2>整套预生成</h2></article>
+          <article><img src="/offer-assets/mock-rule-continuous.svg" alt="" /><h2>连续作答</h2></article>
+          <article><img src="/offer-assets/mock-rule-settlement.svg" alt="" /><h2>统一结算</h2></article>
         </section>
         <section className="mock-history">
           <div className="mock-section-title">
-            <div><span className="eyebrow">EXAM HISTORY</span><h2>过往模考记录</h2></div>
+            <div>
+              <h2>过往模考记录</h2>
+              <img src="/offer-assets/mock-history-deer.svg" alt="" />
+            </div>
             <small>{historyLoading ? "正在同步…" : `共 ${history.length} 场`}</small>
           </div>
           {history.length ? (
@@ -1287,6 +1293,9 @@ export default function MockExam({
   if (view === "preparing") {
     return (
       <main className="mock-preparing">
+        <button className="mock-exit-button mock-preparing-exit" type="button" onClick={exitMockExam}>
+          ← 退出模考
+        </button>
         <div className="mock-loader" aria-hidden="true"><i /><i /><i /></div>
         <span className="eyebrow">PREPARING FIRST SECTION</span>
         <h1>正在准备首个模块</h1>
@@ -1303,6 +1312,9 @@ export default function MockExam({
       <main className="inner-page mock-stage-page">
         <MockNav onHome={onHome} onPractice={onPractice} />
         <section className="mock-stage-card">
+          <button className="mock-exit-button mock-stage-exit" type="button" onClick={exitMockExam}>
+            ← 退出模考
+          </button>
           <span className="eyebrow">
             {view === "between" ? "SECTION COMPLETE" : `SECTION ${exam.activeModuleIndex + 1}`}
           </span>
@@ -1362,6 +1374,9 @@ export default function MockExam({
       <main className="practice-shell mock-exam-shell">
         <header className="mock-exam-header">
           <div className="mock-module-name">
+            <button className="mock-exit-button" type="button" onClick={exitMockExam}>
+              ← 退出模考
+            </button>
             <small>模块 {exam.activeModuleIndex + 1}/3</small>
             <strong>{moduleNames[activeModuleKey]}</strong>
           </div>

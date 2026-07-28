@@ -20,13 +20,16 @@ test("builds a three-module exam with a 70-second limit per question", async () 
   assert.match(mock, /SECTION COMPLETE/);
 });
 
-test("excludes the previous paper and samples by both difficulty and category", async () => {
+test("samples a balanced paper and opens before cloud history or later modules finish", async () => {
   const mock = await readFile(mockUrl, "utf8");
   assert.match(mock, /wholeBank\.filter\(\(question\) => !excluded\.has\(question\.sourceId\)\)/);
   assert.match(mock, /categoryCounts/);
   assert.match(mock, /desired: Record<Difficulty, number>/);
   assert.match(mock, /lastExamQuestionIdsKey/);
-  assert.match(mock, /disabled=\{historyLoading\}/);
+  assert.doesNotMatch(mock, /disabled=\{historyLoading\}/);
+  assert.match(mock, /const initialModulePreloadCount = 5/);
+  assert.match(mock, /const backgroundPreloadBatchSize = 5/);
+  assert.match(mock, /preloadFutureModules\(exam\)/);
 });
 
 test("starts both timers only after the new question is decoded and painted", async () => {

@@ -132,6 +132,11 @@ const activeExamUpdatedAtKey = "qiuzhao-xingce-active-mock-updated-v1";
 const localHistoryStorageKey = "qiuzhao-xingce-mock-history-cache-v1";
 const lastExamQuestionIdsKey = "qiuzhao-xingce-last-mock-questions-v1";
 const questionSeconds = 70;
+const initialModulePreloadCount = 5;
+const rollingPreloadCount = 3;
+const backgroundPreloadBatchSize = 5;
+const imageLoadTimeoutMs = 5_000;
+const mockImageCache = new Map<string, Promise<boolean>>();
 
 function shuffle<T>(items: T[]) {
   const copy = [...items];
@@ -208,20 +213,53 @@ function imageAssets(module: ModuleKey, question: BankQuestion) {
   return [];
 }
 
-function preloadImage(url: string) {
-  return new Promise<void>((resolve) => {
+function preloadImageOnce(url: string) {
+  const cached = mockImageCache.get(url);
+  if (cached) return cached;
+
+  const pending = new Promise<boolean>((resolve) => {
     const image = new window.Image();
-    const finish = () => {
+    let settled = false;
+    let timeout = 0;
+    const finish = (loaded: boolean) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      image.onload = null;
+      image.onerror = null;
+      resolve(loaded);
+    };
+    timeout = window.setTimeout(
+      () => finish(false),
+      imageLoadTimeoutMs,
+    );
+    image.onload = () => {
       if (typeof image.decode === "function") {
-        image.decode().catch(() => undefined).finally(resolve);
+        void image.decode().then(
+          () => finish(true),
+          () => finish(true),
+        );
       } else {
-        resolve();
+        finish(true);
       }
     };
-    image.onload = finish;
-    image.onerror = () => resolve();
+    image.onerror = () => finish(false);
     image.src = url;
   });
+
+  mockImageCache.set(url, pending);
+  void pending.then((loaded) => {
+    if (!loaded && mockImageCache.get(url) === pending) {
+      mockImageCache.delete(url);
+    }
+  });
+  return pending;
+}
+
+async function preloadImage(url: string) {
+  if (await preloadImageOnce(url)) return;
+  await new Promise<void>((resolve) => window.setTimeout(resolve, 120));
+  await preloadImageOnce(url);
 }
 
 async function waitForVisibleQuestion(urls: string[]) {
@@ -229,6 +267,51 @@ async function waitForVisibleQuestion(urls: string[]) {
   await new Promise<void>((resolve) => {
     window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
   });
+}
+
+function imageUrlsForQuestions(module: ModuleKey, questionIds: string[]) {
+  return [
+    ...new Set(
+      questionIds.flatMap((id) => {
+        const question = questionFor(module, id);
+        return question ? imageAssets(module, question) : [];
+      }),
+    ),
+  ];
+}
+
+async function preloadQuestionBatch(
+  module: ModuleKey,
+  questionIds: string[],
+) {
+  await Promise.all(
+    imageUrlsForQuestions(module, questionIds).map(preloadImage),
+  );
+}
+
+function waitForBackgroundTurn(delay = 240) {
+  return new Promise<void>((resolve) => window.setTimeout(resolve, delay));
+}
+
+async function preloadFutureModules(nextExam: ActiveExam) {
+  await waitForBackgroundTurn(800);
+  const futureModules = nextExam.moduleOrder.slice(
+    nextExam.activeModuleIndex + 1,
+  );
+  for (const moduleKey of futureModules) {
+    const questionIds = nextExam.modules[moduleKey].questionIds;
+    for (
+      let offset = 0;
+      offset < questionIds.length;
+      offset += backgroundPreloadBatchSize
+    ) {
+      await preloadQuestionBatch(
+        moduleKey,
+        questionIds.slice(offset, offset + backgroundPreloadBatchSize),
+      );
+      await waitForBackgroundTurn();
+    }
+  }
 }
 
 function categoryForSelection(module: ModuleKey, question: BankQuestion) {
@@ -759,6 +842,30 @@ export default function MockExam({
     };
   }, [view, activeModuleKey, activeQuestionId, activeQuestion]);
 
+  const activeQuestionIds = activeModule?.questionIds;
+  const activeQuestionIndex = activeModule?.current;
+
+  useEffect(() => {
+    if (
+      view !== "question" ||
+      !activeModuleKey ||
+      !activeQuestionIds ||
+      activeQuestionIndex === undefined
+    ) {
+      return;
+    }
+    const nextQuestionIds = activeQuestionIds.slice(
+      activeQuestionIndex + 1,
+      activeQuestionIndex + 1 + rollingPreloadCount,
+    );
+    void preloadQuestionBatch(activeModuleKey, nextQuestionIds);
+  }, [
+    view,
+    activeModuleKey,
+    activeQuestionIds,
+    activeQuestionIndex,
+  ]);
+
   useEffect(() => {
     if (
       view !== "question" ||
@@ -801,13 +908,13 @@ export default function MockExam({
     mockTimerEnabledRef.current = false;
     setQuestionReady(false);
     setExam(nextExam);
-    const urls = nextExam.moduleOrder.flatMap((moduleKey) =>
-      nextExam.modules[moduleKey].questionIds.flatMap((id) => {
-        const question = questionFor(moduleKey, id);
-        return question ? imageAssets(moduleKey, question) : [];
-      }),
+    const moduleKey = nextExam.moduleOrder[nextExam.activeModuleIndex];
+    const moduleState = nextExam.modules[moduleKey];
+    const initialQuestionIds = moduleState.questionIds.slice(
+      moduleState.current,
+      moduleState.current + initialModulePreloadCount,
     );
-    await Promise.all([...new Set(urls)].map(preloadImage));
+    await preloadQuestionBatch(moduleKey, initialQuestionIds);
     setView(nextExam.phase);
   }
 
@@ -839,10 +946,18 @@ export default function MockExam({
   }
 
   function beginCurrentModule() {
-    if (!exam) return;
+    if (!exam || !activeModuleKey || !activeModule) return;
     mockTimerEnabledRef.current = false;
     setExam({ ...exam, phase: "question" });
     setView("question");
+    void preloadQuestionBatch(
+      activeModuleKey,
+      activeModule.questionIds.slice(
+        activeModule.current + initialModulePreloadCount,
+        activeModule.current + initialModulePreloadCount + rollingPreloadCount,
+      ),
+    );
+    void preloadFutureModules(exam);
   }
 
   function selectAnswer(letter: string) {
@@ -1038,6 +1153,14 @@ export default function MockExam({
     };
     setExam(updated);
     setView("intro");
+    const nextModuleKey = updated.moduleOrder[updated.activeModuleIndex];
+    void preloadQuestionBatch(
+      nextModuleKey,
+      updated.modules[nextModuleKey].questionIds.slice(
+        0,
+        initialModulePreloadCount,
+      ),
+    );
   }
 
   async function openHistory(id: string) {
@@ -1120,9 +1243,8 @@ export default function MockExam({
               className="primary-button"
               type="button"
               onClick={startNewExam}
-              disabled={historyLoading}
             >
-              {historyLoading ? "正在同步上次模考…" : "生成一套新模考 →"}
+              生成一套新模考 →
             </button>
             {resumableExam && (
               <button className="resume-mode" type="button" onClick={resumeExam}>
@@ -1132,9 +1254,9 @@ export default function MockExam({
           </div>
         </section>
         <section className="mock-rules">
-          <article><span>01</span><h2>整套预生成</h2><p>先生成全部题目并预载图片，题目真正可见后才开始计时。</p></article>
+          <article><span>01</span><h2>首批优先</h2><p>模块顺序随机生成，只先准备首个模块前 5 题，进入更快。</p></article>
           <article><span>02</span><h2>连续作答</h2><p>顶部圆点只显示进度，不能点击跳题；提交后直接进入下一题。</p></article>
-          <article><span>03</span><h2>统一结算</h2><p>三个模块做完后再显示正确率、失分考点与全部题目回看。</p></article>
+          <article><span>03</span><h2>后台准备</h2><p>作答第一模块时分批准备后续模块，全部完成后统一结算。</p></article>
         </section>
         <section className="mock-history">
           <div className="mock-section-title">
@@ -1166,9 +1288,9 @@ export default function MockExam({
     return (
       <main className="mock-preparing">
         <div className="mock-loader" aria-hidden="true"><i /><i /><i /></div>
-        <span className="eyebrow">PREPARING YOUR PAPER</span>
-        <h1>正在生成整套试卷</h1>
-        <p>题目、选项与图片全部准备好后才会进入考试，当前不计时。</p>
+        <span className="eyebrow">PREPARING FIRST SECTION</span>
+        <h1>正在准备首个模块</h1>
+        <p>只加载最先作答模块的前 5 题，其他模块将在作答时后台准备。</p>
       </main>
     );
   }
@@ -1187,7 +1309,7 @@ export default function MockExam({
           {view === "between" ? (
             <>
               <h1>{moduleNames[activeModuleKey]}已完成</h1>
-              <p>本模块暂不显示成绩。下一模块的题目已经准备好，计时仍未开始。</p>
+              <p>本模块暂不显示成绩。下一模块已在后台准备，计时仍未开始。</p>
               <button className="primary-button" type="button" onClick={enterNextModule}>
                 进入下一模块 →
               </button>

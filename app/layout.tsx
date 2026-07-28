@@ -1,7 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { AccountProvider } from "./account-context";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
@@ -12,18 +18,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: baseUrl,
-    title: "秋招行测｜大厂笔试刷题站",
-    description: "为秋招学生做的大厂行测练习工具：北森题库、逐题计时、错题归档、收藏复练与跨端同步。",
+    title: "Offer Fawn｜Offer 鹿 · 秋招行测",
+    description: "Offer Fawn 为秋招学生提供北森题库、逐题计时、错题归档、收藏复练与跨端同步。",
     openGraph: {
-      title: "秋招行测｜大厂笔试刷题站",
-      description: "把大厂行测，练得更有把握。",
+      title: "Offer Fawn｜Offer 鹿，一路录取",
+      description: "沿着自己的节奏，走向那份 Offer。",
       type: "website",
-      images: [{ url: socialImage, width: 1200, height: 630, alt: "秋招行测图形推理刷题站" }],
+      images: [{ url: socialImage, width: 1200, height: 630, alt: "Offer Fawn 秋招行测刷题站" }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "秋招行测｜大厂笔试刷题站",
-      description: "北森题库逐题计时，错题归档，收藏复练。",
+      title: "Offer Fawn｜Offer 鹿 · 秋招行测",
+      description: "Offer 鹿，一路录取。",
       images: [socialImage],
     },
   };

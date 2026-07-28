@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "./account-context";
 import materialQuestionData from "./material-questions.json";
 import MockExam from "./mock-exam";
-import { refreshQuestionsFromSupabase } from "./question-sync";
 import questionData from "./questions.json";
 import RestrictedPage from "./restricted-page";
 import verbalQuestionData from "./verbal-questions.json";
@@ -612,8 +611,6 @@ export default function Home() {
   const account = useAccount();
   const { saveUserState } = account;
   const [screen, setScreen] = useState<Screen>("home");
-  const [, setQuestionRevision] = useState(0);
-  const [questionsReady, setQuestionsReady] = useState(false);
   const [activeSession, setActiveSession] = useState<SavedSession | null>(null);
   const [savedSessions, setSavedSessions] = useState<Record<string, SavedSession>>({});
   const [performance, setPerformance] = useState<PerformanceState>(initialPerformance);
@@ -635,23 +632,6 @@ export default function Home() {
   const cloudPayloadRef = useRef<CloudPracticePayload | null>(null);
   const lastCloudUpdatedAtRef = useRef("");
   const appliedAccountStateRef = useRef("");
-
-  useEffect(() => {
-    let active = true;
-    refreshQuestionsFromSupabase()
-      .then(() => {
-        if (active) setQuestionRevision((revision) => revision + 1);
-      })
-      .catch((error) => {
-        console.error("Supabase 题库同步失败，已使用本地备用题库", error);
-      })
-      .finally(() => {
-        if (active) setQuestionsReady(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const activeId =
     activeSession?.questionIds[activeSession.current] ?? questions[0].sourceId;
@@ -1457,18 +1437,6 @@ export default function Home() {
     });
     return `conic-gradient(${segments.join(",")})`;
   }, [wrongCategoryCounts]);
-
-  if (!questionsReady) {
-    return (
-      <main className="inner-page overview-page">
-        <section className="loading-panel" aria-live="polite">
-          <span>QUESTION BANK</span>
-          <h1>正在同步最新题库…</h1>
-          <p>将优先读取 Supabase，完成后再进入刷题与模考。</p>
-        </section>
-      </main>
-    );
-  }
 
   if (screen === "categories") {
     return (

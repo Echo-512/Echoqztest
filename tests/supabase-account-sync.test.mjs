@@ -4,7 +4,10 @@ import test from "node:test";
 
 const accountUrl = new URL("../app/account-context.tsx", import.meta.url);
 const pageUrl = new URL("../app/page.tsx", import.meta.url);
-const questionSyncUrl = new URL("../app/question-sync.ts", import.meta.url);
+const questionSnapshotUrl = new URL(
+  "../scripts/sync-question-snapshot.mjs",
+  import.meta.url,
+);
 const mockUrl = new URL("../app/mock-exam.tsx", import.meta.url);
 const schemaUrl = new URL("../supabase/schema.sql", import.meta.url);
 const netlifyUrl = new URL("../netlify.toml", import.meta.url);
@@ -48,7 +51,7 @@ test("uses native Next.js output on Netlify and includes cloud exam totals", asy
   const account = await readFile(accountUrl, "utf8");
   const page = await readFile(pageUrl, "utf8");
   const netlify = await readFile(netlifyUrl, "utf8");
-  assert.match(netlify, /command = "pnpm exec next build"/);
+  assert.match(netlify, /command = "pnpm run sync:questions && pnpm exec next build"/);
   assert.match(netlify, /publish = "\.next"/);
   assert.match(account, /\.select\("total_questions,correct_count,details"\)/);
   assert.match(account, /setCompletedExamQuestionCount/);
@@ -85,16 +88,18 @@ test("never replaces saved account progress with an empty snapshot", async () =>
   assert.doesNotMatch(page, /const cloudIsCurrent/);
 });
 
-test("accepts new Supabase-only questions and reads mock history back", async () => {
+test("builds a Supabase-first static question snapshot without blocking visitors", async () => {
   const page = await readFile(pageUrl, "utf8");
-  const questionSync = await readFile(questionSyncUrl, "utf8");
+  const questionSnapshot = await readFile(questionSnapshotUrl, "utf8");
   const mock = await readFile(mockUrl, "utf8");
-  assert.match(questionSync, /function createQuestion/);
-  assert.match(questionSync, /graphicQuestions\.push\(question\)/);
-  assert.match(questionSync, /materialQuestions\.push\(question\)/);
-  assert.match(questionSync, /verbalQuestions\.push\(question\)/);
-  assert.match(page, /正在同步最新题库/);
-  assert.match(page, /refreshQuestionsFromSupabase\(\)/);
+  assert.match(questionSnapshot, /fetchQuestionType\("图形推理"\)/);
+  assert.match(questionSnapshot, /fetchQuestionType\("材料分析"\)/);
+  assert.match(questionSnapshot, /fetchQuestionType\("文字推理"\)/);
+  assert.match(questionSnapshot, /buildSnapshot\("questions\.json"/);
+  assert.match(questionSnapshot, /buildSnapshot\(\s*"material-questions\.json"/);
+  assert.match(questionSnapshot, /buildSnapshot\(\s*"verbal-questions\.json"/);
+  assert.doesNotMatch(page, /正在同步最新题库/);
+  assert.doesNotMatch(page, /refreshQuestionsFromSupabase\(\)/);
   assert.match(mock, /\.from\("exam_records"\)\s*\.select\("exam_id,details,created_at"\)/);
   assert.match(mock, /onConflict: "user_id,exam_id"/);
 });

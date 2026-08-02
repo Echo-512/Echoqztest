@@ -8546,6 +8546,72 @@ button {
   color: #9a6746;
 }
 
+/* Analysis taxonomy uses the same quiet paper-and-caramel treatment as the
+   wrong-book keyword chips throughout practice and mock review screens. */
+.concept-tags span {
+  border: 1px solid rgba(168, 125, 96, 0.22);
+  color: #9a6746;
+  background: #ffffff;
+  box-shadow: 0 5px 14px rgba(112, 65, 31, 0.035);
+}
+
+.graphic-question-prompt {
+  margin: 0;
+  padding: 14px 18px 4px;
+  color: var(--of-ink, #4a2f20);
+  background: #fffdf8;
+  font-size: clamp(13px, 1.5vw, 17px);
+  line-height: 1.65;
+}
+
+.multi-stem-image-wrap {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.source-options[data-option-count="5"] {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.source-options[data-option-count="5"] .source-option-button {
+  grid-column: span 2;
+}
+
+.source-options[data-option-count="5"] .source-option-button:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.source-options[data-option-count="5"] .source-option-button:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+@media (max-width: 700px) {
+  .multi-stem-image-wrap {
+    gap: 5px;
+  }
+
+  .source-options[data-option-count="5"],
+  .practice-graphic.is-answering .source-options[data-option-count="5"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .source-options[data-option-count="5"] .source-option-button,
+  .practice-graphic.is-answering
+    .source-options[data-option-count="5"]
+    .source-option-button {
+    grid-column: auto;
+  }
+
+  .source-options[data-option-count="5"] .source-option-button:last-child,
+  .practice-graphic.is-answering
+    .source-options[data-option-count="5"]
+    .source-option-button:last-child {
+    grid-column: 1 / -1;
+    width: calc(50% - 3px);
+    justify-self: center;
+  }
+}
+
 .mock-exit-button {
   width: fit-content;
   padding: 5px 9px;

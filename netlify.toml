@@ -1,5 +1,5 @@
 [build]
-  command = "pnpm run sync:questions && pnpm exec next build"
+  command = "pnpm run prepare:questions && pnpm run sync:questions && pnpm exec next build"
   publish = ".next"
 
 [build.environment]

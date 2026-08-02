@@ -11,6 +11,9 @@ type ModuleKey = "graphic" | "material" | "verbal";
 
 type GraphicQuestion = {
   sourceId: string;
+  displayId?: string;
+  prompt?: string;
+  stemImages?: string[];
   image: string;
   optionImages: string[];
   answer: string;
@@ -205,7 +208,10 @@ function questionPoints(module: ModuleKey, question: BankQuestion) {
 function imageAssets(module: ModuleKey, question: BankQuestion) {
   if (module === "graphic") {
     const graphic = question as GraphicQuestion;
-    return [graphic.image, ...graphic.optionImages];
+    return [
+      ...(graphic.stemImages?.length ? graphic.stemImages : [graphic.image]),
+      ...graphic.optionImages,
+    ].filter(Boolean);
   }
   if (module === "material" && (question as MaterialQuestion).image) {
     return [(question as MaterialQuestion).image as string];
@@ -510,11 +516,23 @@ function QuestionBody({
     const graphic = question as GraphicQuestion;
     return (
       <>
-        <div className={`source-image-wrap ${graphic.optionImages.length ? "stem-image-wrap" : ""}`}>
-          <img src={graphic.image} alt={`${graphic.sourceId} 图形推理题`} draggable={false} />
-        </div>
+        {graphic.prompt && <p className="graphic-question-prompt">{graphic.prompt}</p>}
+        {(graphic.stemImages?.length || graphic.image) && (
+          <div className={`source-image-wrap stem-image-wrap ${(graphic.stemImages?.length ?? 0) > 1 ? "multi-stem-image-wrap" : ""}`}>
+            {(graphic.stemImages?.length ? graphic.stemImages! : [graphic.image]).map(
+              (image, index) => (
+                <img
+                  key={image}
+                  src={image}
+                  alt={`${graphic.displayId ?? graphic.sourceId} 图形推理题图 ${index + 1}`}
+                  draggable={false}
+                />
+              ),
+            )}
+          </div>
+        )}
         {graphic.optionImages.length === graphic.optionCount ? (
-          <div className="source-options" aria-label="答案选项">
+          <div className="source-options" data-option-count={graphic.optionCount} aria-label="答案选项">
             {graphic.optionImages.map((image, index) => {
               const letter = letters[index];
               return (

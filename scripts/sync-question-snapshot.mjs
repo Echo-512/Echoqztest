@@ -18,6 +18,7 @@ const publicDirectory = fileURLToPath(new URL("../public/", import.meta.url));
 const pageSize = 1000;
 const selectedColumns = [
   "id",
+  "question_number",
   "question_text",
   "image",
   "options",
@@ -96,14 +97,25 @@ function toGraphicQuestion(row, fallback) {
   const optionImages = supabaseOptionImages.length
     ? supabaseOptionImages
     : fallback?.optionImages ?? [];
-  const image = row.image || fallback?.image;
+  const stemImages = Array.isArray(row.metadata?.stem_images)
+    ? row.metadata.stem_images.map(String)
+    : fallback?.stemImages?.length
+      ? fallback.stemImages
+      : row.image || fallback?.image
+        ? [row.image || fallback.image]
+        : [];
+  const image = stemImages[0] ?? "";
+  const prompt = row.question_text ?? fallback?.prompt ?? "";
   const answer = row.correct_answer || fallback?.answer;
   const optionCount = row.option_count ?? fallback?.optionCount ?? optionImages.length;
-  if (!row.id || !image || !answer || optionCount < 2) {
+  if (!row.id || (!image && !prompt) || !answer || optionCount < 2) {
     return null;
   }
   return {
     sourceId: row.id,
+    displayId: row.question_number || fallback?.displayId || row.id,
+    prompt,
+    stemImages,
     image,
     optionImages,
     answer,

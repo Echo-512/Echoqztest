@@ -27,6 +27,9 @@ type Screen =
 
 type GraphicQuestion = {
   sourceId: string;
+  displayId?: string;
+  prompt?: string;
+  stemImages?: string[];
   image: string;
   optionImages: string[];
   answer: string;
@@ -106,7 +109,7 @@ const questions = questionData as GraphicQuestion[];
 const materialQuestions = materialQuestionData as MaterialQuestion[];
 const verbalQuestions = verbalQuestionData as VerbalQuestion[];
 const orderedGraphicQuestions = [...questions].sort((left, right) =>
-  left.sourceId.localeCompare(right.sourceId, "zh-CN", {
+  (left.displayId ?? left.sourceId).localeCompare(right.displayId ?? right.sourceId, "zh-CN", {
     numeric: true,
     sensitivity: "base",
   }),
@@ -114,9 +117,9 @@ const orderedGraphicQuestions = [...questions].sort((left, right) =>
 const allQuestionImageUrls = [
   ...new Set([
     ...questions.flatMap((question) => [
-      question.image,
+      ...(question.stemImages?.length ? question.stemImages : [question.image]),
       ...question.optionImages,
-    ]),
+    ]).filter(Boolean),
     ...materialQuestions.flatMap((question) =>
       question.image ? [question.image] : [],
     ),
@@ -125,9 +128,9 @@ const allQuestionImageUrls = [
 const priorityQuestionImageUrls = [
   ...new Set([
     ...orderedGraphicQuestions.slice(0, 5).flatMap((question) => [
-      question.image,
+      ...(question.stemImages?.length ? question.stemImages : [question.image]),
       ...question.optionImages,
-    ]),
+    ]).filter(Boolean),
     ...materialQuestions.slice(0, 5).flatMap((question) =>
       question.image ? [question.image] : [],
     ),
@@ -248,7 +251,10 @@ function answerFor(question: BankQuestion) {
 function practiceImageAssets(module: ModuleKey, question: BankQuestion) {
   if (module === "graphic") {
     const graphic = question as GraphicQuestion;
-    return [graphic.image, ...graphic.optionImages];
+    return [
+      ...(graphic.stemImages?.length ? graphic.stemImages : [graphic.image]),
+      ...graphic.optionImages,
+    ].filter(Boolean);
   }
   if (module === "material" && (question as MaterialQuestion).image) {
     return [(question as MaterialQuestion).image as string];
@@ -1536,7 +1542,6 @@ export default function Home() {
           <button className="back-link" type="button" onClick={() => goTo("categories")}>← 返回题型</button>
           <span className="eyebrow">GRAPHIC REASONING</span>
           <h1>图形推理怎么练？</h1>
-          <p>当前为临时核对模式：按原题号顺序练习，或按大类集中训练薄弱考点。</p>
           {savedGraphic && (
             <button className="resume-mode" type="button" onClick={resumePractice}>
               继续上次刷题 · 已完成 {Object.keys(savedGraphic.submitted ?? {}).length} 题 →
@@ -1551,7 +1556,6 @@ export default function Home() {
           >
             <span className="mode-number">01</span>
             <h2>顺序刷题</h2>
-            <p>按原题号从 1-* 到 2-* 排列全部 {questions.length} 道题，跳号按原样保留。</p>
             <strong>从第一题开始核对 →</strong>
           </button>
           <article className="mode-card">
@@ -1583,7 +1587,6 @@ export default function Home() {
           <button className="back-link" type="button" onClick={() => goTo("categories")}>← 返回题型</button>
           <span className="eyebrow">VERBAL REASONING</span>
           <h1>文字推理怎么练？</h1>
-          <p>题型依据配套讲义划分，提交后显示二级考点、答案与解析。</p>
           {savedVerbal && (
             <button className="resume-mode" type="button" onClick={resumeVerbalPractice}>
               继续上次刷题 · 已完成 {Object.keys(savedVerbal.submitted ?? {}).length} 题 →
@@ -1598,7 +1601,6 @@ export default function Home() {
           >
             <span className="mode-number">01</span>
             <h2>随机刷题</h2>
-            <p>打乱全部 {verbalQuestions.length} 道去重题，逐题计时并即时保存。</p>
             <strong>开始随机刷题 →</strong>
           </button>
           <article className="mode-card">
@@ -2055,7 +2057,11 @@ export default function Home() {
 
         <section className="practice-content">
           <div className="question-meta">
-            <span>{activeQuestion.sourceId}</span>
+            <span>
+              {activeSession.module === "graphic"
+                ? (activeQuestion as GraphicQuestion).displayId ?? activeQuestion.sourceId
+                : activeQuestion.sourceId}
+            </span>
             <span>{activeQuestion.difficulty}</span>
             <em>
               {answered
@@ -2081,17 +2087,32 @@ export default function Home() {
           >
             {activeSession.module === "graphic" ? (
               <>
-                <div
-                  className={`source-image-wrap ${(activeQuestion as GraphicQuestion).optionImages.length ? "stem-image-wrap" : ""}`}
-                >
-                  <img
-                    src={(activeQuestion as GraphicQuestion).image}
-                    alt={`${activeId} 图形推理题原图`}
-                    draggable={false}
-                  />
-                </div>
+                {(activeQuestion as GraphicQuestion).prompt && (
+                  <p className="graphic-question-prompt">
+                    {(activeQuestion as GraphicQuestion).prompt}
+                  </p>
+                )}
+                {((activeQuestion as GraphicQuestion).stemImages?.length ||
+                  (activeQuestion as GraphicQuestion).image) && (
+                  <div
+                    className={`source-image-wrap stem-image-wrap ${((activeQuestion as GraphicQuestion).stemImages?.length ?? 0) > 1 ? "multi-stem-image-wrap" : ""}`}
+                  >
+                    {(
+                      (activeQuestion as GraphicQuestion).stemImages?.length
+                        ? (activeQuestion as GraphicQuestion).stemImages!
+                        : [(activeQuestion as GraphicQuestion).image]
+                    ).map((image, index) => (
+                      <img
+                        key={image}
+                        src={image}
+                        alt={`${(activeQuestion as GraphicQuestion).displayId ?? activeId} 图形推理题图 ${index + 1}`}
+                        draggable={false}
+                      />
+                    ))}
+                  </div>
+                )}
                 {(activeQuestion as GraphicQuestion).optionImages.length === optionCount ? (
-                  <div className="source-options" aria-label="请选择答案">
+                  <div className="source-options" data-option-count={optionCount} aria-label="请选择答案">
                     {(activeQuestion as GraphicQuestion).optionImages.map((image, index) => {
                       const letter = letters[index];
                       return (

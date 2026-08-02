@@ -25,6 +25,18 @@ type Screen =
   | "profile"
   | "membership";
 
+const MEMBERSHIP_PROTECTED_SCREENS = new Set<Screen>([
+  "categories",
+  "graphic-mode",
+  "verbal-mode",
+  "mock",
+  "practice",
+  "result",
+  "wrong-categories",
+  "wrong-dashboard",
+  "favorite-categories",
+]);
+
 type GraphicQuestion = {
   sourceId: string;
   displayId?: string;
@@ -1049,6 +1061,16 @@ export default function Home() {
   }, [screen, activeId, activeModule, activeQuestion]);
 
   useEffect(() => {
+    if (!MEMBERSHIP_PROTECTED_SCREENS.has(screen)) return;
+    if (!account.session) {
+      setScreen("home");
+      account.openAuth();
+      return;
+    }
+    if (!account.hasAccess) setScreen("membership");
+  }, [account.hasAccess, account.openAuth, account.session, screen]);
+
+  useEffect(() => {
     const currentSession = activeSessionRef.current;
     if (screen !== "practice" || !currentSession) return;
     preloadPracticeQueue(currentSession, currentSession.current + 1);
@@ -1089,11 +1111,11 @@ export default function Home() {
   }
 
   function goTo(nextScreen: Screen) {
-    if (nextScreen === "mock" && !account.session) {
+    if (MEMBERSHIP_PROTECTED_SCREENS.has(nextScreen) && !account.session) {
       account.openAuth();
       return;
     }
-    if (nextScreen === "mock" && !account.hasAccess) {
+    if (MEMBERSHIP_PROTECTED_SCREENS.has(nextScreen) && !account.hasAccess) {
       setScreen("membership");
       return;
     }
@@ -1860,7 +1882,7 @@ export default function Home() {
                 {account.session
                   ? memberIsCurrent
                     ? "会员有效"
-                    : "当前免费开放"
+                    : "会员未开通"
                   : "登录后保存学习数据"}
                 {"　"}
                 <em>
@@ -1881,6 +1903,13 @@ export default function Home() {
                 <>
                   <button type="button" onClick={openProfileEditor}>
                     编辑资料
+                  </button>
+                  <button
+                    className="profile-membership"
+                    type="button"
+                    onClick={() => goTo("membership")}
+                  >
+                    {memberIsCurrent ? "我的会员账户" : "开通会员"}
                   </button>
                   <button
                     className="profile-signout"

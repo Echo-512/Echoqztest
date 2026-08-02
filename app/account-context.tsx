@@ -16,6 +16,9 @@ const REMEMBER_KEY = "qiuzhao-remember-login";
 const ACTIVE_SESSION_KEY = "qiuzhao-active-session";
 const LAST_ACTIVE_AT_KEY = "qiuzhao-last-active-at";
 const LOGIN_INACTIVITY_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+// 临时测试阶段立即启用会员校验。测试通过后只需将这里改为
+// 2026-08-09T00:00:00+08:00，即可按约定在 8 月 9 日正式启用。
+const MEMBERSHIP_REQUIRED_FROM = Date.parse("2026-01-01T00:00:00+08:00");
 
 export type AccountProfile = {
   id: string;
@@ -222,10 +225,11 @@ async function recordSuccessfulLogin(user: User) {
   if (insertError) throw insertError;
 }
 
-function accessFor() {
-  // 收款主体尚未确定，当前版本保持免费开放。会员字段仍会从
-  // Supabase 同步，后续接入微信支付时可以直接启用权限判断。
-  return true;
+function accessFor(profile: AccountProfile | null) {
+  if (Date.now() < MEMBERSHIP_REQUIRED_FROM) return true;
+  if (!profile?.is_member) return false;
+  if (!profile.membership_expiry) return true;
+  return Date.parse(profile.membership_expiry) > Date.now();
 }
 
 function AuthDialog({
@@ -742,6 +746,37 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     };
   }, [refreshAccountData]);
 
+  useEffect(() => {
+    if (!session) return;
+    let active = true;
+
+    const refreshMembership = async () => {
+      const { data, error } = await supabase
+        .from("users")
+        .select(
+          "id,email,full_name,created_at,last_sign_in_at,is_member,membership_started_at,membership_expiry",
+        )
+        .eq("id", session.user.id)
+        .maybeSingle();
+      if (!active || error || !data) return;
+      setProfile(data as AccountProfile);
+    };
+
+    const timer = window.setInterval(() => void refreshMembership(), 30_000);
+    const onFocus = () => void refreshMembership();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") void refreshMembership();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [session]);
+
   const onAuthenticated = useCallback(
     async (remember: boolean) => {
       window.sessionStorage.setItem(ACTIVE_SESSION_KEY, "1");
@@ -916,7 +951,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       examPerformance,
       loading,
       authOpen,
-      hasAccess: accessFor(),
+      hasAccess: accessFor(profile),
       openAuth: () => setAuthOpen(true),
       closeAuth: () => setAuthOpen(false),
       signOut,

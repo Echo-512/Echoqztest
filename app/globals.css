@@ -8624,6 +8624,81 @@ button {
   cursor: pointer;
 }
 
+/* Graphic choices stay in a single reading order on every question surface.
+   Let the card grow vertically instead of squeezing or overlapping A-E. */
+.question-card > .source-options,
+.question-card > .source-options[data-option-count="3"],
+.question-card > .source-options[data-option-count="4"],
+.question-card > .source-options[data-option-count="5"],
+.question-card > .source-options[data-option-count="6"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: none !important;
+  grid-auto-rows: auto !important;
+  align-content: start;
+  width: 100%;
+  padding: 12px;
+  gap: 10px;
+}
+
+.question-card > .source-options > .source-option-button,
+.question-card
+  > .source-options[data-option-count="5"]
+  > .source-option-button,
+.question-card
+  > .source-options[data-option-count="5"]
+  > .source-option-button:nth-child(4),
+.question-card
+  > .source-options[data-option-count="5"]
+  > .source-option-button:nth-child(5),
+.question-card
+  > .source-options[data-option-count="5"]
+  > .source-option-button:last-child {
+  grid-column: 1 / -1 !important;
+  justify-self: stretch !important;
+  width: 100% !important;
+  min-height: 128px;
+  height: auto !important;
+  padding: 10px 14px;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.question-card > .source-options > .source-option-button img {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  max-width: 100%;
+  max-height: 240px !important;
+  margin: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 700px) {
+  .question-card > .source-options,
+  .question-card > .source-options[data-option-count="3"],
+  .question-card > .source-options[data-option-count="4"],
+  .question-card > .source-options[data-option-count="5"],
+  .question-card > .source-options[data-option-count="6"] {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .question-card > .source-options > .source-option-button,
+  .question-card
+    > .source-options[data-option-count="5"]
+    > .source-option-button:last-child {
+    min-height: 116px !important;
+    padding: 8px 10px;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .question-card > .source-options > .source-option-button img {
+    max-height: 220px !important;
+  }
+}
+
 .mock-stage-card {
   position: relative;
 }
